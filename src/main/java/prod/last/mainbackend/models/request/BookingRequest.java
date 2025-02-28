@@ -1,10 +1,14 @@
 package prod.last.mainbackend.models.request;
 
-import java.time.LocalDateTime;
+import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Data
 public class BookingRequest {
 
-    private String placeId;
+    private UUID placeId;
 
     private LocalDateTime startAt;
 

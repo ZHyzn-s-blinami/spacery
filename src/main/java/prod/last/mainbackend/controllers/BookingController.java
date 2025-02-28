@@ -4,16 +4,31 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import prod.last.mainbackend.models.response.BookingCreateResponse;
+import org.springframework.web.bind.annotation.*;
+import prod.last.mainbackend.models.BookingModel;
+import prod.last.mainbackend.models.UserModel;
+import prod.last.mainbackend.models.request.BookingRequest;
+import prod.last.mainbackend.services.BookingService;
+import prod.last.mainbackend.services.UserService;
+
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
 public class BookingController {
+
+    private final BookingService bookingService;
+    private final UserService userService;
+
+    public BookingController(BookingService bookingService, UserService userService) {
+        this.bookingService = bookingService;
+        this.userService = userService;
+    }
 
     @Operation(
             summary = "Создание бронирования",
@@ -22,16 +37,27 @@ public class BookingController {
     @ApiResponse(
             responseCode = "201",
             description = "Успешное создание бронирования",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingCreateResponse.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingModel.class))
     )
     @ApiResponse(
             responseCode = "400",
             description = "Ошибка при создании бронирования",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingCreateResponse.class))
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
     )
     @PostMapping("/booking/create")
-    private ResponseEntity<BookingCreateResponse> create() {
-        return ResponseEntity.ok(new BookingCreateResponse());
+    private ResponseEntity<?> create(@Valid @RequestBody BookingRequest bookingRequest, Principal principal) {
+        try{
+            UserModel user = userService.getUserById(UUID.fromString(principal.getName()));
+
+            return ResponseEntity.status(201).body(bookingService.create(
+                    user.getId(),
+                    bookingRequest.getPlaceId(),
+                    bookingRequest.getStartAt(),
+                    bookingRequest.getEndAt()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @Operation(
@@ -48,8 +74,14 @@ public class BookingController {
             description = "Бронирование не найдено",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
     )
-    @PostMapping("/booking/cancel")
-    private ResponseEntity<?> cancel() {
+    @PostMapping("/booking/{uuid}/cancel")
+    private ResponseEntity<?> cancel(@PathVariable UUID uuid) {
+        try {
+            bookingService.reject(uuid);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("{\"status\": false}");
+        }
+
         return ResponseEntity.ok("{\"status\": true}");
     }
 
@@ -67,9 +99,15 @@ public class BookingController {
             description = "Бронирование не найдено",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"qrCode\": \"\"}"))
     )
-    @GetMapping("/booking/qr")
-    private ResponseEntity<?> qr() {
-        return ResponseEntity.ok("{\"qrCode\": \"code\"}");
+    @GetMapping("/booking/{uuid}/qr")
+    private ResponseEntity<?> qr(@PathVariable UUID uuid) {
+        try {
+            Map<String, String> response = new HashMap<>();
+            response.put("qrCode", bookingService.generateBookingCode(uuid));
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @Operation(
@@ -86,8 +124,12 @@ public class BookingController {
             description = "Бронирование не найдено",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
     )
-    @GetMapping("/booking/qr/check")
-    private ResponseEntity<?> qrCheck() {
+    @GetMapping("/booking/{uuid}/qr/check")
+    private ResponseEntity<?> qrCheck(@PathVariable UUID uuid) {
+        if (!bookingService.validateBookingCode(uuid.toString())) {
+            return ResponseEntity.status(404).body("{\"status\": false}");
+        }
+
         return ResponseEntity.ok("{\"status\": true}");
     }
 }

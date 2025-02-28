@@ -8,6 +8,7 @@ import prod.last.mainbackend.models.UserRole;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.repositories.UserRepository;
 
+import java.util.UUID;
 
 
 @Service
@@ -26,5 +27,10 @@ public class UserService {
     public UserModel getUserByEmail(String email) {
         log.info("Getting user by email: {}", email);
         return userRepository.findByEmail(email);
+    }
+
+    public UserModel getUserById(UUID id) {
+        log.info("Getting user by id: {}", id);
+        return userRepository.findById(id).orElse(null);
     }
 }
