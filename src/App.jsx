@@ -1,9 +1,19 @@
+import { Route, Routes } from "react-router-dom";
+import UserLayout from "./layouts/UserLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import Auth from "./pages/Auth";
+
 function App() {
 
   return (
-    <div className='text-green-300 bg-gray-800 p-100'>
-      <p className='text-9xl text-center'>App</p>
-    </div>
+    <Routes>
+      <Route path='/' element={<UserLayout />}>
+        <Route path='/auth' element={<Auth />} />
+      </Route>
+      <Route path='/admin' element={<AdminLayout />}>
+
+      </Route>
+    </Routes>
   )
 }
 
