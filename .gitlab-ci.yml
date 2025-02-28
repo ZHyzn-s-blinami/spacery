@@ -3,8 +3,9 @@ include:
     ref: master
     file:
       - "/jobs/build.yaml"
-      - "/jobs/docker.yaml"
       - "/jobs/rules.yaml"
+
+  - local: "/.gitlab-ci/jobs/docker.yaml"
 
 .global-variables:
   variables:
