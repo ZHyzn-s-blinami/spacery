@@ -7,8 +7,8 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <div className='text-green-300'>
-      <p className='text-9xl'>PROOOOOD</p>
+    <div className='text-green-300 bg-gray-800 p-100'>
+      <p className='text-9xl text-center'>PROOOOOD</p>
     </div>
   )
 }
