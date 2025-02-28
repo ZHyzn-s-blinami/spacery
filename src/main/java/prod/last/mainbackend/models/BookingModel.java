@@ -2,6 +2,7 @@ package prod.last.mainbackend.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,7 @@ public class BookingModel {
     private LocalDateTime endAt;
 
     @Enumerated(EnumType.STRING)
-    private BookingStatus status;
+    private BookingStatus status = BookingStatus.PENDING;
 
     @NotBlank
     private LocalDateTime createdAt;
@@ -38,14 +39,13 @@ public class BookingModel {
 
     public BookingModel() {}
 
-    public BookingModel(UUID userId, UUID placeId, LocalDateTime startAt, LocalDateTime endAt, BookingStatus status) {
+    public BookingModel(UUID userId, UUID placeId, LocalDateTime startAt, LocalDateTime endAt) {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.userId = userId;
         this.placeId = placeId;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.status = status;
     }
 
     public void updateStatus(BookingStatus status) {
