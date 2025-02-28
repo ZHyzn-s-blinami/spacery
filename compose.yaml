@@ -3,7 +3,7 @@ version: "3.8"
 services:
     main-backend:
         build:
-            context: ./main-backend
+            context: ./
             dockerfile: Dockerfile
         container_name: main-backend
         ports:
