@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import prod.last.mainbackend.models.UserRole;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.repositories.UserRepository;
+
+
 
 @Service
 @Slf4j
@@ -15,9 +18,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserModel createUser(String login, String email, String password) {
+    public UserModel createUser(String email, String password, UserRole role) {
         log.info("Creating user with email: {}", email);
-        return userRepository.save(new UserModel(login, email, passwordEncoder.encode(password)));
+        return userRepository.save(new UserModel(email, passwordEncoder.encode(password), role));
     }
 
     public UserModel getUserByEmail(String email) {

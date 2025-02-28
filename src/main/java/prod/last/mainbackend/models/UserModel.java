@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -22,8 +23,9 @@ public class UserModel {
     @NotBlank
     private String password;
 
-    @NotBlank
-    private String login;
+    private LocalDateTime createdAt;
+
+    private UserRole role;
 
     @Column(name = "token_uuid")
     @JsonIgnore
@@ -32,9 +34,10 @@ public class UserModel {
     public UserModel() {
     }
 
-    public UserModel(String login, String email, String password) {
-        this.login = login;
+    public UserModel(String email, String password, UserRole role) {
+        this.createdAt = LocalDateTime.now();
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 }
