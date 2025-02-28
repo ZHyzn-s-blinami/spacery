@@ -25,6 +25,7 @@ public class UserModel {
 
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
     @Column(name = "token_uuid")
