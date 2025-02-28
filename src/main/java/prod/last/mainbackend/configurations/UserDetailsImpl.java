@@ -3,6 +3,7 @@ package prod.last.mainbackend.configurations;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import prod.last.mainbackend.models.UserModel;
 
@@ -13,16 +14,16 @@ import java.util.Collections;
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
     private String id;
-    private String name;
     private String email;
     private String password;
+    private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(UserModel user) {
         return new UserDetailsImpl(
                 user.getId().toString(),
-                user.getLogin(),
                 user.getEmail(),
-                user.getPassword()
+                user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
         );
     }
 
@@ -38,7 +39,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return this.authorities;
     }
 
     @Override

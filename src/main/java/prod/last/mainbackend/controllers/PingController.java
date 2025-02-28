@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import prod.last.mainbackend.models.response.JwtResponse;
@@ -41,5 +43,11 @@ public class PingController {
     @GetMapping("/pong")
     private ResponseEntity<?> pong() {
         return ResponseEntity.ok("PONG");
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin-only")
+    public ResponseEntity<?> adminOnlyEndpoint() {
+        return ResponseEntity.ok("This is an admin-only endpoint");
     }
 }
