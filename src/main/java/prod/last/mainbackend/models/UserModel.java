@@ -18,10 +18,14 @@ public class UserModel {
     private UUID id;
 
     @NotBlank
+    @Column(unique = true)
     private String email;
 
     @NotBlank
     private String password;
+
+    @NotBlank
+    private String name;
 
     private LocalDateTime createdAt;
 
@@ -35,10 +39,11 @@ public class UserModel {
     public UserModel() {
     }
 
-    public UserModel(String email, String password, UserRole role) {
+    public UserModel(String email, String password, String name, UserRole role) {
         this.createdAt = LocalDateTime.now();
         this.email = email;
         this.password = password;
+        this.name = name;
         this.role = role;
     }
 }

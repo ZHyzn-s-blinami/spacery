@@ -19,9 +19,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserModel createUser(String email, String password, UserRole role) {
+    public UserModel createUser(String email, String password, String name, UserRole role) {
         log.info("Creating user with email: {}", email);
-        return userRepository.save(new UserModel(email, passwordEncoder.encode(password), role));
+
+        if (userRepository.findByEmail(email) != null) {
+            log.error("User with email {} already exists", email);
+            throw new IllegalArgumentException("User with email " + email + " already exists");
+        }
+
+        return userRepository.save(new UserModel(email, passwordEncoder.encode(password), name, role));
     }
 
     public UserModel getUserByEmail(String email) {
