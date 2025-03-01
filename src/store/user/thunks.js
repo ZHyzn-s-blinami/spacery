@@ -9,7 +9,7 @@ export const registerUser = createAsyncThunk(
       const response = await authService.register(userData);
 
       dispatch(addUser(userData));
-
+      localStorage.setItem('userToken', response.token);
       return response.user;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: error.message });
@@ -22,6 +22,7 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
+      localStorage.setItem('userToken', response.token);
       return response.user;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: error.message });
