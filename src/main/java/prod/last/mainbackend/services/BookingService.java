@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -68,5 +69,10 @@ public class BookingService {
             log.warn("Invalid booking token: {}", e.getMessage());
             return false;
         }
+    }
+
+    public List<BookingModel> findAllByPlaceId(UUID placeId) {
+        log.info("Getting bookings by placeId: {}", placeId);
+        return bookingRepository.findAllByPlaceId(placeId);
     }
 }

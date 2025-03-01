@@ -1,11 +1,13 @@
 package prod.last.mainbackend.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.UserModel;
@@ -131,5 +133,29 @@ public class BookingController {
         }
 
         return ResponseEntity.ok("{\"status\": true}");
+    }
+
+    @Operation(
+            summary = "Получение всех бронирований",
+            description = "Получает все бронирования"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Успешное получение всех бронирований",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingModel.class)))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Бронирования не найдены или любая другая ошибка. Смотреть на ошибку",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/booking/{uuid}/place")
+    private ResponseEntity<?> getAllBookingByPlace(@PathVariable UUID uuid) {
+        try {
+            return ResponseEntity.ok(bookingService.findAllByPlaceId(uuid));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
 }
