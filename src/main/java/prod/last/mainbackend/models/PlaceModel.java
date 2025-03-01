@@ -29,11 +29,12 @@ public class PlaceModel {
     private String description;
 
     @NotNull
+    @Column(name = "place_row")
     private Integer row;
 
     @NotNull
+    @Column(name = "place_column")
     private Integer column;
-
 
     @NotNull
     private LocalDateTime createdAt;
