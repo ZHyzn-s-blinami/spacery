@@ -50,7 +50,7 @@ public class UserController {
     @PostMapping("/sign-up")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
-        UserModel userModel = userService.createUser(request.getEmail(), request.getPassword(), request.getRole());
+        UserModel userModel = userService.createUser(request.getEmail(), request.getPassword(), request.getName(), request.getRole());
 
         tokenService.updateTokenUUID(userModel);
 
