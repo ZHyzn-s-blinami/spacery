@@ -18,9 +18,9 @@ public class PlaceService {
 
     private final PlaceRepository placeRepository;
 
-    public List<PlaceModel> getFreePlacesByTypeAndCapacity(PlaceType type, int capacity, LocalDateTime start, LocalDateTime end) {
-        return placeRepository.findFreePlacesByTypeAndCapacity(type, capacity, start, end);
-    }
+public List<PlaceModel> getFreePlacesByTypeAndCapacity(PlaceType type, Integer capacity, LocalDateTime start, LocalDateTime end) {
+    return placeRepository.findFreePlacesByTypeAndCapacity(type, capacity != null ? capacity : 0, start, end);
+}
 
     public PlaceModel createPlace(PlaceType type, int capacity, String description, Long placeId, String name) {
         return placeRepository.save(new PlaceModel(capacity, description, type, placeId, name));

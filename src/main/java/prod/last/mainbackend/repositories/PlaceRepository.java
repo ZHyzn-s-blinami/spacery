@@ -12,11 +12,12 @@ import java.util.UUID;
 
 public interface PlaceRepository extends JpaRepository<PlaceModel, UUID> {
 
-    @Query("SELECT p FROM PlaceModel p WHERE p.type = :type AND p.capacity >= :capacity AND p.id NOT IN " +
-            "(SELECT b.placeId FROM BookingModel b WHERE b.startAt < :end AND b.endAt > :start)")
-    List<PlaceModel> findFreePlacesByTypeAndCapacity(@Param("type") PlaceType type,
-                                                     @Param("capacity") int capacity,
-                                                     @Param("start") LocalDateTime start,
-                                                     @Param("end") LocalDateTime end);
+@Query("SELECT p FROM PlaceModel p WHERE (:type = 'DEFAULT' OR p.type = :type) AND " +
+        "(:capacity = 0 OR p.capacity = :capacity) AND p.id NOT IN " +
+        "(SELECT b.placeId FROM BookingModel b WHERE b.startAt <= :end AND b.endAt >= :start)")
+List<PlaceModel> findFreePlacesByTypeAndCapacity(@Param("type") PlaceType type,
+                                                 @Param("capacity") Integer capacity,
+                                                 @Param("start") LocalDateTime start,
+                                                 @Param("end") LocalDateTime end);
 
 }
