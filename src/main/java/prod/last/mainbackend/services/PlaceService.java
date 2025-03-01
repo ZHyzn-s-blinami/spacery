@@ -8,6 +8,7 @@ import prod.last.mainbackend.repositories.PlaceRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,5 +22,9 @@ public class PlaceService {
 
     public PlaceModel createPlace(PlaceType type, int capacity, String description, Integer row, Integer column) {
         return placeRepository.save(new PlaceModel(capacity, description, type, row, column));
+    }
+
+    public PlaceModel getPlaceById(UUID id) {
+        return placeRepository.findById(id).orElse(null);
     }
 }

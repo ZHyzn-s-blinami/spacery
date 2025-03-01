@@ -11,6 +11,7 @@ import prod.last.mainbackend.models.request.PlaceCreate;
 import prod.last.mainbackend.services.PlaceService;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/place")
@@ -53,4 +54,14 @@ public class PlaceController {
         }
     }
 
+    @GetMapping("/{uuid}")
+    public ResponseEntity<?> getPlaceById(@PathVariable String uuid) {
+        try {
+            UUID id = UUID.fromString(uuid);
+
+            return ResponseEntity.ok(placeService.getPlaceById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 }
