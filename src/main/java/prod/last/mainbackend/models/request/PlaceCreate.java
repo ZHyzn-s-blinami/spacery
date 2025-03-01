@@ -1,5 +1,6 @@
 package prod.last.mainbackend.models.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import prod.last.mainbackend.models.PlaceType;
@@ -17,12 +18,9 @@ public class PlaceCreate {
     private String description;
 
     @NotNull
-    private Integer row;
-
-    @NotNull
-    private Integer column;
-
-    @NotNull
     private Long placeId;
+
+    @NotBlank
+    private String name;
 
 }

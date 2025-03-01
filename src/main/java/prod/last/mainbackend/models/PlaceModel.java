@@ -28,26 +28,20 @@ public class PlaceModel {
     @NotBlank
     private String description;
 
-    @NotNull
-    @Column(name = "place_row")
-    private Integer row;
-
-    @NotNull
-    @Column(name = "place_column")
-    private Integer column;
+    @NotBlank
+    private String name;
 
     @NotNull
     private LocalDateTime createdAt;
 
     public PlaceModel() {}
 
-    public PlaceModel(Integer capacity, String description, PlaceType type, Integer row, Integer column, Long placeId) {
+    public PlaceModel(Integer capacity, String description, PlaceType type, Long placeId, String name) {
         this.createdAt = LocalDateTime.now();
         this.capacity = capacity;
         this.description = description;
         this.type = type;
-        this.row = row;
-        this.column = column;
         this.placeId = placeId;
+        this.name = name;
     }
 }

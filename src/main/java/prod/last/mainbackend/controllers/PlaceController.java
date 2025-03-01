@@ -16,6 +16,7 @@ import prod.last.mainbackend.models.request.PlaceCreate;
 import prod.last.mainbackend.services.PlaceService;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -77,9 +78,8 @@ public class PlaceController {
                     placeCreate.getType(),
                     placeCreate.getCapacity(),
                     placeCreate.getDescription(),
-                    placeCreate.getRow(),
-                    placeCreate.getColumn(),
-                    placeCreate.getPlaceId()
+                    placeCreate.getPlaceId(),
+                    placeCreate.getName()
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -114,6 +114,29 @@ public class PlaceController {
     public ResponseEntity<?> getAllPlaces() {
         try {
             return ResponseEntity.ok(placeService.getAllPlaces());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @Operation(
+            summary = "Создание новых мест",
+            description = "Создаёт новые места. Доступно только для администраторов"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Места успешно созданы",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PlaceModel.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Ошибка при создании мест"
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/create-multiple")
+    public ResponseEntity<?> createPlaces(@Valid @RequestBody List<PlaceCreate> placeCreates) {
+        try {
+            return ResponseEntity.ok(placeService.createPlaces(placeCreates));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
