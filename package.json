@@ -13,6 +13,7 @@
     "@headlessui/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.6.0",
     "@tailwindcss/postcss": "^4.0.0",
+    "axios": "^1.8.1",
     "flowbite": "^3.1.2",
     "lucide-react": "^0.476.0",
     "react": "^18.3.1",
