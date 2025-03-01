@@ -42,7 +42,7 @@ public class PlaceController {
     @GetMapping("/free")
     public ResponseEntity<?> getFreePlacesByTypeAndCapacity(
             @PathParam("type") String type,
-            @PathParam("capacity") int capacity,
+            @PathParam("capacity") Integer capacity,
             @PathParam("start") String start,
             @PathParam("end") String end
     ) {
@@ -50,8 +50,9 @@ public class PlaceController {
             LocalDateTime startTime = start != null ? LocalDateTime.parse(start) : LocalDateTime.now();
             LocalDateTime endTime = end != null ? LocalDateTime.parse(end) : LocalDateTime.now().plusHours(1);
             PlaceType placeType = type != null ? PlaceType.valueOf(type.toUpperCase()) : PlaceType.DEFAULT;
+            Integer capacityParam = capacity != null  ? capacity : 0;
 
-            return ResponseEntity.ok(placeService.getFreePlacesByTypeAndCapacity(placeType, capacity, startTime, endTime));
+            return ResponseEntity.ok(placeService.getFreePlacesByTypeAndCapacity(placeType, capacityParam, startTime, endTime));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
