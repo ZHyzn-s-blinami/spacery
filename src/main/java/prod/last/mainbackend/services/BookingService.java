@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.BookingStatus;
@@ -79,5 +80,18 @@ public class BookingService {
     public List<BookingModel> findAllByPlaceId(UUID placeId) {
         log.info("Getting bookings by placeId: {}", placeId);
         return bookingRepository.findAllByPlaceId(placeId);
+    }
+
+    @Scheduled(fixedRate = 300000)
+    public void checkAndUpdateBookingStatus() {
+        List<BookingModel> bookings = bookingRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (BookingModel booking : bookings) {
+            if (booking.getStatus() == BookingStatus.PENDING && booking.getStartAt().plusMinutes(5).isBefore(now)) {
+                booking.updateStatus(BookingStatus.OVERDUE);
+                bookingRepository.save(booking);
+            }
+        }
     }
 }
