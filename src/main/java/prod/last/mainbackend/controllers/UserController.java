@@ -19,6 +19,7 @@ import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.LoginRequest;
 import prod.last.mainbackend.models.request.RegisterRequest;
 import prod.last.mainbackend.models.response.JwtResponse;
+import prod.last.mainbackend.services.EmailService;
 import prod.last.mainbackend.services.TokenService;
 import prod.last.mainbackend.services.UserService;
 
@@ -34,6 +35,7 @@ public class UserController {
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final EmailService emailService;
 
     @Operation(
             summary = "Регистрация нового пользователя",
@@ -146,6 +148,26 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
         try {
             return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> sendVerificationEmail(Principal principal) {
+        try {
+            userService.sendVerificationEmail(UUID.fromString(principal.getName()));
+            return ResponseEntity.ok("Verification email sent");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<?> confirmUser(@RequestParam String token) {
+        try {
+            userService.confirmUser(token);
+            return ResponseEntity.ok("User verified successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }

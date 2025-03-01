@@ -27,6 +27,8 @@ public class UserModel {
     @NotBlank
     private String name;
 
+    private Boolean verified;
+
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
@@ -45,5 +47,6 @@ public class UserModel {
         this.password = password;
         this.name = name;
         this.role = role;
+        this.verified = false;
     }
 }
