@@ -2,6 +2,7 @@ package prod.last.mainbackend.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,13 +19,13 @@ public class PlaceModel {
     @Enumerated(EnumType.STRING)
     private PlaceType type;
 
-    @NotBlank
+    @NotNull
     private Integer capacity;
 
     @NotBlank
     private String description;
 
-    @NotBlank
+    @NotNull
     private LocalDateTime createdAt;
 
     public PlaceModel() {}

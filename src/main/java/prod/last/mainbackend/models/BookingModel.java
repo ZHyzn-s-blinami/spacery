@@ -2,6 +2,7 @@ package prod.last.mainbackend.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,25 +17,23 @@ public class BookingModel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank
+    @NotNull
     private UUID userId;
 
-    @NotBlank
+    @NotNull
     private UUID placeId;
 
-    @NotBlank
+    @NotNull
     private LocalDateTime startAt;
 
-    @NotBlank
+    @NotNull
     private LocalDateTime endAt;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status = BookingStatus.PENDING;
 
-    @NotBlank
     private LocalDateTime createdAt;
 
-    @NotBlank
     private LocalDateTime updatedAt;
 
     public BookingModel() {}
