@@ -44,7 +44,7 @@ public class BookingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
     )
     @PostMapping("/booking/create")
-    private ResponseEntity<?> create(@Valid @RequestBody BookingRequest bookingRequest, Principal principal) {
+    public ResponseEntity<?> create(@Valid @RequestBody BookingRequest bookingRequest, Principal principal) {
         try{
             UserModel user = userService.getUserById(UUID.fromString(principal.getName()));
 
@@ -74,7 +74,7 @@ public class BookingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
     )
     @PostMapping("/booking/{uuid}/cancel")
-    private ResponseEntity<?> cancel(@PathVariable UUID uuid) {
+    public ResponseEntity<?> cancel(@PathVariable UUID uuid) {
         try {
             bookingService.reject(uuid);
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class BookingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"qrCode\": \"\"}"))
     )
     @GetMapping("/booking/{uuid}/qr")
-    private ResponseEntity<?> qr(@PathVariable UUID uuid) {
+    public ResponseEntity<?> qr(@PathVariable UUID uuid) {
         try {
             Map<String, String> response = new HashMap<>();
             response.put("qrCode", bookingService.generateBookingCode(uuid));
@@ -124,7 +124,7 @@ public class BookingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
     )
     @GetMapping("/booking/{uuid}/qr/check")
-    private ResponseEntity<?> qrCheck(@PathVariable UUID uuid) {
+    public ResponseEntity<?> qrCheck(@PathVariable UUID uuid) {
         if (!bookingService.validateBookingCode(uuid.toString())) {
             return ResponseEntity.status(404).body("{\"status\": false}");
         }
@@ -148,7 +148,7 @@ public class BookingController {
     )
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/booking/{uuid}/place")
-    private ResponseEntity<?> getAllBookingByPlace(@PathVariable UUID uuid) {
+    public ResponseEntity<?> getAllBookingByPlace(@PathVariable UUID uuid) {
         try {
             return ResponseEntity.ok(bookingService.findAllByPlaceId(uuid));
         } catch (Exception e) {
