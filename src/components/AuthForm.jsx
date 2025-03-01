@@ -6,7 +6,7 @@ import { loginUser, registerUser } from '../store/user/thunks';
 
 export const AuthForm = () => {
   const dispatch = useDispatch();
-  const { currentUser, loading, error, isAuthenticated } = useSelector((state) => state.users);
+  const { loading, error, isAuthenticated } = useSelector((state) => state.user);
 
   const [isLogin, setIsLogin] = useState(true);
   

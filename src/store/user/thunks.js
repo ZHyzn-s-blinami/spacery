@@ -41,3 +41,16 @@ export const logoutUser = createAsyncThunk(
     }
   }
 )
+
+export const fetchUserData = createAsyncThunk(
+  'users/fetchUserData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.getUser();
+      console.log(response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

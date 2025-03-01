@@ -15,7 +15,7 @@ const initialState = {
 }
 
 const userSlice = createSlice({
-  name: "users",
+  name: "user",
   initialState,
   reducers: {
     addUser: (state, action) => {
@@ -52,7 +52,6 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentUser = action.payload;
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -62,7 +61,6 @@ const userSlice = createSlice({
     
     builder
       .addCase(logoutUser.fulfilled, (state) => {
-        state.currentUser = null;
         state.isAuthenticated = false;
       })
   }
