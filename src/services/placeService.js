@@ -22,9 +22,13 @@ export const placeService = {
     try {
       const token = localStorage.getItem('userToken');
     
-      const response = await apiClient.get(`/api/place/all`, {
+      const response = await apiClient.get(`/api/place/free`, {
         headers: {
           'Authorization': `Bearer ${token}`
+        },
+        params: {
+          start,
+          end
         }
       });
       console.log(response.data);
