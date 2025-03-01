@@ -36,6 +36,8 @@ public class BookingModel {
 
     private LocalDateTime updatedAt;
 
+    private boolean sentNotification = false;
+
     public BookingModel() {}
 
     public BookingModel(UUID userId, UUID placeId, LocalDateTime startAt, LocalDateTime endAt) {
