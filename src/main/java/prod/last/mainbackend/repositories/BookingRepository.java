@@ -8,4 +8,7 @@ import java.util.UUID;
 
 public interface BookingRepository extends JpaRepository<BookingModel, UUID> {
     List<BookingModel> findAllByPlaceId(UUID placeId);
+
+    List<BookingModel> findAllByUserId(UUID userId);
+
 }

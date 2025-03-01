@@ -30,9 +30,10 @@ public class PlaceModel {
 
     public PlaceModel() {}
 
-    public PlaceModel(Integer capacity, String description) {
+    public PlaceModel(Integer capacity, String description, PlaceType type) {
         this.createdAt = LocalDateTime.now();
         this.capacity = capacity;
         this.description = description;
+        this.type = type;
     }
 }

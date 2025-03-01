@@ -18,6 +18,7 @@ import prod.last.mainbackend.services.UserService;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -151,6 +152,17 @@ public class BookingController {
     public ResponseEntity<?> getAllBookingByPlace(@PathVariable UUID uuid) {
         try {
             return ResponseEntity.ok(bookingService.findAllByPlaceId(uuid));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/booking/{uuid}/user")
+    public ResponseEntity<?> getAllBookingByUserId(@PathVariable String uuid) {
+        try {
+            UUID userId = UUID.fromString(uuid);
+
+            return ResponseEntity.ok(bookingService.findAllByUserId(userId));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }

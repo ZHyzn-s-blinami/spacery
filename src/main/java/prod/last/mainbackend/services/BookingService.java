@@ -71,6 +71,11 @@ public class BookingService {
         }
     }
 
+    public List<BookingModel> findAllByUserId(UUID userId) {
+        log.info("Getting bookings by userId: {}", userId);
+        return bookingRepository.findAllByUserId(userId);
+    }
+
     public List<BookingModel> findAllByPlaceId(UUID placeId) {
         log.info("Getting bookings by placeId: {}", placeId);
         return bookingRepository.findAllByPlaceId(placeId);

@@ -8,14 +8,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import prod.last.mainbackend.configurations.jwt.JwtUtils;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.LoginRequest;
@@ -23,6 +21,9 @@ import prod.last.mainbackend.models.request.RegisterRequest;
 import prod.last.mainbackend.models.response.JwtResponse;
 import prod.last.mainbackend.services.TokenService;
 import prod.last.mainbackend.services.UserService;
+
+import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
@@ -103,5 +104,24 @@ public class UserController {
         String jwt = jwtUtils.generateJwtToken(authentication, user.getTokenUUID());
 
         return ResponseEntity.ok(new JwtResponse(jwt));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getUserById(Principal principal) {
+        try {
+            return ResponseEntity.ok(userService.getUserById(UUID.fromString(principal.getName())));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 }

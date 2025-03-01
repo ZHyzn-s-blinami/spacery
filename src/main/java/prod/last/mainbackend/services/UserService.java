@@ -8,6 +8,7 @@ import prod.last.mainbackend.models.UserRole;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.repositories.UserRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -38,5 +39,10 @@ public class UserService {
     public UserModel getUserById(UUID id) {
         log.info("Getting user by id: {}", id);
         return userRepository.findById(id).orElse(null);
+    }
+
+    public List<UserModel> getAllUsers() {
+        log.info("Getting all users");
+        return userRepository.findAll();
     }
 }
