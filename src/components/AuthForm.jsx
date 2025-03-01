@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addUser, UserRole } from '../store/user/slice';
+import { addUser, clearError, UserRole } from '../store/user/slice';
+import { useNavigate } from 'react-router-dom';
+import { loginUser, registerUser } from '../store/user/thunks';
 
 export const AuthForm = () => {
   const dispatch = useDispatch();
-  const users = useSelector((state) => state.users.users);
+  const { users, loading, error, isAuthenticated } = useSelector((state) => state.users);
 
   const [isLogin, setIsLogin] = useState(true);
   
   const [formData, setFormData] = useState({
-    id: Date.now(),
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    verificationStatus: false,
-    role: UserRole.ROLE_ANONYMOUS
+    confirmPassword: ''
   });
   
   const [errors, setErrors] = useState({
@@ -26,6 +25,10 @@ export const AuthForm = () => {
   });
   
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const navigate = useNavigate()
+
+  const userToken = localStorage.getItem('userToken');
   
   useEffect(() => {
     setErrors({
@@ -35,7 +38,15 @@ export const AuthForm = () => {
       confirmPassword: ''
     });
     setIsSubmitted(false);
+    dispatch(clearError());
   }, [isLogin]);
+
+  useEffect(() => {
+    if (userToken) {
+      console.log(userToken);
+      navigate('/dashboard');
+    }
+  }, [userToken])
   
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -116,9 +127,20 @@ export const AuthForm = () => {
         }));
         return;
       }
-      dispatch(addUser(formData));
+      const userData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: UserRole.ROLE_ANONYMOUS
+      };
+      dispatch(registerUser(userData));
     } else {
-      // TODO: сделать логику для логина и дописать логику для регистрации
+      const credentials = {
+        email: formData.email,
+        password: formData.password
+      }
+
+      dispatch(loginUser(credentials));
     }
   };
   
