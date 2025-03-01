@@ -24,7 +24,11 @@ export const placeService = {
     
       const response = await apiClient.get(`/api/place/free`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+
         },
         params: {
           start,

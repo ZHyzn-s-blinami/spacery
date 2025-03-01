@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {Calendar, Lock, Info, Coffee, Wifi, Users, MapPin, Filter} from 'lucide-react';
+import { placeService } from '../services/placeService';
 
 const TimeRangeSlider = ({
                              startTime,
@@ -472,73 +473,81 @@ const SeatPopover = ({seat, timeRange, selectedDate, onClose, onBook, position})
     );
 };
 
-const CoworkingMap = ({selectedSeat, onSeatSelect}) => {
+const CoworkingMap = ({selectedSeat, onSeatSelect, freePlaces}) => {
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const mapRef = useRef(null);  
     const [seats, setSeats] = useState([]);
-    const mapRef = useRef(null);
 
+    const generateSeats = () => {
+        const rooms = [
+          ...Array(30)
+            .fill()
+            .map((_, idx) => ({
+              id: `A${idx + 1}`,
+              name: `A${idx + 1}`,
+              x: 53 + (idx % 6) * 25,
+              y: 60 + Math.floor(idx / 6) * 25,
+              // Если в freePlaces нет объекта с таким name, считаем место занятым
+              isOccupied: !freePlaces.some(item => item.name === `A${idx + 1}`),
+              zone: "A",
+              type: "desk"
+            })),
+          ...Array(9)
+            .fill()
+            .map((_, idx) => ({
+              id: `B${idx + 1}`,
+              name: `B${idx + 1}`,
+              x: 295 + (idx % 3) * 35,
+              y: 65 + Math.floor(idx / 3) * 40,
+              isOccupied: !freePlaces.some(item => item.name === `B${idx + 1}`),
+              zone: "B",
+              type: "office"
+            })),
+          // Аналогично для зон C, D, E…
+          ...Array(8)
+            .fill()
+            .map((_, idx) => ({
+              id: `C${idx + 1}`,
+              name: `C${idx + 1}`,
+              x: 55 + (idx % 4) * 40,
+              y: 280 + Math.floor(idx / 4) * 45,
+              isOccupied: !freePlaces.some(item => item.name === `C${idx + 1}`),
+              zone: "C",
+              type: "meeting"
+            })),
+          ...Array(12)
+            .fill()
+            .map((_, idx) => ({
+              id: `D${idx + 1}`,
+              name: `D${idx + 1}`,
+              x: 270 + (idx % 6) * 30,
+              y: 270 + Math.floor(idx / 6) * 35,
+              isOccupied: !freePlaces.some(item => item.name === `D${idx + 1}`),
+              zone: "D",
+              type: "focus"
+            })),
+          ...Array(6)
+            .fill()
+            .map((_, idx) => ({
+              id: `E${idx + 1}`,
+              name: `E${idx + 1}`,
+              x: 490 + (idx % 3) * 30,
+              y: 80 + Math.floor(idx / 3) * 40,
+              isOccupied: !freePlaces.some(item => item.name === `E${idx + 1}`),
+              zone: "E",
+              type: "lounge"
+            }))
+        ];
+        return rooms;
+      };
+    
+        // Обновляем список мест, когда меняются freePlaces
     useEffect(() => {
-        const generateSeats = () => {
-            const rooms = [
-                ...Array(30).fill().map((_, idx) => ({
-                    id: `A${idx + 1}`,
-                    name: `A${idx + 1}`,
-                    x: 53 + (idx % 6) * 25,
-                    y: 60 + Math.floor(idx / 6) * 25,
-                    isOccupied: Math.random() > 0.7,
-                    zone: "A",
-                    type: "desk"
-                })),
-
-                ...Array(9).fill().map((_, idx) => ({
-                    id: `B${idx + 1}`,
-                    name: `B${idx + 1}`,
-                    x: 295 + (idx % 3) * 35,
-                    y: 65 + Math.floor(idx / 3) * 40,
-                    isOccupied: Math.random() > 0.7,
-                    zone: "B",
-                    type: "office"
-                })),
-
-                ...Array(8).fill().map((_, idx) => ({
-                    id: `C${idx + 1}`,
-                    name: `C${idx + 1}`,
-                    x: 55 + (idx % 4) * 40,
-                    y: 280 + Math.floor(idx / 4) * 45,
-                    isOccupied: Math.random() > 0.6,
-                    zone: "C",
-                    type: "meeting"
-                })),
-
-                ...Array(12).fill().map((_, idx) => ({
-                    id: `D${idx + 1}`,
-                    name: `D${idx + 1}`,
-                    x: 270 + (idx % 6) * 30,
-                    y: 270 + Math.floor(idx / 6) * 35,
-                    isOccupied: Math.random() > 0.7,
-                    zone: "D",
-                    type: "focus"
-                })),
-
-                ...Array(6).fill().map((_, idx) => ({
-                    id: `E${idx + 1}`,
-                    name: `E${idx + 1}`,
-                    x: 490 + (idx % 3) * 30,
-                    y: 80 + Math.floor(idx / 3) * 40,
-                    isOccupied: Math.random() > 0.5,
-                    zone: "E",
-                    type: "lounge"
-                })),
-            ];
-
-            return rooms;
-        };
-
         setSeats(generateSeats());
-    }, []);
+    }, [freePlaces]);
 
     const handleWheel = (e) => {
         e.preventDefault();
@@ -912,6 +921,40 @@ const CoworkingBooking = () => {
     const [isToday, setIsToday] = useState(true);
     const [popoverSeat, setPopoverSeat] = useState(null);
     const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 0 });
+    const [timeRange, setTimeRange] = useState({
+        start: { hour: 12, minute: 0 },
+        end: { hour: 13, minute: 0 }
+    });
+    const [freePlaces, setFreePlaces] = useState([]);
+
+    const formatDateTimeForAPI = (date, time) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(time.hour).padStart(2, '0');
+        const minutes = String(time.minute).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}:00`;
+    };
+
+    // Функция для получения свободных мест (должна обращаться к вашему API)
+    const fetchFreePlaces = async () => {
+        try {
+        const start = formatDateTimeForAPI(selectedDate, timeRange.start);
+        const end = formatDateTimeForAPI(selectedDate, timeRange.end);
+        const data = await placeService.get(start, end);
+        console.log('freePlaces:', data);
+        setFreePlaces(data);
+        } catch (err) {
+        console.error('Error fetching places:', err);
+        }
+    };
+
+    // Вызываем fetchFreePlaces при изменении даты или временного диапазона
+    useEffect(() => {
+        if (selectedDate && timeRange.start && timeRange.end) {
+        fetchFreePlaces();
+        }
+    }, [selectedDate, timeRange.start, timeRange.end]);
 
     const handleSeatSelect = (seat) => {
         setSelectedSeat(seat);
@@ -943,12 +986,7 @@ const CoworkingBooking = () => {
 
     const handleEndTimeChange = (newEndTime) => {
         setTimeRange(prev => ({...prev, end: newEndTime}));
-    };
-
-    const [timeRange, setTimeRange] = useState({
-        start: {hour: 12, minute: 0},
-        end: {hour: 13, minute: 0}
-    });
+    };    
 
     const getRoundedCurrentTime = () => {
         const current = new Date();
@@ -1292,7 +1330,7 @@ const CoworkingBooking = () => {
                     <CoworkingMap
                         selectedSeat={selectedSeat}
                         onSeatSelect={handleSeatSelect}
-                        selectedZone={selectedZone}
+                        freePlaces={freePlaces}
                     />
                 </div>
 
