@@ -47,9 +47,9 @@ public class PlaceController {
             @PathParam("end") String end
     ) {
         try {
-            LocalDateTime startTime = LocalDateTime.parse(start);
-            LocalDateTime endTime = LocalDateTime.parse(end);
-            PlaceType placeType = PlaceType.valueOf(type.toUpperCase());
+            LocalDateTime startTime = start != null ? LocalDateTime.parse(start) : LocalDateTime.now();
+            LocalDateTime endTime = end != null ? LocalDateTime.parse(end) : LocalDateTime.now().plusHours(1);
+            PlaceType placeType = type != null ? PlaceType.valueOf(type.toUpperCase()) : PlaceType.DEFAULT;
 
             return ResponseEntity.ok(placeService.getFreePlacesByTypeAndCapacity(placeType, capacity, startTime, endTime));
         } catch (Exception e) {
