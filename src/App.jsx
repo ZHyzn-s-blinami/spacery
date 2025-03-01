@@ -8,12 +8,6 @@ import HomeAdmin from './pages/HomeAdmin';
 import BookingList from './pages/BookingList';
 
 function App() {
-  const userToken = localStorage.getItem('userToken');
-  const navigate = useNavigate();
-
-  if (!userToken) {
-    navigate('/auth');
-  }
   return (
     <Routes>
       <Route path="/" element={<UserLayout />}>

@@ -25,7 +25,6 @@ export const placeService = {
       const response = await apiClient.get(`/api/place/free`, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Access-Control-Allow-Origin': '*',
 
@@ -35,7 +34,27 @@ export const placeService = {
           end
         }
       });
-      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  post: async (placeData) => {
+    try {
+      const token = localStorage.getItem('userToken');
+      
+      const response = await apiClient.post(
+        '/api/booking/create', 
+        placeData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      );
+      
       return response.data;
     } catch (error) {
       throw error;

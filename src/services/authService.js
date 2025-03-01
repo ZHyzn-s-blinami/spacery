@@ -30,7 +30,6 @@ export const authService = {
   login: async (credentials) => {
     try {
       const response = await apiClient.post('/user/sign-in', credentials);
-      console.log(response);
       if (response.data.token) {
         localStorage.setItem('userToken', response.data.token);
         apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
