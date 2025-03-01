@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import prod.last.mainbackend.models.BookingModel;
@@ -135,10 +136,11 @@ public class BookingService {
     }
 
     @Scheduled(fixedRate = 300000)
+    @Async
     public void checkAndUpdateBookingStatus() {
         List<BookingModel> bookings = bookingRepository.findAll();
         LocalDateTime now = LocalDateTime.now();
-
+        log.info("Checking booking status");
         for (BookingModel booking : bookings) {
             if (booking.getStatus() == BookingStatus.PENDING && booking.getStartAt().plusMinutes(5).isBefore(now)) {
                 booking.updateStatus(BookingStatus.OVERDUE);
