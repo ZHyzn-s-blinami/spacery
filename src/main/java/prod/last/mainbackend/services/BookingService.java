@@ -10,9 +10,12 @@ import org.springframework.stereotype.Service;
 import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.BookingStatus;
 import prod.last.mainbackend.models.PlaceModel;
+import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
+import prod.last.mainbackend.models.response.BookingWithUserResponse;
 import prod.last.mainbackend.repositories.BookingRepository;
 import prod.last.mainbackend.repositories.PlaceRepository;
+import prod.last.mainbackend.repositories.UserRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -30,6 +33,7 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final PlaceRepository placeRepository;
+    private final UserRepository userRepository;
 
     @Value("${security.random-secret}")
     private String SECRET_KEY;
@@ -100,9 +104,6 @@ public class BookingService {
             PlaceModel placeModel = placeRepository.findById(booking.getPlaceId()).orElse(null);
             BookingCreateResponse response = new BookingCreateResponse();
             response.setBookingId(booking.getId().toString());
-            // Если имеется информация о месте, её можно установить.
-            // Например, если BookingModel содержит поле place или вы можете получить PlaceModel по booking.getPlaceId()
-            // Здесь поле place оставляем null или устанавливаем соответствующим образом.
             response.setPlace(placeModel);
             response.setStartAt(booking.getStartAt().toString());
             response.setEndAt(booking.getEndAt().toString());
@@ -113,10 +114,24 @@ public class BookingService {
         }).collect(Collectors.toList());
     }
 
-
-    public List<BookingModel> findAllByPlaceId(UUID placeId) {
-        log.info("Getting bookings by placeId: {}", placeId);
-        return bookingRepository.findAllByPlaceId(placeId);
+    public List<BookingWithUserResponse> findAllByPlaceId(UUID placeId) {
+        log.info("Getting booking by placeId: {}", placeId);
+        List<BookingModel> bookings = bookingRepository.findAllByPlaceId(placeId);
+        if (bookings == null || bookings.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return bookings.stream().map(booking -> {
+            UserModel userModel = userRepository.findById(booking.getUserId()).orElse(null);
+            BookingWithUserResponse response = new BookingWithUserResponse();
+            response.setBookingId(booking.getId().toString());
+            response.setUser(userModel);
+            response.setStartAt(booking.getStartAt().toString());
+            response.setEndAt(booking.getEndAt().toString());
+            response.setStatus(booking.getStatus().name());
+            response.setCreatedAt(booking.getCreatedAt() != null ? booking.getCreatedAt().toString() : null);
+            response.setUpdatedAt(booking.getUpdatedAt() != null ? booking.getUpdatedAt().toString() : null);
+            return response;
+        }).collect(Collectors.toList());
     }
 
     @Scheduled(fixedRate = 300000)

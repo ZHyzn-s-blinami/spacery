@@ -14,6 +14,7 @@ import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.BookingRequest;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
+import prod.last.mainbackend.models.response.BookingWithUserResponse;
 import prod.last.mainbackend.services.BookingService;
 import prod.last.mainbackend.services.UserService;
 
@@ -142,7 +143,7 @@ public class BookingController {
     @ApiResponse(
             responseCode = "200",
             description = "Успешное получение всех бронирований",
-            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingModel.class)))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingWithUserResponse.class)))
     )
     @ApiResponse(
             responseCode = "404",
