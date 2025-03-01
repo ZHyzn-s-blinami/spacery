@@ -158,10 +158,24 @@ public class BookingController {
         }
     }
 
-    @GetMapping("/booking/{uuid}/user")
-    public ResponseEntity<?> getAllBookingByUserId(@PathVariable String uuid) {
+    @Operation(
+            summary = "Получение всех бронирований пользователя",
+            description = "Возвращает список всех бронирований текущего пользователя"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Список бронирований успешно получен",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingModel.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Бронирования не найдены",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
+    )
+    @GetMapping("/booking/user")
+    public ResponseEntity<?> getAllBookingByUserId(Principal principal) {
         try {
-            UUID userId = UUID.fromString(uuid);
+            UUID userId = UUID.fromString(principal.getName());
 
             return ResponseEntity.ok(bookingService.findAllByUserId(userId));
         } catch (Exception e) {

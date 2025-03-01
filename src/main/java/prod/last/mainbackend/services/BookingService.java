@@ -64,6 +64,13 @@ public class BookingService {
                     .build()
                     .parseClaimsJws(token);
 
+            BookingModel booking = bookingRepository.findById(UUID.fromString(claimsJws.getBody().getSubject()))
+                    .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+
+            if (booking.getStatus() != BookingStatus.PENDING) {
+                return false;
+            }
+
             Date expiration = claimsJws.getBody().getExpiration();
             return expiration.after(new Date());
         } catch (JwtException e) {
