@@ -85,7 +85,14 @@ public class BookingService {
             }
 
             Date expiration = claimsJws.getBody().getExpiration();
-            return expiration.after(new Date());
+
+            if (expiration.after(new Date())) {
+                booking.updateStatus(BookingStatus.ACCEPTED);
+                bookingRepository.save(booking);
+                return true;
+            }
+
+            return false;
         } catch (JwtException e) {
             log.warn("Invalid booking token: {}", e.getMessage());
             return false;
