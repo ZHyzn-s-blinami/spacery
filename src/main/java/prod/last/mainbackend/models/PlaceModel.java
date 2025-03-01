@@ -13,8 +13,8 @@ import java.util.UUID;
 @Table(name = "palce")
 public class PlaceModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Enumerated(EnumType.STRING)
     private PlaceType type;
