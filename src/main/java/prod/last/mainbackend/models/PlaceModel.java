@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "palce")
+@Table(name = "place")
 public class PlaceModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
