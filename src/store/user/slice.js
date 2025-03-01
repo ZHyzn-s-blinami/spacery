@@ -8,8 +8,7 @@ export const UserRole = {
 }
 
 const initialState = {
-  users: [],
-  currentUser: null,
+  user: null,
   isAuthenticated: false,
   loading: false,
   error: null
@@ -20,19 +19,13 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     addUser: (state, action) => {
-      state.users.push(action.payload);
+      state.user = action.payload;
     },
-    updateVerification: (state, action) => {
-      const index = state.users.findIndex(user => user.id === action.payload.id);
-      if (index !== -1) {
-        state.verificationStatus = true;
-      }
+    updateVerification: (state) => {
+      state.verificationStatus = true;
     },
     updateRole: (state, action) => {
-      const index = state.users.findIndex(user => user.id === action.payload.id);
-      if (index !== -1) {
-        state.users[index].role = action.payload.role;
-      }
+      state.user.role = action.payload.role;
     },
     clearError: (state) => {
       state.error = null;

@@ -6,7 +6,7 @@ import { loginUser, registerUser } from '../store/user/thunks';
 
 export const AuthForm = () => {
   const dispatch = useDispatch();
-  const { users, loading, error, isAuthenticated } = useSelector((state) => state.users);
+  const { currentUser, loading, error, isAuthenticated } = useSelector((state) => state.users);
 
   const [isLogin, setIsLogin] = useState(true);
   
@@ -93,7 +93,6 @@ export const AuthForm = () => {
     if (!formData.password) {
       formErrors.password = 'Введите пароль';
       isValid = false;
-    } else if (formData.password.length < 6) {
       formErrors.password = 'Пароль должен содержать не менее 6 символов';
       isValid = false;
     }
@@ -119,21 +118,15 @@ export const AuthForm = () => {
     if (!validateForm()) return;
 
     if (!isLogin) {
-      const exists = users.find(user => user.email === formData.email);
-      if (exists) {
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          email: 'Пользователь с таким email уже существует'
-        }));
-        return;
-      }
       const userData = {
         name: formData.name,
         email: formData.email,
         password: formData.password,
         role: UserRole.ROLE_ANONYMOUS
       };
+
       dispatch(registerUser(userData));
+      console.log(error);
     } else {
       const credentials = {
         email: formData.email,
@@ -280,6 +273,9 @@ export const AuthForm = () => {
         >
           {isLogin ? 'Войти в аккаунт' : 'Создать аккаунт'}
         </button>
+        {error && (
+          <p className="text-sm text-red-600">{`Ошибка авторизации${isLogin ? ': Неверный логин или пароль' : ''}`}</p>
+        )}
         
         {isLogin ? (
           <div className="text-sm font-medium text-gray-500">
