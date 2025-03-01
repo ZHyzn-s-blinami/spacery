@@ -53,7 +53,7 @@ public class BookingController {
 
             return ResponseEntity.status(201).body(bookingService.create(
                     user.getId(),
-                    bookingRequest.getPlaceId(),
+                    bookingRequest.getName(),
                     bookingRequest.getStartAt(),
                     bookingRequest.getEndAt()
             ));

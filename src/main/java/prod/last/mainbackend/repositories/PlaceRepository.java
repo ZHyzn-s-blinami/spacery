@@ -8,6 +8,7 @@ import prod.last.mainbackend.models.PlaceType;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PlaceRepository extends JpaRepository<PlaceModel, UUID> {
@@ -19,5 +20,7 @@ List<PlaceModel> findFreePlacesByTypeAndCapacity(@Param("type") PlaceType type,
                                                  @Param("capacity") Integer capacity,
                                                  @Param("start") LocalDateTime start,
                                                  @Param("end") LocalDateTime end);
+
+    Optional<PlaceModel> findByName(String name);
 
 }

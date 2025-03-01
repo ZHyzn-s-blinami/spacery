@@ -8,7 +8,7 @@ import java.util.UUID;
 @Data
 public class BookingRequest {
 
-    private UUID placeId;
+    private String name;
 
     private LocalDateTime startAt;
 
