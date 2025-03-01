@@ -124,6 +124,7 @@ public class BookingController {
             description = "Бронирование не найдено",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
     )
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/booking/{token}/qr/check")
     public ResponseEntity<?> qrCheck(@PathVariable String token) {
         if (!bookingService.validateBookingCode(token)) {
