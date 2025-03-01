@@ -1,7 +1,9 @@
+import CoworkingBooking from "../components/reservation";
+
 function Home() {
   return (
     <div>
-      Home
+      <CoworkingBooking />
     </div>
   )
 }
