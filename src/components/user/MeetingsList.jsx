@@ -4,12 +4,12 @@ const meetings = [
     {   
         placeId: '1',
         time: '15:00',
-        qr: ''
+        qr: 'google.com'
     },
     {
         placeId: '2',
         time: '12:00',
-        qr: '',
+        qr: 'ya.ru',
     },
 ]
 
