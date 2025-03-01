@@ -39,8 +39,63 @@ export const authService = {
       throw error;
     }
   },
+
   logout: async () => {
     localStorage.removeItem('userToken');
     delete apiClient.defaults.headers.common['Authorization'];
+  },
+
+  getUser: async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const response = await apiClient.get('/user/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
+      localStorage.setItem('userInfo', JSON.stringify(response.data));
+      return response.data;
+    }
+    catch (error) {
+      throw error;
+    }
+  },
+
+  getMeetings: async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const response = await apiClient.get(`/booking/user`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
+      localStorage.setItem('userMeetings', JSON.stringify(response.data))
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getQrCode: async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const response = await apiClient.get(`/booking/${token}/qr`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 }
