@@ -11,9 +11,15 @@ public class PlaceCreate {
     private PlaceType type;
 
     @NotNull
-    private int capacity;
+    private Integer capacity;
 
     @NotNull
     private String description;
+
+    @NotNull
+    private Integer row;
+
+    @NotNull
+    private Integer column;
 
 }

@@ -26,14 +26,23 @@ public class PlaceModel {
     private String description;
 
     @NotNull
+    private Integer row;
+
+    @NotNull
+    private Integer column;
+
+
+    @NotNull
     private LocalDateTime createdAt;
 
     public PlaceModel() {}
 
-    public PlaceModel(Integer capacity, String description, PlaceType type) {
+    public PlaceModel(Integer capacity, String description, PlaceType type, Integer row, Integer column) {
         this.createdAt = LocalDateTime.now();
         this.capacity = capacity;
         this.description = description;
         this.type = type;
+        this.row = row;
+        this.column = column;
     }
 }

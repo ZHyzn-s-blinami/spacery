@@ -19,7 +19,7 @@ public class PlaceService {
         return placeRepository.findFreePlacesByTypeAndCapacity(type, capacity, start, end);
     }
 
-    public PlaceModel createPlace(PlaceType type, int capacity, String description) {
-        return placeRepository.save(new PlaceModel(capacity, description, type));
+    public PlaceModel createPlace(PlaceType type, int capacity, String description, Integer row, Integer column) {
+        return placeRepository.save(new PlaceModel(capacity, description, type, row, column));
     }
 }

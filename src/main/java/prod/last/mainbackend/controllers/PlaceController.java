@@ -41,9 +41,16 @@ public class PlaceController {
     @PostMapping("/create")
     public ResponseEntity<?> createPlace(@Valid @RequestBody PlaceCreate placeCreate) {
         try {
-            return ResponseEntity.ok(placeService.createPlace(placeCreate.getType(), placeCreate.getCapacity(), placeCreate.getDescription()));
+            return ResponseEntity.ok(placeService.createPlace(
+                    placeCreate.getType(),
+                    placeCreate.getCapacity(),
+                    placeCreate.getDescription(),
+                    placeCreate.getRow(),
+                    placeCreate.getColumn()
+            ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
 }
