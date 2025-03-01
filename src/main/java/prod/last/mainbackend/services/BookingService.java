@@ -45,9 +45,11 @@ public class BookingService {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
-    public BookingModel create(UUID userId, UUID placeId, LocalDateTime start, LocalDateTime end) {
-        log.info("Creating booking for user {} and place {}", userId, placeId);
-        return bookingRepository.save(new BookingModel(userId, placeId, start, end));
+    public BookingModel create(UUID userId, String name, LocalDateTime start, LocalDateTime end) {
+        log.info("Creating booking for user {} and place {}", userId, name);
+        PlaceModel place = placeRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("Place not found"));
+        return bookingRepository.save(new BookingModel(userId, place.getId(), start, end));
     }
 
     public BookingModel reject(UUID bookingId) {
