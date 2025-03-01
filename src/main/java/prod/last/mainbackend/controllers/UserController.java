@@ -106,6 +106,19 @@ public class UserController {
         return ResponseEntity.ok(new JwtResponse(jwt));
     }
 
+    @Operation(
+            summary = "Получение информации о текущем пользователе",
+            description = "Возвращает информацию о текущем пользователе на основе его токена"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Информация о пользователе успешно получена",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserModel.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Ошибка при получении информации о пользователе"
+    )
     @GetMapping("/me")
     public ResponseEntity<?> getUserById(Principal principal) {
         try {
@@ -115,6 +128,19 @@ public class UserController {
         }
     }
 
+    @Operation(
+            summary = "Получение списка всех пользователей",
+            description = "Возвращает список всех пользователей. Доступно только для администраторов"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Список пользователей успешно получен",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserModel.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Ошибка при получении списка пользователей"
+    )
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllUsers() {

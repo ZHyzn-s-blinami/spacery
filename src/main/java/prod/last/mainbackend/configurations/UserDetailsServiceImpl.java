@@ -32,6 +32,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return UserDetailsImpl.build(user);
         }
 
-        throw new UsernameNotFoundException("User or Business not found: " + id);
+        throw new UsernameNotFoundException("User not found: " + id);
     }
 }
