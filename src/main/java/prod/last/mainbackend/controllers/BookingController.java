@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.BookingRequest;
+import prod.last.mainbackend.models.response.BookingCreateResponse;
 import prod.last.mainbackend.services.BookingService;
 import prod.last.mainbackend.services.UserService;
 
@@ -165,7 +166,7 @@ public class BookingController {
     @ApiResponse(
             responseCode = "200",
             description = "Список бронирований успешно получен",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingModel.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingCreateResponse.class)))
     )
     @ApiResponse(
             responseCode = "404",
@@ -177,7 +178,7 @@ public class BookingController {
         try {
             UUID userId = UUID.fromString(principal.getName());
 
-            return ResponseEntity.ok(bookingService.findAllByUserId(userId));
+            return ResponseEntity.ok(bookingService.findBookingByUserId(userId));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }
