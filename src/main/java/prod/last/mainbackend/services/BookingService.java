@@ -35,6 +35,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final PlaceRepository placeRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Value("${security.random-secret}")
     private String SECRET_KEY;
@@ -158,6 +159,12 @@ public class BookingService {
             if (booking.getStatus() == BookingStatus.PENDING && booking.getStartAt().plusMinutes(5).isBefore(now)) {
                 booking.updateStatus(BookingStatus.OVERDUE);
                 bookingRepository.save(booking);
+            } else if (booking.getStatus() == BookingStatus.PENDING && booking.getStartAt().minusMinutes(15).isAfter(now) && !booking.isSentNotification()) {
+                UserModel user = userRepository.findById(booking.getUserId()).orElse(null);
+                emailService.sendSimpleMessage(user.getEmail(), "Напоминание о бронировании", "Ваше бронирование начнется через 15 минут");
+                booking.setSentNotification(true);
+                bookingRepository.save(booking);
+                log.info("Sending email to user {}", user.getEmail());
             }
         }
     }
