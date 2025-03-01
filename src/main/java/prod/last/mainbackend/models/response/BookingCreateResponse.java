@@ -1,7 +1,10 @@
 package prod.last.mainbackend.models.response;
 
+import lombok.Data;
+import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.PlaceModel;
 
+@Data
 public class BookingCreateResponse {
 
     private String bookingId;
@@ -17,5 +20,4 @@ public class BookingCreateResponse {
     private String createdAt;
 
     private String updatedAt;
-
 }

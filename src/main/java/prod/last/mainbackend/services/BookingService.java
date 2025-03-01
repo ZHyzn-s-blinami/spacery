@@ -9,14 +9,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.BookingStatus;
+import prod.last.mainbackend.models.response.BookingCreateResponse;
 import prod.last.mainbackend.repositories.BookingRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -83,6 +86,29 @@ public class BookingService {
         log.info("Getting bookings by userId: {}", userId);
         return bookingRepository.findAllByUserId(userId);
     }
+
+    public List<BookingCreateResponse> findBookingByUserId(UUID userId) {
+        log.info("Getting booking by userId: {}", userId);
+        List<BookingModel> bookings = bookingRepository.findAllByUserId(userId);
+        if (bookings == null || bookings.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return bookings.stream().map(booking -> {
+            BookingCreateResponse response = new BookingCreateResponse();
+            response.setBookingId(booking.getId().toString());
+            // Если имеется информация о месте, её можно установить.
+            // Например, если BookingModel содержит поле place или вы можете получить PlaceModel по booking.getPlaceId()
+            // Здесь поле place оставляем null или устанавливаем соответствующим образом.
+            response.setPlace(null);
+            response.setStartAt(booking.getStartAt().toString());
+            response.setEndAt(booking.getEndAt().toString());
+            response.setStatus(booking.getStatus().name());
+            response.setCreatedAt(booking.getCreatedAt() != null ? booking.getCreatedAt().toString() : null);
+            response.setUpdatedAt(booking.getUpdatedAt() != null ? booking.getUpdatedAt().toString() : null);
+            return response;
+        }).collect(Collectors.toList());
+    }
+
 
     public List<BookingModel> findAllByPlaceId(UUID placeId) {
         log.info("Getting bookings by placeId: {}", placeId);
