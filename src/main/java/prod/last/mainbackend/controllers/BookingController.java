@@ -151,10 +151,10 @@ public class BookingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/booking/{uuid}/place")
-    public ResponseEntity<?> getAllBookingByPlace(@PathVariable UUID uuid) {
+    @GetMapping("/booking/{name}/place")
+    public ResponseEntity<?> getAllBookingByPlace(@PathVariable String name) {
         try {
-            return ResponseEntity.ok(bookingService.findAllByPlaceId(uuid));
+            return ResponseEntity.ok(bookingService.findAllByPlaceId(name));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }

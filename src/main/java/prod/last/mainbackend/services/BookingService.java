@@ -124,9 +124,13 @@ public class BookingService {
         }).collect(Collectors.toList());
     }
 
-    public List<BookingWithUserResponse> findAllByPlaceId(UUID placeId) {
-        log.info("Getting booking by placeId: {}", placeId);
-        List<BookingModel> bookings = bookingRepository.findAllByPlaceId(placeId);
+    public List<BookingWithUserResponse> findAllByPlaceId(String name) {
+        log.info("Getting booking by placeId: {}", name);
+
+        PlaceModel place = placeRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("Place not found"));
+
+        List<BookingModel> bookings = bookingRepository.findAllByPlaceId(place.getId());
         if (bookings == null || bookings.isEmpty()) {
             return Collections.emptyList();
         }
