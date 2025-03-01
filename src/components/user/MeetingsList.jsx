@@ -1,14 +1,18 @@
 import MeetingItem from "./MeetingItem"
 
 const meetings = [
-    {   
+    {
         placeId: '1',
-        time: '15:00',
+        address: 'ГРузинский вал 7',
+        startAt: "2025-03-01T08:18:26.887Z",
+        endAt: "2025-03-01T08:18:26.887Z",
         qr: 'google.com'
     },
     {
         placeId: '2',
-        time: '12:00',
+        address: 'Бутырский вал 10',
+        startAt: "2025-03-01T08:18:26.887Z",
+        endAt: "2025-03-01T08:18:26.887Z",
         qr: 'ya.ru',
     },
 ]
