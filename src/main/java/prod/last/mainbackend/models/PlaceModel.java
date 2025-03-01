@@ -13,8 +13,11 @@ import java.util.UUID;
 @Table(name = "palce")
 public class PlaceModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @NotNull
+    private Long placeId;
 
     @Enumerated(EnumType.STRING)
     private PlaceType type;
@@ -37,12 +40,13 @@ public class PlaceModel {
 
     public PlaceModel() {}
 
-    public PlaceModel(Integer capacity, String description, PlaceType type, Integer row, Integer column) {
+    public PlaceModel(Integer capacity, String description, PlaceType type, Integer row, Integer column, Long placeId) {
         this.createdAt = LocalDateTime.now();
         this.capacity = capacity;
         this.description = description;
         this.type = type;
         this.row = row;
         this.column = column;
+        this.placeId = placeId;
     }
 }

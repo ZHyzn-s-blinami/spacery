@@ -78,7 +78,8 @@ public class PlaceController {
                     placeCreate.getCapacity(),
                     placeCreate.getDescription(),
                     placeCreate.getRow(),
-                    placeCreate.getColumn()
+                    placeCreate.getColumn(),
+                    placeCreate.getPlaceId()
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());

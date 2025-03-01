@@ -22,4 +22,7 @@ public class PlaceCreate {
     @NotNull
     private Integer column;
 
+    @NotNull
+    private Long placeId;
+
 }

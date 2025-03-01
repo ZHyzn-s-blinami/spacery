@@ -20,8 +20,8 @@ public class PlaceService {
         return placeRepository.findFreePlacesByTypeAndCapacity(type, capacity, start, end);
     }
 
-    public PlaceModel createPlace(PlaceType type, int capacity, String description, Integer row, Integer column) {
-        return placeRepository.save(new PlaceModel(capacity, description, type, row, column));
+    public PlaceModel createPlace(PlaceType type, int capacity, String description, Integer row, Integer column, Long placeId) {
+        return placeRepository.save(new PlaceModel(capacity, description, type, row, column, placeId));
     }
 
     public PlaceModel getPlaceById(UUID id) {
