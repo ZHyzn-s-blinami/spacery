@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addUser, clearError, UserRole } from '../store/user/slice';
+import { clearError, UserRole } from '../store/user/slice';
 import { useNavigate } from 'react-router-dom';
 import { loginUser, registerUser } from '../store/user/thunks';
 
@@ -44,7 +44,7 @@ export const AuthForm = () => {
   useEffect(() => {
     if (userToken) {
       console.log(userToken);
-      navigate('/dashboard');
+      navigate('/profile');
     }
   }, [userToken])
   
