@@ -54,3 +54,16 @@ export const fetchUserData = createAsyncThunk(
     }
   }
 );
+
+export const fetchUserMeetings = createAsyncThunk(
+  'users/fetchUserMeetings',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.getMeetings();
+      console.log(response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
