@@ -27,4 +27,8 @@ public class PlaceService {
     public PlaceModel getPlaceById(UUID id) {
         return placeRepository.findById(id).orElse(null);
     }
+
+    public List<PlaceModel> getAllPlaces() {
+        return placeRepository.findAll();
+    }
 }

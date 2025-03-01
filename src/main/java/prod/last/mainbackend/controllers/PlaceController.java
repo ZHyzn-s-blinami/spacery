@@ -109,4 +109,13 @@ public class PlaceController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllPlaces() {
+        try {
+            return ResponseEntity.ok(placeService.getAllPlaces());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 }
