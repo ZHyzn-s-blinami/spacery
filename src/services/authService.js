@@ -67,7 +67,25 @@ export const authService = {
   getMeetings: async () => {
     try {
       const token = localStorage.getItem('userToken');
-      const response = await apiClient.get(`/booking/${token}/user`, {
+      const response = await apiClient.get(`/booking/user`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
+      localStorage.setItem('userMeetings', JSON.stringify(response.data))
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getQrCode: async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const response = await apiClient.get(`/booking/${token}/qr`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -79,6 +97,5 @@ export const authService = {
     } catch (error) {
       throw error;
     }
-
   }
 }

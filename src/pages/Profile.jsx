@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserData } from '../store/user/thunks';
 import { addUser } from '../store/user/slice';
+import MeetingList from '../components/user/MeetingsList';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -39,7 +40,8 @@ const Profile = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Access-Control-Allow-Origin': '*',
-        }})
+        }
+      })
         .then(response => {
           setBooking(response.data);
         })
@@ -60,12 +62,9 @@ const Profile = () => {
         <div>
           <h1 className="text-2xl font-bold">{user.name}!</h1>
           <h2 className="text-2xl font-bold">{user.role}!</h2>
-          {booking && (
-            <div className="mt-4">
-              <h3 className="text-xl font-semibold">Список бронирований:</h3>
-              <pre className="bg-gray-100 p-2 rounded">{JSON.stringify(booking, null, 2)}</pre>
-            </div>
-          )}
+          {booking &&
+            <MeetingList booking={booking} />
+          }
         </div>
       )}
     </div>

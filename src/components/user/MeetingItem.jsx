@@ -1,6 +1,8 @@
+import { useEffect } from "react"
 import QRCode from "react-qr-code"
+import { fetchUserMeetings } from "../../store/user/thunks"
 
-const MeetingItem = ({item}) => {
+const MeetingItem = ({item, bookingId}) => {
 
     const startTime = new Date(item.startAt)
     const endTime = new Date(item.endAt)
@@ -14,10 +16,13 @@ const MeetingItem = ({item}) => {
         <div>
             <p>{item.address}</p>
             <p>{`${startTime.getHours()}:${endTime.getMinutes()}-${endTime.getHours()}:${endTime.getMinutes()}`}</p>
-            <QRCode value={item.qr}/>
+            <QRCode value={bookingId}/>
             <button onClick={handleRemove}>отменить</button>
         </div>
     )
 }
 
 export default MeetingItem
+
+
+

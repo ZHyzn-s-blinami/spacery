@@ -67,3 +67,16 @@ export const fetchUserMeetings = createAsyncThunk(
     }
   }
 );
+
+export const fetchQrCode = createAsyncThunk(
+  'users/fetchQrCode',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.getQrCode();
+      console.log(response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
