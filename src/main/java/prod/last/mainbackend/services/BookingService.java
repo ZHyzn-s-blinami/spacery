@@ -9,8 +9,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.BookingStatus;
+import prod.last.mainbackend.models.PlaceModel;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
 import prod.last.mainbackend.repositories.BookingRepository;
+import prod.last.mainbackend.repositories.PlaceRepository;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
+    private final PlaceRepository placeRepository;
 
     @Value("${security.random-secret}")
     private String SECRET_KEY;
@@ -94,12 +97,13 @@ public class BookingService {
             return Collections.emptyList();
         }
         return bookings.stream().map(booking -> {
+            PlaceModel placeModel = placeRepository.findById(booking.getPlaceId()).orElse(null);
             BookingCreateResponse response = new BookingCreateResponse();
             response.setBookingId(booking.getId().toString());
             // Если имеется информация о месте, её можно установить.
             // Например, если BookingModel содержит поле place или вы можете получить PlaceModel по booking.getPlaceId()
             // Здесь поле place оставляем null или устанавливаем соответствующим образом.
-            response.setPlace(null);
+            response.setPlace(placeModel);
             response.setStartAt(booking.getStartAt().toString());
             response.setEndAt(booking.getEndAt().toString());
             response.setStatus(booking.getStatus().name());

@@ -178,7 +178,7 @@ public class BookingController {
         try {
             UUID userId = UUID.fromString(principal.getName());
 
-            return ResponseEntity.ok(bookingService.findAllByUserId(userId));
+            return ResponseEntity.ok(bookingService.findBookingByUserId(userId));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
         }
