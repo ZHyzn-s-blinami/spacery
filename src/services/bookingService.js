@@ -65,5 +65,11 @@ export const bookingService = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+//   rescheduleBooking: async(uuid) => {
+//     try {
+//         const 
+//     }
+//   }
 }

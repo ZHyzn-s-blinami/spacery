@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchUserMeetings } from "./../user/thunks";
+import { fetchUserMeetings, cancelUserMeeting } from "./../user/thunks";
 
 const initialState = {
   meetings: [],
@@ -25,6 +25,18 @@ const bookingSlice = createSlice({
         state.meetings = action.payload;
       })
       .addCase(fetchUserMeetings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+    builder
+      .addCase(cancelUserMeeting.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(cancelUserMeeting.fulfilled, (state, action) => {
+        state.loading = false;
+        state.meetings = action.payload;
+      })
+      .addCase(cancelUserMeeting.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

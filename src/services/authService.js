@@ -1,98 +1,96 @@
-import axios from 'axios';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { authService } from "../../services/authService";
+import { addUser } from "./slice";
+import { bookingService } from "../../services/bookingService";
 
-const API_URL = 'https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api';
+export const registerUser = createAsyncThunk(
+  'users/register',
+  async (userData, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await authService.register(userData);
 
-const apiClient = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-});
-
-apiClient.interceptors.response.use(
-  response => response,
-  error => {
-    console.error('API Error:', error.response ? error.response.data : error.message);
-    return Promise.reject(error);
+      dispatch(addUser(userData));
+      localStorage.setItem('userToken', response.token);
+      return response.user;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: error.message });
+    }
   }
 )
 
-export const authService = {
-  register: async (userData) => {
+export const loginUser = createAsyncThunk(
+  'users/login',
+  async (credentials, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post('/user/sign-up', userData);
-      return response.data;
+      const response = await authService.login(credentials);
+      localStorage.setItem('userToken', response.token);
+      return response.user;
     } catch (error) {
-      throw error;
-    }
-  },
-
-  login: async (credentials) => {
-    try {
-      const response = await apiClient.post('/user/sign-in', credentials);
-      if (response.data.token) {
-        localStorage.setItem('userToken', response.data.token);
-        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
-      }
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  logout: async () => {
-    localStorage.removeItem('userToken');
-    delete apiClient.defaults.headers.common['Authorization'];
-  },
-
-  getUser: async () => {
-    try {
-      const token = localStorage.getItem('userToken');
-      const response = await apiClient.get('/user/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        }
-      });
-      localStorage.setItem('userInfo', JSON.stringify(response.data));
-      return response.data;
-    }
-    catch (error) {
-      throw error;
-    }
-  },
-
-  getMeetings: async () => {
-    try {
-      const token = localStorage.getItem('userToken');
-      const response = await apiClient.get(`/booking/user`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  getQrCode: async () => {
-    try {
-      const token = localStorage.getItem('userToken');
-      const response = await apiClient.get(`/booking/${token}/qr`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-        }
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
+      return rejectWithValue(error.response?.data || { message: error.message });
     }
   }
-}
+)
+
+export const logoutUser = createAsyncThunk(
+  'users/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      authService.logout();
+      return null;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+)
+
+export const fetchUserData = createAsyncThunk(
+  'users/fetchUserData',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.getUser();
+      console.log(response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const fetchUserMeetings = createAsyncThunk(
+  "booking/fetchUserMeetings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await bookingService.getMeetings();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const cancelUserMeeting = createAsyncThunk(
+  "booking/cancelUserMeeting",
+  async (uuid, { rejectWithValue }) => {
+    try {
+      await bookingService.cancelBooking(uuid);
+      const response = await bookingService.getMeetings();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+
+export const fetchQrCode = createAsyncThunk(
+  'users/fetchQrCode',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await bookingService.getQrCode();
+      console.log(response);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);

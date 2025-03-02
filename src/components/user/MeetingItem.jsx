@@ -1,7 +1,7 @@
 import QRCode from "react-qr-code"
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserMeetings } from "../../store/user/thunks";
-import { bookingService } from "../../services/bookingService";
+import { cancelUserMeeting } from "../../store/user/thunks";
+
 const MeetingItem = ({ item }) => {
     const dispatch = useDispatch();
     const startTime = new Date(item.startAt)
@@ -9,9 +9,7 @@ const MeetingItem = ({ item }) => {
 
     const handleRemove = async (bookingId) => {
         try {
-          const response = await bookingService.cancelBooking(bookingId);
-          
-          dispatch(fetchUserMeetings());
+          dispatch(cancelUserMeeting(bookingId));
           
         } catch (error) {
           console.error("Ошибка при удалении брони:", error);
