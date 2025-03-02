@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import {Clock} from "lucide-react";
 
 const TimeRangeSlider = ({
                              startTime,
@@ -10,6 +11,7 @@ const TimeRangeSlider = ({
                              currentTime = new Date(),
                              isToday = true,
                              disabled = false,
+                             onOutsideHoursChange,
                          }) => {
     const sliderRef = useRef(null);
     const startHandleRef = useRef(null);
@@ -27,11 +29,20 @@ const TimeRangeSlider = ({
             const minTotalMinutes = minTime.hour * 60 + minTime.minute;
             const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
 
-            setIsOutsideWorkingHours(currentTotalMinutes < minTotalMinutes || currentTotalMinutes >= maxTotalMinutes);
+            const outsideHours = currentTotalMinutes < minTotalMinutes || currentTotalMinutes >= maxTotalMinutes;
+            setIsOutsideWorkingHours(outsideHours);
+
+            if (onOutsideHoursChange) {
+                onOutsideHoursChange(outsideHours);
+            }
         } else {
             setIsOutsideWorkingHours(false);
+
+            if (onOutsideHoursChange) {
+                onOutsideHoursChange(false);
+            }
         }
-    }, [isToday, currentTime]);
+    }, [isToday, currentTime, minTime, maxTime, onOutsideHoursChange]);
 
     const timeToPercent = (time) => {
         const totalMinutesMin = minTime.hour * 60 + minTime.minute;
@@ -47,7 +58,6 @@ const TimeRangeSlider = ({
         const totalMinutesMax = maxTime.hour * 60 + maxTime.minute;
         const totalRange = totalMinutesMax - totalMinutesMin;
 
-        // Защита от отрицательной позиции
         position = Math.max(0, Math.min(sliderWidth, position));
 
         const percent = Math.max(0, Math.min(100, (position / sliderWidth) * 100));
@@ -456,82 +466,90 @@ const TimeRangeSlider = ({
     }, [isDragging, sliderRef.current]);
 
     return (
-        <div className={`relative h-40 md:h-32 mb-4 ${(disabled || isOutsideWorkingHours) ? 'opacity-50 pointer-events-none' : ''}`}>
-            {isOutsideWorkingHours && isToday && (
-                <div className="absolute inset-0 flex items-center justify-center z-10 bg-white bg-opacity-70 rounded">
-                    <div className="text-center bg-red-100 px-4 py-2 rounded-lg">
-                        <p className="font-medium text-red-700">Бронирование доступно с {formatTime(minTime)} до {formatTime(maxTime)}</p>
+        <>
+            {isOutsideWorkingHours && isToday ? (
+                <div className="h-40 md:h-32 mb-4 flex items-center justify-center">
+                    <div className="text-center bg-gradient-to-r from-red-50 to-red-100 px-6 py-4 rounded-xl shadow-sm border border-red-200 max-w-md w-full">
+                        <div className="flex items-center justify-center mb-2">
+                            <Clock className="w-5 h-5 text-red-600 mr-2" />
+                            <span className="font-semibold text-red-800">Коворкинг закрыт</span>
+                        </div>
+                        <p className="text-red-700">
+                            Бронирование доступно с <span className="font-bold">{formatTime(minTime)}</span> до <span className="font-bold">{formatTime(maxTime)}</span>
+                        </p>
+                    </div>
+                </div>
+            ) : (
+                <div className={`relative h-40 md:h-32 mb-4 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <div className="absolute top-0 w-full flex justify-between px-1 text-xs text-gray-500">
+                        {timeMarkers.map((marker, i) => (
+                            <div
+                                key={i}
+                                style={{ position: 'absolute', left: `${marker.position}%` }}
+                                className={`flex flex-col items-center ${
+                                    marker.isHour ? 'font-medium' : 'text-gray-400'
+                                }`}
+                            >
+                                <div className={`h-2 w-0.5 bg-gray-300 mb-1 ${marker.isHour ? 'h-3' : 'h-2'}`}></div>
+                                {marker.isHour && <span className="text-xs">{marker.time.split(':')[0]}</span>}
+                            </div>
+                        ))}
+                    </div>
+
+                    <div ref={sliderRef} className="absolute inset-x-0 top-10 h-4 bg-gray-200 rounded-full">
+                        {isToday && (
+                            <div
+                                className="absolute h-full bg-gray-400 opacity-50 rounded-l-full"
+                                style={{
+                                    width: `${Math.min(100, timeToPercent(getCurrentTimeObj()))}%`,
+                                    left: 0,
+                                }}
+                            ></div>
+                        )}
+                        <div
+                            className="absolute h-full bg-blue-500 rounded-full"
+                            style={{
+                                left: `${timeToPercent(startTime)}%`,
+                                width: `${timeToPercent(endTime) - timeToPercent(startTime)}%`,
+                            }}
+                        ></div>
+                    </div>
+
+                    <div
+                        ref={startHandleRef}
+                        className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none active:scale-110"
+                        style={{ left: `${timeToPercent(startTime)}%` }}
+                        onMouseDown={handleStartDragStart}
+                        onTouchStart={handleStartDragStart}
+                    >
+                        <span className="text-xs select-none font-bold text-blue-600">{formatTime(startTime)}</span>
+                    </div>
+
+                    <div
+                        ref={endHandleRef}
+                        className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none active:scale-110"
+                        style={{ left: `${timeToPercent(endTime)}%` }}
+                        onMouseDown={handleEndDragStart}
+                        onTouchStart={handleEndDragStart}
+                    >
+                        <span className="text-xs select-none font-bold text-blue-600">{formatTime(endTime)}</span>
+                    </div>
+
+                    <div className="absolute top-20 md:top-20 left-0 right-0 text-center">
+                        <div className="inline-block bg-blue-100 px-4 py-2 rounded-full text-sm font-medium text-blue-800 shadow-sm">
+                            <span className="mr-2 font-bold">С:</span> {formatTime(startTime)}
+                            <span className="mx-2 font-bold">До:</span> {formatTime(endTime)}
+                            <span className="text-blue-600 ml-2 font-bold">
+                        ({Math.round(
+                                endTime.hour * 60 + endTime.minute - (startTime.hour * 60 + startTime.minute),
+                            )}{' '}
+                                мин)
+                    </span>
+                        </div>
                     </div>
                 </div>
             )}
-
-            <div className="absolute top-0 w-full flex justify-between px-1 text-xs text-gray-500">
-                {timeMarkers.map((marker, i) => (
-                    <div
-                        key={i}
-                        style={{ position: 'absolute', left: `${marker.position}%` }}
-                        className={`flex flex-col items-center ${
-                            marker.isHour ? 'font-medium' : 'text-gray-400'
-                        }`}
-                    >
-                        <div className={`h-2 w-0.5 bg-gray-300 mb-1 ${marker.isHour ? 'h-3' : 'h-2'}`}></div>
-                        {marker.isHour && <span className="text-xs">{marker.time.split(':')[0]}</span>}
-                    </div>
-                ))}
-            </div>
-
-            <div ref={sliderRef} className="absolute inset-x-0 top-10 h-4 bg-gray-200 rounded-full">
-                {isToday && (
-                    <div
-                        className="absolute h-full bg-gray-400 opacity-50 rounded-l-full"
-                        style={{
-                            width: `${Math.min(100, timeToPercent(getCurrentTimeObj()))}%`,
-                            left: 0,
-                        }}
-                    ></div>
-                )}
-                <div
-                    className="absolute h-full bg-blue-500 rounded-full"
-                    style={{
-                        left: `${timeToPercent(startTime)}%`,
-                        width: `${timeToPercent(endTime) - timeToPercent(startTime)}%`,
-                    }}
-                ></div>
-            </div>
-
-            <div
-                ref={startHandleRef}
-                className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none active:scale-110"
-                style={{ left: `${timeToPercent(startTime)}%` }}
-                onMouseDown={handleStartDragStart}
-                onTouchStart={handleStartDragStart}
-            >
-                <span className="text-xs select-none font-bold text-blue-600">{formatTime(startTime)}</span>
-            </div>
-
-            <div
-                ref={endHandleRef}
-                className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none active:scale-110"
-                style={{ left: `${timeToPercent(endTime)}%` }}
-                onMouseDown={handleEndDragStart}
-                onTouchStart={handleEndDragStart}
-            >
-                <span className="text-xs select-none font-bold text-blue-600">{formatTime(endTime)}</span>
-            </div>
-
-            <div className="absolute top-20 md:top-20 left-0 right-0 text-center">
-                <div className="inline-block bg-blue-100 px-4 py-2 rounded-full text-sm font-medium text-blue-800 shadow-sm">
-                    <span className="mr-2 font-bold">С:</span> {formatTime(startTime)}
-                    <span className="mx-2 font-bold">До:</span> {formatTime(endTime)}
-                    <span className="text-blue-600 ml-2 font-bold">
-                        ({Math.round(
-                        endTime.hour * 60 + endTime.minute - (startTime.hour * 60 + startTime.minute),
-                    )}{' '}
-                        мин)
-                    </span>
-                </div>
-            </div>
-        </div>
+        </>
     );
 };
 
