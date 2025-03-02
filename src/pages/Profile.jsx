@@ -12,6 +12,11 @@ const Profile = () => {
 
   const { user, loading, error } = useSelector((state) => state.user);
 
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    location.reload()
+  }
+
   useEffect(() => {
     if (userToken && !user) {
       dispatch(fetchUserData())
@@ -53,9 +58,10 @@ const Profile = () => {
       {error && <p className="text-red-600">Ошибка: {error}</p>}
       {user && (
         <div>
-          <h1 className="text-2xl font-bold">{user.name}!</h1>
-          <h2 className="text-2xl font-bold">{user.role}!</h2>
+          <h1 className="text-2xl font-bold">{user.name}</h1>
+          <h2 className="text-2xl font-bold">{user.role}</h2>
           {booking && <MeetingList booking={booking} />}
+          <button onClick={handleLogout}>Выйти из аккаунта</button>
         </div>
       )}
     </div>

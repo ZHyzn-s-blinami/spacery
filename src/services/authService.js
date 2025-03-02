@@ -74,7 +74,10 @@ export const authService = {
           'Access-Control-Allow-Origin': '*',
         }
       });
-      localStorage.setItem('userMeetings', JSON.stringify(response.data))
+      const meetings = await bookingService.getMeetings();
+      localStorage.setItem('userMeetings', JSON.stringify(meetings));
+
+      // localStorage.setItem('userMeetings', JSON.stringify(response.data))
       return response.data;
     } catch (error) {
       throw error;
