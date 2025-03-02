@@ -48,6 +48,25 @@ export const bookingService = {
     console.log(response.data);
     return response.data;
   },
+
+  getMeetings: async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const response = await apiClient.get(`/api/booking/user`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
+      localStorage.setItem('userMeetings', JSON.stringify(response.data))
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   cancelUserMeeting: async (uuid) => {
     try {
       const token = localStorage.getItem('userToken');
