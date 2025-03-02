@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import prod.last.mainbackend.models.BookingModel;
+import prod.last.mainbackend.models.BookingStatus;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.BookingRequest;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
@@ -210,6 +211,15 @@ public class BookingController {
             return ResponseEntity.ok(bookingService.updateBookingTime(uuid, startAt, endAt));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/booking/status/{status}")
+    public ResponseEntity<?> getAllBookingByUserIdAndStatus(@Valid @PathVariable BookingStatus status, Principal principal) {
+        try {
+            return ResponseEntity.ok(bookingService.findAllUserBookingsByStatus(UUID.fromString(principal.getName()), status));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 }

@@ -228,4 +228,9 @@ public class BookingService {
         booking.setSentNotification(false);
         return bookingRepository.save(booking);
     }
+
+    public List<BookingModel> findAllUserBookingsByStatus(UUID userId, BookingStatus status) {
+        log.info("Getting bookings by userId: {} and status: {}", userId, status);
+        return bookingRepository.findAllByUserIdAndStatus(userId, status);
+    }
 }
