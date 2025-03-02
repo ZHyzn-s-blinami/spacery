@@ -20,6 +20,8 @@ const CoworkingBooking = () => {
   });
   const [freePlaces, setFreePlaces] = useState([]);
 
+  const userToken = localStorage.getItem('userToken');
+
   const debouncedTimeRange = useDebounce(timeRange, 500);
 
   const formatDateTimeForAPI = (date, time) => {
@@ -43,10 +45,10 @@ const CoworkingBooking = () => {
   };
 
   useEffect(() => {
-    if (selectedDate && debouncedTimeRange.start && debouncedTimeRange.end) {
+    if (selectedDate && debouncedTimeRange.start && debouncedTimeRange.end && userToken) {
       fetchFreePlaces();
     }
-  }, [selectedDate, debouncedTimeRange]);
+  }, [selectedDate, debouncedTimeRange, userToken]);
 
   const handleSeatSelect = (seat) => {
     setSelectedSeat(seat);
