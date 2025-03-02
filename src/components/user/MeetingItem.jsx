@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
 import { useDispatch } from "react-redux";
 import { cancelUserMeeting } from "../../store/user/thunks";
+import { fetchUserMeetings } from "../../store/user/thunks";
 import { updateMeeting } from "../../store/booking/thunks"
 import {
     ClockIcon,
@@ -15,7 +16,6 @@ import {
 } from "lucide-react";
 
 const MeetingItem = ({ item }) => {
-    // Проверка на валидность данных
     if (!item || !item.startAt || !item.endAt) {
         return (
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 text-center">
@@ -208,21 +208,19 @@ const MeetingItem = ({ item }) => {
             const formattedStartAt = newStartDate.toISOString().split('.')[0];
             const formattedEndAt = newEndDate.toISOString().split('.')[0];
 
+            await dispatch(updateMeeting({ uuid: item.bookingId, startAt: formattedStartAt, endAt: formattedEndAt })).unwrap();
 
-            await dispatch(updateMeeting({ uuid: item.bookingId, startAt: formattedStartAt, endAt: formattedEndAt }));
+            const meetingsResponse = await dispatch(fetchUserMeetings()).unwrap();
+            console.log("Обновленные встречи:", meetingsResponse);
 
-            // const response = await dispatch(updateMeeting({ uuid: item.bookingId, startAt: newStartDate, endAt: newEndDate })).unwrap(); // unwrap() позволяет обработать ошибки в try/catch
+            setRescheduleStatus("success");
+            setTimeout(() => {
+                closeRescheduleModal();
+            }, 3000);
 
-            // console.log("Ответ сервера:", response);
-
-            if (response) {
-                setRescheduleStatus("success");
-                // toast.success("Встреча успешно перенесена!");
-            }
         } catch (error) {
             console.error("Ошибка при переносе встречи:", error);
             setRescheduleStatus("error");
-            // toast.error("Ошибка при переносе встречи");
         } finally {
             setReschedulingLoading(false);
         }
