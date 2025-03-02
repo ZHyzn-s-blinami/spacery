@@ -16,6 +16,7 @@ import prod.last.mainbackend.models.request.PlaceCreate;
 import prod.last.mainbackend.services.PlaceService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,8 +48,9 @@ public class PlaceController {
             @PathParam("end") String end
     ) {
         try {
-            LocalDateTime startTime = start != null ? LocalDateTime.parse(start) : LocalDateTime.now();
-            LocalDateTime endTime = end != null ? LocalDateTime.parse(end) : LocalDateTime.now().plusHours(1);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            LocalDateTime startTime = start != null ? LocalDateTime.parse(start, formatter) : LocalDateTime.now();
+            LocalDateTime endTime = end != null ? LocalDateTime.parse(end, formatter) : LocalDateTime.now().plusHours(1);
             PlaceType placeType = type != null ? PlaceType.valueOf(type.toUpperCase()) : PlaceType.DEFAULT;
             Integer capacityParam = capacity != null  ? capacity : 0;
 
