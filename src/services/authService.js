@@ -70,14 +70,9 @@ export const authService = {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          'Accept': 'application/json'
         }
       });
-      const meetings = await bookingService.getMeetings();
-      localStorage.setItem('userMeetings', JSON.stringify(meetings));
-
-      // localStorage.setItem('userMeetings', JSON.stringify(response.data))
       return response.data;
     } catch (error) {
       throw error;

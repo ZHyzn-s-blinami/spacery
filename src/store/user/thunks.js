@@ -56,7 +56,7 @@ export const fetchUserData = createAsyncThunk(
 );
 
 export const fetchUserMeetings = createAsyncThunk(
-  'users/fetchUserMeetings',
+  "booking/fetchUserMeetings",
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.getMeetings();

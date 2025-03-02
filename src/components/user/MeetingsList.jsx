@@ -1,42 +1,30 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { bookingService } from "../../services/bookingService";
-
-import MeetingItem from "./MeetingItem";
 import { fetchUserMeetings } from "../../store/user/thunks";
+import MeetingItem from "./MeetingItem";
 
-const MeetingList = ({ booking }) => {
-  const meetings = useSelector(state => state.booking.meetings)
+const MeetingList = () => {
   const dispatch = useDispatch();
+  const meetings = useSelector(state => state.booking.meetings);
+  const loading = useSelector(state => state.booking.loading);
+  const error = useSelector(state => state.booking.error);
 
   useEffect(() => {
     dispatch(fetchUserMeetings());
-  }, [dispatch, meetings]);
+  }, [dispatch]);
 
-  const handleRemove = async (bookingId) => {
-    try {
-      const response = await bookingService.cancelBooking(bookingId);
-      if (response) {
-        await dispatch(fetchUserMeetings());
-      }
-    } catch (error) {
-      console.error("Ошибка при удалении брони:", error);
-    }
-  };
+  if (loading) return <p>Загрузка...</p>;
+  if (error) return <p>Ошибка: {error}</p>;
 
   return (
     <div>
-      {booking.map((item) => {
-        if (item.status == 'PENDING') {
-          return <MeetingItem key={item.bookingId} item={item} handleRemove={handleRemove} />
-
-        }
-
-      }
-      )}
+      {meetings.map((item) => (
+        item.status === "PENDING" && (
+          <MeetingItem key={item.bookingId} item={item} />
+        )
+      ))}
     </div>
   );
 };
 
 export default MeetingList;
-

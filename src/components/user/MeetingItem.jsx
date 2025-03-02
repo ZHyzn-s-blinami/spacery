@@ -1,20 +1,22 @@
 import QRCode from "react-qr-code"
+import { useDispatch, useSelector } from "react-redux";
 import { fetchUserMeetings } from "../../store/user/thunks";
-const MeetingItem = ({ item, handleRemove}) => {
-
-
+import { bookingService } from "../../services/bookingService";
+const MeetingItem = ({ item }) => {
+    const dispatch = useDispatch();
     const startTime = new Date(item.startAt)
     const endTime = new Date(item.endAt)
 
-    // const handleRemove = async () => {
-    //     const response = await bookingService.cancelBooking(item.bookingId);
-    //     console.log(response)
-    //     if (response) {
-    //         const meetings = await fetchUserMeetings();
-    //         localStorage.setItem('userMeetings', JSON.stringify(meetings))
-
-    //     }
-    // }
+    const handleRemove = async (bookingId) => {
+        try {
+          const response = await bookingService.cancelBooking(bookingId);
+          
+          dispatch(fetchUserMeetings());
+          
+        } catch (error) {
+          console.error("Ошибка при удалении брони:", error);
+        }
+      };
 
     return (
         <div>
