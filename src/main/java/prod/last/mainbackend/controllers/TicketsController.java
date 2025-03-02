@@ -1,6 +1,7 @@
 package prod.last.mainbackend.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,6 +16,7 @@ import prod.last.mainbackend.models.TicketType;
 import prod.last.mainbackend.models.TicketsModel;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.TicketCreate;
+import prod.last.mainbackend.models.response.BookingCreateResponse;
 import prod.last.mainbackend.services.TicketsService;
 import prod.last.mainbackend.services.UserService;
 
@@ -63,7 +65,7 @@ public class TicketsController {
     @ApiResponse(
             responseCode = "200",
             description = "Тикеты успешно получены",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketsModel.class)))
     )
     @ApiResponse(
             responseCode = "400",
@@ -87,7 +89,7 @@ public class TicketsController {
     @ApiResponse(
             responseCode = "200",
             description = "Tickets retrieved successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketsModel.class)))
     )
     @ApiResponse(
             responseCode = "400",
@@ -111,7 +113,7 @@ public class TicketsController {
     @ApiResponse(
             responseCode = "200",
             description = "Тикеты успешно получены",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketsModel.class)))
     )
     @ApiResponse(
             responseCode = "400",
@@ -159,7 +161,7 @@ public class TicketsController {
     @ApiResponse(
         responseCode = "200",
         description = "Тикет успешно получен",
-        content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
+        content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketsModel.class)))
     )
     @ApiResponse(
         responseCode = "400",
