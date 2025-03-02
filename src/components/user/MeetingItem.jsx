@@ -190,6 +190,7 @@ const MeetingItem = ({ item }) => {
     };
 
     const confirmReschedule = async () => {
+        console.log('confirmed')
         setReschedulingLoading(true);
         setRescheduleStatus(null);
 
@@ -206,6 +207,8 @@ const MeetingItem = ({ item }) => {
             console.log("Перенос встречи:", item.bookingId);
             console.log("Новая дата начала:", newStartDate.toISOString());
             console.log("Новая дата окончания:", newEndDate.toISOString());
+
+            await 
 
             // Имитация запроса к серверу
             await new Promise(resolve => setTimeout(resolve, 1000));
