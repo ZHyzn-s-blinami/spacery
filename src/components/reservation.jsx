@@ -1335,7 +1335,9 @@ const CoworkingBooking = () => {
       };
 
       const result = await placeService.post(placeData);
+      console.log(result);
       fetchFreePlaces();
+      console.log(fetchFreePlaces());
       setPopoverSeat(null);
       setSelectedSeat(null);
     } catch (error) {

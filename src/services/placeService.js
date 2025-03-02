@@ -18,11 +18,11 @@ apiClient.interceptors.response.use(
 )
 
 export const placeService = {
-  get: async (type, capacity, start, end) => {
+  get: async (start, end) => {
     try {
       const token = localStorage.getItem('userToken');
     
-      const response = await apiClient.get(`/api/place/free`, {
+      const response = await apiClient.get(`/api/place/free${start && end ? `?start=${start}&end=${end}` : ''}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
