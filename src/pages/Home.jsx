@@ -3,7 +3,9 @@ import CoworkingBooking from '../components/reservation';
 function Home() {
   return (
     <div>
-      <CoworkingBooking />
+      <CoworkingBooking 
+        isAdmin={false}
+      />
     </div>
   );
 }

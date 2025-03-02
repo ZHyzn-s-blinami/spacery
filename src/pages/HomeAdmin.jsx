@@ -1,9 +1,11 @@
-import CoworkingBookingAdmin from "../components/adminReservation";
+import CoworkingBooking from '../components/reservation';
 
 function HomeAdmin() {
   return (
     <>
-      <CoworkingBookingAdmin />
+      <CoworkingBooking 
+        isAdmin={true}
+      />
     </>
   )
 }

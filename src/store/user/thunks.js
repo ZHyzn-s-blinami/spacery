@@ -1,17 +1,19 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { authService } from "../../services/authService";
 import { addUser } from "./slice";
+import toast from "react-hot-toast";
 
 export const registerUser = createAsyncThunk(
   'users/register',
   async (userData, { dispatch, rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
-
-      dispatch(addUser(userData));
       localStorage.setItem('userToken', response.token);
+      dispatch(addUser(userData));
+      toast.success('Регистрация прошла успешно!')
       return response.user;
     } catch (error) {
+      toast.error('Ошибка регистрации')
       return rejectWithValue(error.response?.data || { message: error.message });
     }
   }
@@ -22,9 +24,11 @@ export const loginUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
-      localStorage.setItem('userToken', response.token);
-      return response.user;
+      toast.success('Вход прошёл успешно!');
+      return response;
     } catch (error) {
+      toast.error('Ошибка при входе');
+      console.log(error);
       return rejectWithValue(error.response?.data || { message: error.message });
     }
   }

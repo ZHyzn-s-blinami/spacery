@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
-const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
+const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -9,7 +10,12 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
     const [seats, setSeats] = useState([]);
     const [selectedZone, setSelectedZone] = useState(null);
     const [filtersExpanded, setFiltersExpanded] = useState(false);
-
+    const [lastDistance, setLastDistance] = useState(null);
+    const [lastTapTime, setLastTapTime] = useState(0);
+    const isTouchDevice = useRef(false);
+    const pinchCenterRef = useRef({ clientX: 0, clientY: 0, mapX: 0, mapY: 0 });
+    const lastScaleRef = useRef(1);
+    const navigate = useNavigate();
 
 
     const generateSeats = () => {
@@ -32,7 +38,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `B${idx + 1}`,
                     x: 280 + (idx % 3) * 50,
                     y: 65 + Math.floor(idx / 3) * 50,
-                    isOccupied: !freePlaces.some((item) => item.name === `B${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'B',
                     type: 'office',
                 })),
@@ -43,7 +49,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `C${idx + 1}`,
                     x: 55 + (idx % 4) * 40,
                     y: 280 + Math.floor(idx / 4) * 45,
-                    isOccupied: !freePlaces.some((item) => item.name === `C${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'C',
                     type: 'meeting',
                 })),
@@ -54,7 +60,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `D${idx + 1}`,
                     x: 265 + (idx % 6) * 27,
                     y: 285 + Math.floor(idx / 6) * 70,
-                    isOccupied: !freePlaces.some((item) => item.name === `D${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'D',
                     type: 'focus',
                 })),
@@ -65,7 +71,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `E${idx + 1}`,
                     x: 490 + (idx % 2) * 55,
                     y: 80 + Math.floor(idx / 2) * 40,
-                    isOccupied: !freePlaces.some((item) => item.name === `E${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'E',
                     type: 'lounge',
                 })),
@@ -76,6 +82,126 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
     useEffect(() => {
         setSeats(generateSeats());
     }, [freePlaces]);
+
+    useEffect(() => {
+        isTouchDevice.current = 'ontouchstart' in window ||
+            navigator.maxTouchPoints > 0 ||
+            navigator.msMaxTouchPoints > 0;
+            setSeats(generateSeats());
+    }, [freePlaces]);
+
+    const getDistance = (x1, y1, x2, y2) => {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    };
+
+    const handleTouchStart = (e) => {
+        // Проверяем, не является ли цель местом
+        let target = e.target;
+        while (target && target !== mapRef.current) {
+            if (target.getAttribute('data-seat') === 'true') {
+                return;
+            }
+            target = target.parentElement;
+        }
+
+        // Обработка двойного касания
+        const currentTime = new Date().getTime();
+        const tapTimeDiff = currentTime - lastTapTime;
+
+        if (tapTimeDiff < 300 && e.touches.length === 1) {
+            // Двойное касание для приближения
+            if (scale >= 1.8) {
+                // Если уже в приближенном состоянии, возвращаем к обзору всей карты
+                setScale(1);
+                setPosition({ x: 0, y: 0 });
+            } else {
+                // Иначе приближаем к месту касания
+                const touchX = e.touches[0].clientX;
+                const touchY = e.touches[0].clientY;
+                const rect = mapRef.current.getBoundingClientRect();
+                const targetX = (touchX - rect.left - position.x) / scale;
+                const targetY = (touchY - rect.top - position.y) / scale;
+
+                setScale(2);
+                setPosition({
+                    x: touchX - targetX * 2,
+                    y: touchY - targetY * 2
+                });
+            }
+
+            e.preventDefault();
+            setLastTapTime(0);
+            return;
+        }
+
+        setLastTapTime(currentTime);
+
+        if (e.touches.length === 2) {
+            // Запоминаем начальное расстояние для масштабирования
+            const dist = getDistance(
+                e.touches[0].clientX,
+                e.touches[0].clientY,
+                e.touches[1].clientX,
+                e.touches[1].clientY
+            );
+            setLastDistance(dist);
+
+            e.preventDefault();
+        } else if (e.touches.length === 1) {
+            // Перетаскивание
+            setIsDragging(true);
+            setDragStart({
+                x: e.touches[0].clientX - position.x,
+                y: e.touches[0].clientY - position.y,
+            });
+
+            e.preventDefault();
+        }
+    };
+
+
+
+    const handleTouchMove = (e) => {
+        e.preventDefault();
+
+        if (e.touches.length === 2 && lastDistance !== null) {
+            // Вычисляем текущее расстояние между пальцами
+            const dist = getDistance(
+                e.touches[0].clientX,
+                e.touches[0].clientY,
+                e.touches[1].clientX,
+                e.touches[1].clientY
+            );
+
+            // Вычисляем коэффициент изменения расстояния
+            const ratio = dist / lastDistance;
+
+            // Рассчитываем новый масштаб
+            const newScale = Math.max(0.5, Math.min(2, scale * ratio));
+
+            // Обновляем только масштаб, сохраняя текущую позицию
+            setScale(newScale);
+
+            // Обновляем расстояние для следующего расчета
+            setLastDistance(dist);
+        } else if (e.touches.length === 1 && isDragging) {
+            // Стандартное перетаскивание одним пальцем
+            setPosition({
+                x: e.touches[0].clientX - dragStart.x,
+                y: e.touches[0].clientY - dragStart.y,
+            });
+        }
+    };
+
+    const handleTouchEnd = (e) => {
+        if (e.touches.length < 2) {
+            setLastDistance(null);
+        }
+
+        if (e.touches.length === 0) {
+            setIsDragging(false);
+        }
+    };
 
     const handleWheel = (e) => {
         e.preventDefault();
@@ -116,13 +242,23 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
         const currentMapRef = mapRef.current;
         if (currentMapRef) {
             currentMapRef.addEventListener('wheel', handleWheel, { passive: false });
+
+            currentMapRef.addEventListener('touchstart', handleTouchStart, { passive: false });
+            currentMapRef.addEventListener('touchmove', handleTouchMove, { passive: false });
+            currentMapRef.addEventListener('touchend', handleTouchEnd);
+            currentMapRef.addEventListener('touchcancel', handleTouchEnd);
         }
+
         return () => {
             if (currentMapRef) {
                 currentMapRef.removeEventListener('wheel', handleWheel);
+                currentMapRef.removeEventListener('touchstart', handleTouchStart);
+                currentMapRef.removeEventListener('touchmove', handleTouchMove);
+                currentMapRef.removeEventListener('touchend', handleTouchEnd);
+                currentMapRef.removeEventListener('touchcancel', handleTouchEnd);
             }
         };
-    }, []);
+    }, [isDragging, dragStart, position, scale, lastDistance]);
 
     const moveToZone = (zone) => {
         setSelectedZone(zone);
@@ -161,21 +297,23 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                 userSelect: 'none',
                 WebkitUserSelect: 'none',
                 MozUserSelect: 'none',
-                msUserSelect: 'none'
+                msUserSelect: 'none',
+                touchAction: 'none',
+                overscrollBehavior: 'none',
+                WebkitOverflowScrolling: 'touch',
             }}
         >
             <div className="absolute top-3 left-3 bg-white p-2 rounded-md shadow-sm z-20">
-                {/* Кнопки масштабирования */}
-                <div className="flex gap-2 mb-2">
+                <div className="flex gap-4">
                     <button
                         className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
-                        onClick={() => setScale((prev) => Math.min(2, prev + 0.1))}
+                        onClick={() => setScale((prev) => Math.min(2, prev + 0.2))}
                     >
                         +
                     </button>
                     <button
                         className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
-                        onClick={() => setScale((prev) => Math.max(0.5, prev - 0.1))}
+                        onClick={() => setScale((prev) => Math.max(0.5, prev - 0.2))}
                     >
                         -
                     </button>
@@ -196,7 +334,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     </button>
                 </div>
 
-                {/* Кнопки фильтров с анимацией */}
                 <div
                     className="overflow-hidden transition-all duration-300 ease-in-out"
                     style={{
@@ -206,7 +343,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     }}
                 >
                     <div className="text-sm font-medium text-gray-700 mb-1">Перейти к зоне:</div>
-                    <div className="grid grid-cols-2 gap-1">
+                    <div className="grid grid-cols-1 gap-1">
                         <button
                             className={`px-2 py-1 text-xs rounded ${selectedZone === 'A' ? 'bg-blue-500 text-white' : 'bg-blue-100 text-blue-800'}`}
                             onClick={() => moveToZone('A')}
@@ -816,9 +953,9 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     {seats.map((seat) => (
                         <g
                             key={seat.id}
-                            onClick={() => !seat.isOccupied && onSeatSelect(seat)}
+                            onClick={() => !isAdmin ? seat.isOccupied && onSeatSelect(seat) : navigate(`/admin/booking/${seat.name}/place`)}
                             style={{
-                                cursor: seat.isOccupied ? 'not-allowed' : 'pointer',
+                                cursor: isAdmin ? ('pointer') : (!seat.isOccupied ? 'pointer' : 'not-allowed'),
                                 pointerEvents: 'auto'
                             }}
                             data-seat="true"
