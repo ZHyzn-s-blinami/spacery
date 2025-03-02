@@ -80,4 +80,29 @@ public class UserService {
         user.setVerified(true);
         userRepository.save(user);
     }
+
+    public void editUser(UUID id, String name, String description, String email, String password) {
+        UserModel user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        if (name != null) {
+            user.setName(name);
+        }
+
+        if (description != null) {
+            user.setDescription(description);
+        }
+
+        if (email != null) {
+            user.setEmail(email);
+        }
+
+        if (password != null) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+
+        userRepository.save(user);
+    }
 }

@@ -1,6 +1,7 @@
 package prod.last.mainbackend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -26,6 +27,9 @@ public class UserModel {
 
     @NotBlank
     private String name;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String description;
 
     private Boolean verified;
 

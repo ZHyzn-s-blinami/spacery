@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import prod.last.mainbackend.configurations.jwt.JwtUtils;
 import prod.last.mainbackend.models.UserModel;
+import prod.last.mainbackend.models.request.EditUser;
 import prod.last.mainbackend.models.request.LoginRequest;
 import prod.last.mainbackend.models.request.RegisterRequest;
 import prod.last.mainbackend.models.response.JwtResponse;
@@ -174,6 +175,32 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FOUND)
                     .header(HttpHeaders.LOCATION, "https://prod-team-5-qnkvbg7c.final.prodcontest.ru/profile")
                     .build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @Operation(
+            summary = "Редактирование пользователя",
+            description = "Редактирует информацию о пользователе. Доступно только для администраторов",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Пользователь успешно отредактирован",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"User edited\"}"))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Ошибка при редактировании пользователя",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
+    )
+    @PutMapping("/edit/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> editUser(@PathVariable UUID id, @RequestBody EditUser editUser) {
+        try {
+            userService.editUser(id, editUser.getName(), editUser.getDescription(), editUser.getEmail(), editUser.getPassword());
+            return ResponseEntity.ok("User edited");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
