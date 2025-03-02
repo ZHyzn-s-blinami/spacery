@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
-
-
   return (
-    <div>
     <div className="p-4 bg-black h-[100px] max-w-5x1 mx-auto flex items-center border border-gray-200 rounded-[30px]">
         <span className="text-white text-[50px]">BookIT</span>
         <div className="flex w-[300px] justify-center ml-[60%]">
@@ -21,7 +17,6 @@ const Header = () => {
             </div>
           </Link>
         </div>
-    </div>
     </div>
   );
 };
