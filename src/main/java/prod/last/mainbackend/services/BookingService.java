@@ -21,6 +21,7 @@ import prod.last.mainbackend.repositories.UserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -50,6 +51,20 @@ public class BookingService {
         log.info("Creating booking for user {} and place {}", userId, name);
         PlaceModel place = placeRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("Place not found"));
+
+        UserModel userModel = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        String formattedStart = start.format(formatter);
+        String formattedEnd = end.format(formatter);
+
+        emailService.sendSimpleMessage(
+                userModel.getEmail(),
+                "Создание бронирования",
+                "Ваше бронирование на место " + place.getName() + " успешно создано.\n" +
+                        "Ваше время с " + formattedStart + " по " + formattedEnd
+        );
+
         return bookingRepository.save(new BookingModel(userId, place.getId(), start, end));
     }
 
@@ -159,13 +174,26 @@ public class BookingService {
             if (booking.getStatus() == BookingStatus.PENDING && booking.getStartAt().plusMinutes(5).isBefore(now)) {
                 booking.updateStatus(BookingStatus.OVERDUE);
                 bookingRepository.save(booking);
-            } else if (booking.getStatus() == BookingStatus.PENDING && booking.getStartAt().minusMinutes(15).isAfter(now) && !booking.isSentNotification()) {
+            } else if (booking.getStatus() == BookingStatus.PENDING
+                    && booking.getStartAt().minusMinutes(15).isBefore(now)
+                    && !booking.isSentNotification()) {
                 UserModel user = userRepository.findById(booking.getUserId()).orElse(null);
-                emailService.sendSimpleMessage(user.getEmail(), "Напоминание о бронировании", "Ваше бронирование начнется через 15 минут");
+                emailService.sendSimpleMessage(user.getEmail(), "Напоминание о бронировании",
+                        "Ваше бронирование начнется через 15 минут");
+                booking.setSentNotification(true);
+                bookingRepository.save(booking);
+                log.info("Sending email to user {}", user.getEmail());
+            } else if (booking.getStatus() == BookingStatus.PENDING
+                    && booking.getEndAt().minusMinutes(15).isBefore(now)
+                    && !booking.isSentNotification()) {
+                UserModel user = userRepository.findById(booking.getUserId()).orElse(null);
+                emailService.sendSimpleMessage(user.getEmail(), "Напоминание о бронировании",
+                        "Ваше бронирование закончится через 15 минут");
                 booking.setSentNotification(true);
                 bookingRepository.save(booking);
                 log.info("Sending email to user {}", user.getEmail());
             }
         }
     }
+
 }
