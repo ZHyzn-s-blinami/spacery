@@ -23,7 +23,4 @@ const MeetingItem = ({item, bookingId}) => {
     )
 }
 
-export default MeetingItem
-
-
-
+export default MeetingItem;

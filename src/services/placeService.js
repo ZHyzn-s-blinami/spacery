@@ -17,16 +17,21 @@ apiClient.interceptors.response.use(
   }
 )
 
-export const bookingService = {
-  getBooks: async (name) => {
+export const placeService = {
+  get: async (start, end) => {
     try {
       const token = localStorage.getItem('userToken');
     
-      const response = await apiClient.get(`/api/booking/${name}/place`, {
+      const response = await apiClient.get(`/api/place/free${start && end ? `?start=${start}&end=${end}` : ''}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
           'Access-Control-Allow-Origin': '*',
+
+        },
+        params: {
+          start,
+          end
         }
       });
       return response.data;
@@ -34,33 +39,22 @@ export const bookingService = {
       throw error;
     }
   },
-  getPlace: async (name) => {
-    const token = localStorage.getItem('userToken');
-
-    const response = await apiClient.get(`/api/place/${name}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      }
-    })
-
-    console.log(response.data);
-    return response.data;
-  },
-  cancelBooking: async (uuid) => {
+  post: async (placeData) => {
     try {
       const token = localStorage.getItem('userToken');
-
-      const response = await apiClient.post(`/api/booking/${uuid}/cancel`, {}, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+      
+      const response = await apiClient.post(
+        '/api/booking/create', 
+        placeData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          }
         }
-      },
       );
-      console.log(response.data);
+      
       return response.data;
     } catch (error) {
       throw error;
