@@ -54,11 +54,9 @@ const BookingList = () => {
 
         await checkAuth();
 
-        // Fetch place details
         const placeData = await bookingService.getPlace(name);
         setPlace(placeData);
 
-        // Fetch bookings for this place
         const bookingsData = await bookingService.getBooks(name);
         setBookings(bookingsData);
         console.log(place);
@@ -76,7 +74,6 @@ const BookingList = () => {
     }
   }, [name]);
 
-  // Форматирование даты и времени
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -87,14 +84,11 @@ const BookingList = () => {
     return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Обработчики действий с бронированиями
   const confirmBooking = (id) => {
-    // Here you would typically call an API to update the booking status
-    // For now, we'll just update the local state
     setBookings(
       bookings.map((booking) =>
         booking.id === id
-          ? { ...booking, status: 'CONFIRMED', updatedAt: new Date().toISOString() }
+          ? { ...booking, status: 'ACCEPTED', updatedAt: new Date().toISOString() }
           : booking,
       ),
     );
@@ -123,14 +117,11 @@ const BookingList = () => {
     }
   };
 
-  // Фильтрация бронирований
   const filteredBookings = bookings.filter((booking) => {
-    // Фильтр по статусу
     if (filterOptions.status !== 'ALL' && booking.status !== filterOptions.status) {
       return false;
     }
 
-    // Фильтр по поиску (имя пользователя)
     if (
       filterOptions.searchQuery &&
       !booking.userName.toLowerCase().includes(filterOptions.searchQuery.toLowerCase())
@@ -138,7 +129,6 @@ const BookingList = () => {
       return false;
     }
 
-    // Фильтр по дате "от"
     if (filterOptions.dateFrom) {
       const fromDate = new Date(filterOptions.dateFrom);
       const bookingDate = new Date(booking.startAt);
@@ -147,7 +137,6 @@ const BookingList = () => {
       }
     }
 
-    // Фильтр по дате "до"
     if (filterOptions.dateTo) {
       const toDate = new Date(filterOptions.dateTo);
       const bookingDate = new Date(booking.startAt);
@@ -159,10 +148,9 @@ const BookingList = () => {
     return true;
   });
 
-  // Получение класса статуса для визуального отображения
   const getStatusClass = (status) => {
     switch (status) {
-      case 'CONFIRMED':
+      case 'ACCEPTED':
         return 'bg-green-100 text-green-800';
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
@@ -173,10 +161,9 @@ const BookingList = () => {
     }
   };
 
-  // Получение текста статуса на русском
   const getStatusText = (status) => {
     switch (status) {
-      case 'CONFIRMED':
+      case 'ACCEPTED':
         return 'Подтверждено';
       case 'PENDING':
         return 'Ожидает подтверждения';
@@ -187,10 +174,9 @@ const BookingList = () => {
     }
   };
 
-  // Получение иконки статуса
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'CONFIRMED':
+      case 'ACCEPTED':
         return <CheckCircle className="h-5 w-5 text-green-600" />;
       case 'PENDING':
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
@@ -201,7 +187,6 @@ const BookingList = () => {
     }
   };
 
-  // Обработчик изменения фильтров
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilterOptions({
@@ -310,7 +295,7 @@ const BookingList = () => {
                       onChange={handleFilterChange}
                     >
                       <option value="ALL">Все статусы</option>
-                      <option value="CONFIRMED">Подтверждено</option>
+                      <option value="ACCEPTED">Подтверждено</option>
                       <option value="PENDING">Ожидает подтверждения</option>
                       <option value="REJECTED">Отменено</option>
                     </select>
@@ -436,7 +421,7 @@ const BookingList = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            {booking.status !== 'REJECTED' && booking.status !== 'CONFIRMED' && (
+                            {booking.status !== 'REJECTED' && booking.status !== 'ACCEPTED' && (
                               <div className="flex justify-end gap-2">
                                 <button
                                   className="text-red-600 hover:text-red-900 py-1 px-2 rounded hover:bg-red-50"
