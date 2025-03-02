@@ -7,7 +7,7 @@ import TimeRangeSlider from './TimeRangeSlider.jsx';
 import { useDebounce } from '../hooks/useDebounce.js';
 import toast from 'react-hot-toast';
 
-const CoworkingBooking = () => {
+const CoworkingBooking = ({ isAdmin }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [selectedZone, setSelectedZone] = useState('all');
@@ -454,6 +454,7 @@ const CoworkingBooking = () => {
             selectedSeat={selectedSeat}
             onSeatSelect={handleSeatSelect}
             freePlaces={freePlaces}
+            isAdmin={isAdmin}
           />
 
           {popoverSeat && (

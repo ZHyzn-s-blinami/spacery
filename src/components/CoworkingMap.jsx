@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
-const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
+const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
     const [scale, setScale] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -14,8 +15,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
     const isTouchDevice = useRef(false);
     const pinchCenterRef = useRef({ clientX: 0, clientY: 0, mapX: 0, mapY: 0 });
     const lastScaleRef = useRef(1);
-
-
+    const navigate = useNavigate();
 
 
     const generateSeats = () => {
@@ -38,7 +38,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `B${idx + 1}`,
                     x: 280 + (idx % 3) * 50,
                     y: 65 + Math.floor(idx / 3) * 50,
-                    isOccupied: !freePlaces.some((item) => item.name === `B${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'B',
                     type: 'office',
                 })),
@@ -49,7 +49,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `C${idx + 1}`,
                     x: 55 + (idx % 4) * 40,
                     y: 280 + Math.floor(idx / 4) * 45,
-                    isOccupied: !freePlaces.some((item) => item.name === `C${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'C',
                     type: 'meeting',
                 })),
@@ -60,7 +60,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `D${idx + 1}`,
                     x: 265 + (idx % 6) * 27,
                     y: 285 + Math.floor(idx / 6) * 70,
-                    isOccupied: !freePlaces.some((item) => item.name === `D${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'D',
                     type: 'focus',
                 })),
@@ -71,7 +71,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     name: `E${idx + 1}`,
                     x: 490 + (idx % 2) * 55,
                     y: 80 + Math.floor(idx / 2) * 40,
-                    isOccupied: !freePlaces.some((item) => item.name === `E${idx + 1}`),
+                    isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
                     zone: 'E',
                     type: 'lounge',
                 })),
@@ -953,9 +953,9 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
                     {seats.map((seat) => (
                         <g
                             key={seat.id}
-                            onClick={() => !seat.isOccupied && onSeatSelect(seat)}
+                            onClick={() => !isAdmin ? seat.isOccupied && onSeatSelect(seat) : navigate(`/admin/booking/${seat.name}/place`)}
                             style={{
-                                cursor: seat.isOccupied ? 'not-allowed' : 'pointer',
+                                cursor: isAdmin ? ('pointer') : (!seat.isOccupied ? 'pointer' : 'not-allowed'),
                                 pointerEvents: 'auto'
                             }}
                             data-seat="true"
