@@ -1,7 +1,6 @@
 import React from 'react';
 import CoworkingBooking from '../components/reservation';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import { adminService } from '../services/adminService';
 
 function HomeAdmin() {
