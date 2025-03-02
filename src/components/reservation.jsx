@@ -486,6 +486,7 @@ const CoworkingBooking = ({ isAdmin }) => {
                     onClose={() => setPopoverSeat(null)}
                     onBook={handleBooking}
                     containerRef={mapContainerRef}
+                    isWorkingHours={!isOutsideWorkingHours}
                 />
             )}
           </div>
