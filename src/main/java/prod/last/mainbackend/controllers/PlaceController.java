@@ -88,8 +88,8 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "Получение информации о месте по ID",
-            description = "Возвращает информацию о месте по его уникальному идентификатору"
+            summary = "Получение информации о месте по name",
+            description = "Возвращает информацию о месте по name"
     )
     @ApiResponse(
             responseCode = "200",
@@ -100,12 +100,10 @@ public class PlaceController {
             responseCode = "400",
             description = "Ошибка при получении информации о месте"
     )
-    @GetMapping("/{uuid}")
-    public ResponseEntity<?> getPlaceById(@PathVariable String uuid) {
+    @GetMapping("/{name}")
+    public ResponseEntity<?> getPlaceById(@PathVariable String name) {
         try {
-            UUID id = UUID.fromString(uuid);
-
-            return ResponseEntity.ok(placeService.getPlaceById(id));
+            return ResponseEntity.ok(placeService.getByName(name));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
