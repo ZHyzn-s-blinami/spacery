@@ -85,4 +85,25 @@ export const bookingService = {
             throw error;
         }
     },
+    updateMeeting: async (uuid, startAt, endAt) => {
+        try {
+            const token = localStorage.getItem('userToken');
+
+            const response = await apiClient.post(
+                `/api/booking/${uuid}/update`,
+                { startAt, endAt },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    }
+                }
+            );
+
+            return response.data;
+
+        } catch (error) {
+            throw error;
+        }
+    }
 }
