@@ -150,11 +150,9 @@ public class UserController {
     )
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getAllUsers(
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "0") int offset) {
+    public ResponseEntity<?> getAllUsers() {
         try {
-            return ResponseEntity.ok(userService.getAllUsers(limit, offset));
+            return ResponseEntity.ok(userService.getAllUsers());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
