@@ -158,6 +158,8 @@ const BookingList = () => {
         return 'bg-yellow-100 text-yellow-800';
       case 'REJECTED':
         return 'bg-red-100 text-red-800';
+      case 'OVERDUE':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -171,6 +173,8 @@ const BookingList = () => {
         return 'Ожидает подтверждения';
       case 'REJECTED':
         return 'Отменено';
+      case 'OVERDUE':
+        return 'Просрочено';
       default:
         return status;
     }
@@ -183,6 +187,8 @@ const BookingList = () => {
       case 'PENDING':
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
       case 'REJECTED':
+        return <XCircle className="h-5 w-5 text-red-600" />;
+      case 'OVERDUE':
         return <XCircle className="h-5 w-5 text-red-600" />;
       default:
         return null;
@@ -300,6 +306,7 @@ const BookingList = () => {
                       <option value="ACCEPTED">Подтверждено</option>
                       <option value="PENDING">Ожидает подтверждения</option>
                       <option value="REJECTED">Отменено</option>
+                      <option value="OVERDUE">Просрочено</option>
                     </select>
                   </div>
                   <div>
@@ -423,16 +430,18 @@ const BookingList = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            {booking.status !== 'REJECTED' && booking.status !== 'ACCEPTED' && (
-                              <div className="flex justify-end gap-2">
-                                <button
-                                  className="text-red-600 hover:text-red-900 py-1 px-2 rounded hover:bg-red-50"
-                                  onClick={() => cancelUserMeeting(booking.bookingId)}
-                                >
-                                  Отменить
-                                </button>
-                              </div>
-                            )}
+                            {booking.status !== 'REJECTED' &&
+                              booking.status !== 'OVERDUE' &&
+                              booking.status !== 'ACCEPTED' && (
+                                <div className="flex justify-end gap-2">
+                                  <button
+                                    className="text-red-600 hover:text-red-900 py-1 px-2 rounded hover:bg-red-50"
+                                    onClick={() => cancelUserMeeting(booking.bookingId)}
+                                  >
+                                    Отменить
+                                  </button>
+                                </div>
+                              )}
                           </td>
                         </tr>
                       );
