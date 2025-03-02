@@ -16,11 +16,16 @@ const MeetingItem = ({ item }) => {
         }
       };
 
+      const handleReshedule = () => {
+
+      }
+
     return (
         <div>
             <p>{item.address}</p>
             <p>{`${startTime.getHours()}:${endTime.getMinutes()}-${endTime.getHours()}:${endTime.getMinutes()}`}</p>
             <QRCode value={item.bookingId} />
+            <button>перенести</button>
             <button onClick={() => handleRemove(item.bookingId)}>отменить</button>
         </div>
     )

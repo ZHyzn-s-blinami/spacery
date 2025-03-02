@@ -9,10 +9,8 @@ const apiClient = axios.create({
   }
 });
 
-// Обработка всех ответов (успешных и с ошибками)
 apiClient.interceptors.response.use(
   response => {
-    // Проверка статус-кода для успешных ответов
     if (response.status !== 200) {
       localStorage.removeItem('userToken');
       window.location.href = '/auth';
@@ -23,7 +21,6 @@ apiClient.interceptors.response.use(
   error => {
     console.error('API Error:', error.response ? error.response.data : error.message);
     
-    // Всегда удаляем токен и делаем редирект при любой ошибке
     localStorage.removeItem('userToken');
     window.location.href = '/auth';
     
