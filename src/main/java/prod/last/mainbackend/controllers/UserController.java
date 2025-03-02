@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -167,7 +168,9 @@ public class UserController {
     public ResponseEntity<?> confirmUser(@RequestParam String token) {
         try {
             userService.confirmUser(token);
-            return ResponseEntity.ok("User verified successfully");
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, "https://prod-team-5-qnkvbg7c.final.prodcontest.ru/profile")
+                    .build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
