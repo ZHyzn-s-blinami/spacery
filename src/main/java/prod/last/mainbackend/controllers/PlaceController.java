@@ -44,17 +44,15 @@ public class PlaceController {
     public ResponseEntity<?> getFreePlacesByTypeAndCapacity(
             @PathParam("type") String type,
             @PathParam("capacity") Integer capacity,
-            @PathParam("start") String start,
-            @PathParam("end") String end
+            @PathParam("start") LocalDateTime start,
+            @PathParam("end") LocalDateTime end
     ) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            LocalDateTime startTime = start != null ? LocalDateTime.parse(start, formatter) : LocalDateTime.now();
-            LocalDateTime endTime = end != null ? LocalDateTime.parse(end, formatter) : LocalDateTime.now().plusHours(1);
             PlaceType placeType = type != null ? PlaceType.valueOf(type.toUpperCase()) : PlaceType.DEFAULT;
             Integer capacityParam = capacity != null  ? capacity : 0;
 
-            return ResponseEntity.ok(placeService.getFreePlacesByTypeAndCapacity(placeType, capacityParam, startTime, endTime));
+            return ResponseEntity.ok(placeService.getFreePlacesByTypeAndCapacity(placeType, capacityParam, start, end));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
