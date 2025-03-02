@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
-import Header from '../components/header.jsx';
+import Header from '../components/Header.jsx';
 
 function UserLayout() {
   const userToken = localStorage.getItem('userToken');
