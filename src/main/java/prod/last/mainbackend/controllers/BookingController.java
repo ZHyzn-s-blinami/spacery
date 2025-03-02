@@ -19,6 +19,7 @@ import prod.last.mainbackend.services.BookingService;
 import prod.last.mainbackend.services.UserService;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,6 +183,33 @@ public class BookingController {
             return ResponseEntity.ok(bookingService.findBookingByUserId(userId));
         } catch (Exception e) {
             return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
+
+    @Operation(
+            summary = "Обновление времени бронирования",
+            description = "Обновляет время бронирования"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Успешное обновление времени бронирования",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingModel.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Ошибка при обновлении времени бронирования",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
+    )
+    @PostMapping("/booking/{uuid}/update")
+    public ResponseEntity<?> update(
+            @Valid @PathVariable UUID uuid,
+            @RequestParam LocalDateTime startAt,
+            @RequestParam LocalDateTime endAt
+    ) {
+        try {
+            return ResponseEntity.ok(bookingService.updateBookingTime(uuid, startAt, endAt));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
         }
     }
 }

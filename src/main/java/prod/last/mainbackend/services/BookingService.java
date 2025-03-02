@@ -176,4 +176,29 @@ public class BookingService {
             }
         }
     }
+
+    public BookingModel updateBookingTime(UUID bookingId, LocalDateTime start, LocalDateTime end) {
+        log.info("Updating booking time for booking {}", bookingId);
+        BookingModel booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
+
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new IllegalArgumentException("Booking status is not PENDING");
+        }
+
+        List<BookingModel> existingBookings = bookingRepository.findAllByPlaceId(booking.getPlaceId());
+        for (BookingModel existingBooking : existingBookings) {
+            if (!existingBooking.getId().equals(bookingId) &&
+                    existingBooking.getStartAt().isBefore(end) &&
+                    existingBooking.getEndAt().isAfter(start)) {
+                throw new IllegalArgumentException("The new booking time overlaps with an existing booking for this place");
+            }
+        }
+
+        booking.setStartAt(start);
+        booking.setEndAt(end);
+        booking.updateStatus(BookingStatus.PENDING);
+        booking.setSentNotification(false);
+        return bookingRepository.save(booking);
+    }
 }
