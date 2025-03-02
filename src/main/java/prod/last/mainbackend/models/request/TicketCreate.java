@@ -13,9 +13,6 @@ import java.util.UUID;
 public class TicketCreate {
 
     @NotNull
-    private UUID userId;
-
-    @NotNull
     private UUID placeId;
 
     @NotNull

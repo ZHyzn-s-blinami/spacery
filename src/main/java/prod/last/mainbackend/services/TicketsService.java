@@ -19,9 +19,9 @@ public class TicketsService {
 
     private final TicketsRepository ticketsRepository;
 
-    public TicketsModel createTicket(TicketCreate create) {
+    public TicketsModel createTicket(TicketCreate create, UUID userId) {
         return ticketsRepository.save(new TicketsModel(
-                create.getUserId(),
+                userId,
                 create.getPlaceId(),
                 create.getTicketType(),
                 create.getDescription()
