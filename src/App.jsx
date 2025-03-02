@@ -7,6 +7,9 @@ import AdminLayout from './layouts/AdminLayout';
 import HomeAdmin from './pages/HomeAdmin';
 import BookingList from './pages/BookingList';
 import { Toaster } from 'react-hot-toast';
+import ProtectedUserRoute from './components/ProtectedUserRoute';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute';
+import UserControl from './pages/UserControl';
 
 function App() {
   return (
@@ -52,14 +55,29 @@ function App() {
         }}
       />
       <Routes>
-        <Route path="/" element={<UserLayout />}>
+        <Route
+          path="/"
+          element={
+            <ProtectedUserRoute>
+              <UserLayout />
+            </ProtectedUserRoute>
+          }
+        >
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          path="/admin"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLayout />
+            </ProtectedAdminRoute>
+          }
+        >
           <Route path="/admin" element={<HomeAdmin />} />
           <Route path="/admin/booking/:name/place" element={<BookingList />} />
+          <Route path="/admin/userControl" element={<UserControl />} />
         </Route>
       </Routes>
     </>
