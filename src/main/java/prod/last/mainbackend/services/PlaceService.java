@@ -9,6 +9,7 @@ import prod.last.mainbackend.repositories.PlaceRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,10 @@ public List<PlaceModel> getFreePlacesByTypeAndCapacity(PlaceType type, Integer c
                 ))
                 .collect(Collectors.toList());
         return placeRepository.saveAll(places);
+    }
+
+    public Optional<PlaceModel> getByName(String name) {
+        return placeRepository.findByName(name);
     }
 
 }

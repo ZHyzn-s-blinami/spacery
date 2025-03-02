@@ -24,4 +24,6 @@ List<PlaceModel> findFreePlacesByTypeAndCapacity(@Param("type") PlaceType type,
 
     Optional<PlaceModel> findByName(String name);
 
+    List<PlaceModel> findAllByName(String name);
+
 }

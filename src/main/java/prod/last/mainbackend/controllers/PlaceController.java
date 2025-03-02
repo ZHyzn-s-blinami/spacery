@@ -44,17 +44,15 @@ public class PlaceController {
     public ResponseEntity<?> getFreePlacesByTypeAndCapacity(
             @PathParam("type") String type,
             @PathParam("capacity") Integer capacity,
-            @PathParam("start") String start,
-            @PathParam("end") String end
+            @PathParam("start") LocalDateTime start,
+            @PathParam("end") LocalDateTime end
     ) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            LocalDateTime startTime = start != null ? LocalDateTime.parse(start, formatter) : LocalDateTime.now();
-            LocalDateTime endTime = end != null ? LocalDateTime.parse(end, formatter) : LocalDateTime.now().plusHours(1);
             PlaceType placeType = type != null ? PlaceType.valueOf(type.toUpperCase()) : PlaceType.DEFAULT;
             Integer capacityParam = capacity != null  ? capacity : 0;
 
-            return ResponseEntity.ok(placeService.getFreePlacesByTypeAndCapacity(placeType, capacityParam, startTime, endTime));
+            return ResponseEntity.ok(placeService.getFreePlacesByTypeAndCapacity(placeType, capacityParam, start, end));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
@@ -90,8 +88,8 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "Получение информации о месте по ID",
-            description = "Возвращает информацию о месте по его уникальному идентификатору"
+            summary = "Получение информации о месте по name",
+            description = "Возвращает информацию о месте по name"
     )
     @ApiResponse(
             responseCode = "200",
@@ -102,12 +100,10 @@ public class PlaceController {
             responseCode = "400",
             description = "Ошибка при получении информации о месте"
     )
-    @GetMapping("/{uuid}")
-    public ResponseEntity<?> getPlaceById(@PathVariable String uuid) {
+    @GetMapping("/{name}")
+    public ResponseEntity<?> getPlaceById(@PathVariable String name) {
         try {
-            UUID id = UUID.fromString(uuid);
-
-            return ResponseEntity.ok(placeService.getPlaceById(id));
+            return ResponseEntity.ok(placeService.getByName(name));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
