@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
+import Header from '../components/header.jsx';
 
 function UserLayout() {
   const userToken = localStorage.getItem('userToken');
@@ -16,6 +17,7 @@ function UserLayout() {
 
   return (
     <>
+      <Header />     
       <Outlet />
     </>
   );
