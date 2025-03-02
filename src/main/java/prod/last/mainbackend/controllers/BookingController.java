@@ -221,7 +221,7 @@ public class BookingController {
     @ApiResponse(
             responseCode = "200",
             description = "Список бронирований успешно получен",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingModel.class))
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingCreateResponse.class)))
     )
     @ApiResponse(
             responseCode = "404",

@@ -229,8 +229,20 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
-    public List<BookingModel> findAllUserBookingsByStatus(UUID userId, BookingStatus status) {
+    public List<BookingCreateResponse>  findAllUserBookingsByStatus(UUID userId, BookingStatus status) {
         log.info("Getting bookings by userId: {} and status: {}", userId, status);
-        return bookingRepository.findAllByUserIdAndStatus(userId, status);
+        List<BookingModel> bookings = bookingRepository.findAllByUserIdAndStatus(userId, status);
+        return bookings.stream().map(booking -> {
+            PlaceModel placeModel = placeRepository.findById(booking.getPlaceId()).orElse(null);
+            BookingCreateResponse response = new BookingCreateResponse();
+            response.setBookingId(booking.getId().toString());
+            response.setPlace(placeModel);
+            response.setStartAt(booking.getStartAt().toString());
+            response.setEndAt(booking.getEndAt().toString());
+            response.setStatus(booking.getStatus().name());
+            response.setCreatedAt(booking.getCreatedAt() != null ? booking.getCreatedAt().toString() : null);
+            response.setUpdatedAt(booking.getUpdatedAt() != null ? booking.getUpdatedAt().toString() : null);
+            return response;
+        }).collect(Collectors.toList());
     }
 }
