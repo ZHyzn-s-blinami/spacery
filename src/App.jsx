@@ -17,7 +17,7 @@ function App() {
       </Route>
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="/admin" element={<HomeAdmin />} />
-        <Route path="/admin/booking/:uuid/place" element={<BookingList />} />
+        <Route path="/admin/booking/:name/place" element={<BookingList />} />
       </Route>
     </Routes>
   );
