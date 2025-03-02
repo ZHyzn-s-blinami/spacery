@@ -1,20 +1,11 @@
-<<<<<<< Updated upstream
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, MapPin, Filter } from 'lucide-react';
 import { placeService } from '../services/placeService';
 import CoworkingMap from './CoworkingMap.jsx';
 import SeatPopover from './SeatPopover.jsx';
 import TimeRangeSlider from './TimeRangeSlider.jsx';
-import toast from 'react-hot-toast';
 import { useDebounce } from '../hooks/useDebounce.js';
-=======
-import React, {useEffect, useRef, useState} from 'react';
-import {Calendar, Filter, MapPin} from 'lucide-react';
-import {placeService} from '../services/placeService';
-import CoworkingMap from "./CoworkingMap.jsx";
-import SeatPopover from "./SeatPopover.jsx";
-import TimeRangeSlider from "./TimeRangeSlider.jsx";
->>>>>>> Stashed changes
+
 
 const CoworkingBooking = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -99,24 +90,12 @@ const CoworkingBooking = () => {
       };
 
       const result = await placeService.post(placeData);
-<<<<<<< Updated upstream
-      console.log(result);
-      fetchFreePlaces();
-      console.log(fetchFreePlaces());
-      setPopoverSeat(null);
-      setSelectedSeat(null);
-      toast.success('Успешно забронировано');
-    } catch (error) {
-      console.error('Ошибка при создании бронирования: ', error);
-      toast.error('Ошибка при бронировании');
-=======
       console.log('Booking result:', result);
       await fetchFreePlaces();
       return result;
     } catch (error) {
       console.error('Ошибка при создании бронирования: ', error);
       throw error;
->>>>>>> Stashed changes
     }
   };
 
