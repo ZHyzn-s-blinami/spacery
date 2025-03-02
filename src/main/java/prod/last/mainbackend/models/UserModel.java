@@ -28,6 +28,8 @@ public class UserModel {
     @NotBlank
     private String name;
 
+    private Boolean active;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
 
@@ -52,5 +54,6 @@ public class UserModel {
         this.name = name;
         this.role = role;
         this.verified = false;
+        this.active = true;
     }
 }

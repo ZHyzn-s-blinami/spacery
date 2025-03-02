@@ -158,6 +158,21 @@ public class UserController {
         }
     }
 
+    @Operation(
+        summary = "Отправка верификационного email",
+        description = "Отправляет верификационное письмо на email пользователя",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Верификационное письмо успешно отправлено",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"Verification email sent\"}"))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Ошибка при отправке верификационного письма",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
+    )
     @PostMapping("/verify")
     public ResponseEntity<?> sendVerificationEmail(Principal principal) {
         try {
@@ -168,6 +183,21 @@ public class UserController {
         }
     }
 
+    @Operation(
+        summary = "Подтверждение пользователя",
+        description = "Подтверждает пользователя по токену",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+        responseCode = "302",
+        description = "Пользователь успешно подтверждён",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"User confirmed\"}"))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Ошибка при подтверждении пользователя",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
+    )
     @GetMapping("/confirm")
     public ResponseEntity<?> confirmUser(@RequestParam String token) {
         try {
@@ -205,4 +235,84 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+    @Operation(
+        summary = "Блокировка пользователя",
+        description = "Блокирует пользователя по его ID. Доступно только для администраторов",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Пользователь успешно заблокирован",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"User blocked\"}"))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Ошибка при блокировке пользователя",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
+    )
+    @PostMapping("block/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> blockUser(@PathVariable UUID id) {
+        try {
+            userService.blockUser(id);
+            return ResponseEntity.ok("User blocked");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @Operation(
+        summary = "Разблокировка пользователя",
+        description = "Разблокирует пользователя по его ID. Доступно только для администраторов",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Пользователь успешно разблокирован",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"User unblocked\"}"))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Ошибка при разблокировке пользователя",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
+    )
+    @PostMapping("unblock/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> unblockUser(@PathVariable UUID id) {
+        try {
+            userService.unblockUser(id);
+            return ResponseEntity.ok("User unblocked");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @Operation(
+        summary = "Удаление пользователя",
+        description = "Удаляет пользователя по его ID. Доступно только для администраторов",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Пользователь успешно удалён",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"User deleted\"}"))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Ошибка при удалении пользователя",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
+    )
+    @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("User deleted");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+
 }

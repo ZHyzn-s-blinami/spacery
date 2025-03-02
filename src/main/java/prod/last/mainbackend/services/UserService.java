@@ -105,4 +105,33 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public void blockUser(UUID id) {
+        UserModel user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
+    public void unblockUser(UUID id) {
+        UserModel user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        user.setActive(true);
+        userRepository.save(user);
+    }
+
+    public void deleteUser(UUID id) {
+        UserModel user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        userRepository.delete(user);
+    }
 }

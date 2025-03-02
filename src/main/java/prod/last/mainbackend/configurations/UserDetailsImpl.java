@@ -17,13 +17,15 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
+    private Boolean active;
 
     public static UserDetailsImpl build(UserModel user) {
         return new UserDetailsImpl(
                 user.getId().toString(),
                 user.getEmail(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())),
+                user.getActive()
         );
     }
 
@@ -49,7 +51,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return this.active;
     }
 
     @Override
