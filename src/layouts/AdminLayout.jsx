@@ -1,5 +1,6 @@
 import React from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import AdminHeader from "../components/AdminHeader.jsx";
 
 function AdminLayout() {
   const userToken = localStorage.getItem('userToken');
@@ -15,6 +16,7 @@ function AdminLayout() {
 
   return (
     <>
+      {location.pathname !== '/auth' && <AdminHeader />}
       <Outlet />
     </>
   );
