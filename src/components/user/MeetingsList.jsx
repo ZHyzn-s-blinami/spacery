@@ -6,16 +6,16 @@ import MeetingItem from "./MeetingItem";
 import { fetchUserMeetings } from "../../store/user/thunks";
 
 const MeetingList = ({ booking }) => {
+  const meetings = useSelector(state => state.booking.meetings)
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchUserMeetings());
-  }, [dispatch]);
+  }, [dispatch, meetings]);
 
   const handleRemove = async (bookingId) => {
     try {
       const response = await bookingService.cancelBooking(bookingId);
-      // console.log(response);
       if (response) {
         await dispatch(fetchUserMeetings());
       }
