@@ -14,6 +14,11 @@ const Profile = () => {
         // Аунтификация хз, что тут сделать
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('userToken');
+        location.reload()
+    }
+
     useEffect(() => {
         if (userToken && !user) {
             dispatch(fetchUserData())
@@ -98,6 +103,7 @@ const Profile = () => {
                         <MeetingList />
                     </div>
                 </div>
+                <button onClick={handleLogout}>Выйти из профиля</button>
             </div>
         </div>
     );
