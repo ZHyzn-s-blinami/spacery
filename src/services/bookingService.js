@@ -48,7 +48,7 @@ export const bookingService = {
     console.log(response.data);
     return response.data;
   },
-  cancelBooking: async (uuid) => {
+  cancelUserMeeting: async (uuid) => {
     try {
       const token = localStorage.getItem('userToken');
 
