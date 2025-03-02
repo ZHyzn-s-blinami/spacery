@@ -307,6 +307,48 @@ const UserControl = () => {
     const nextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
     const prevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
 
+    // Add these handler functions after the existing handlers
+    const handleBlockUser = async (userId) => {
+        try {
+            const token = localStorage.getItem('userToken');
+            await axios.post(
+                `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/block/${userId}`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            // Success message can be shown with a toast notification
+            fetchUsers(); // Refresh user list
+        } catch (err) {
+            console.error('Error blocking user:', err);
+            // Error notification can be shown here
+        }
+    };
+
+    const handleUnblockUser = async (userId) => {
+        try {
+            const token = localStorage.getItem('userToken');
+            await axios.post(
+                `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/unblock/${userId}`,
+                {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            // Success message can be shown with a toast notification
+            fetchUsers(); // Refresh user list
+        } catch (err) {
+            console.error('Error unblocking user:', err);
+            // Error notification can be shown here
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 py-8">
@@ -415,6 +457,21 @@ const UserControl = () => {
                                                     >
                                                         Удалить
                                                     </button>
+                                                    {user.active ? (
+                                                        <button
+                                                            onClick={() => handleBlockUser(user.id)}
+                                                            className="px-3 py-1 bg-amber-500 text-white rounded-lg hover:bg-amber-600 text-xs transition-colors shadow-sm hover:shadow whitespace-nowrap"
+                                                        >
+                                                            Блок
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => handleUnblockUser(user.id)}
+                                                            className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 text-xs transition-colors shadow-sm hover:shadow whitespace-nowrap"
+                                                        >
+                                                            Разблок
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
