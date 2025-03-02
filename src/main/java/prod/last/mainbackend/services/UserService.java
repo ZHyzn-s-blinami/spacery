@@ -47,9 +47,11 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public List<UserModel> getAllUsers() {
-        log.info("Getting all users");
-        return userRepository.findAll();
+    public List<UserModel> getAllUsers(int limit, int offset) {
+        List<UserModel> allUsers = userRepository.findAll();
+        int start = Math.min(offset, allUsers.size());
+        int end = Math.min(offset + limit, allUsers.size());
+        return allUsers.subList(start, end);
     }
 
     public void sendVerificationEmail(UUID id) {
