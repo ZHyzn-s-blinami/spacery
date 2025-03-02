@@ -1,17 +1,18 @@
-import { useEffect } from "react"
 import QRCode from "react-qr-code"
-import { fetchUserMeetings } from "../../store/user/thunks"
+import { useDispatch } from "react-redux";
+import { cancelBooking } from "../../store/booking/thunk"
 
 const MeetingItem = ({item, bookingId}) => {
+
+    const dispatch = useDispatch()
 
     const startTime = new Date(item.startAt)
     const endTime = new Date(item.endAt)
 
     const handleRemove = () => {
-        console.log('deleted')
+        dispatch(cancelBooking(item.bookingId));
     }
 
-    console.log(startTime.getHours())
     return (
         <div>
             <p>{item.address}</p>
