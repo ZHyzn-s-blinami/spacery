@@ -4,6 +4,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,6 +25,7 @@ import prod.last.mainbackend.repositories.UserRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
@@ -79,14 +83,55 @@ public class BookingService {
             throw new IllegalArgumentException("Booking start time is equal to end time");
         }
 
-        emailService.sendSimpleMessage(
+        // Generate iCalendar file
+        byte[] calendarData = generateCalendarEvent(place.getName(), start, end);
+
+        // Send email with calendar attachment
+        emailService.sendMessageWithAttachment(
                 userModel.getEmail(),
                 "Создание бронирования",
                 "Ваше бронирование на место " + place.getName() + " успешно создано.\n" +
-                        "Ваше время с " + formattedStart + " по " + formattedEnd
+                        "Ваше время с " + formattedStart + " по " + formattedEnd + "\n\n" +
+                        "Вы можете добавить это бронирование в свой календарь, используя прикрепленный файл.",
+                "booking.ics",
+                calendarData
         );
 
         return bookingRepository.save(new BookingModel(userId, place.getId(), start, end));
+    }
+
+    private byte[] generateCalendarEvent(String placeName, LocalDateTime start, LocalDateTime end) {
+        try {
+            // Create calendar
+            net.fortuna.ical4j.model.Calendar calendar = new net.fortuna.ical4j.model.Calendar();
+            calendar.getProperties().add(new ProdId("-//Event Calendar//iCal4j 3.2//EN"));
+            calendar.getProperties().add(Version.VERSION_2_0);
+            calendar.getProperties().add(CalScale.GREGORIAN);
+
+            // Create event
+            VEvent event = new VEvent(
+                    new DateTime(java.util.Date.from(start.atZone(ZoneId.systemDefault()).toInstant())),
+                    new DateTime(java.util.Date.from(end.atZone(ZoneId.systemDefault()).toInstant())),
+                    "Бронирование места: " + placeName
+            );
+
+            // Add unique identifier
+            event.getProperties().add(new Uid(UUID.randomUUID().toString()));
+
+            // Add description
+            event.getProperties().add(new Description("Бронирование места " + placeName));
+
+            // Add location
+            event.getProperties().add(new Location(placeName));
+
+            // Add event to calendar
+            calendar.getComponents().add(event);
+
+            return calendar.toString().getBytes(StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            log.error("Error generating calendar event", e);
+            return new byte[0];
+        }
     }
 
     public BookingModel reject(UUID bookingId) {
