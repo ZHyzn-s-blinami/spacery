@@ -16,7 +16,7 @@ public interface PlaceRepository extends JpaRepository<PlaceModel, UUID> {
 @Query("SELECT p FROM PlaceModel p WHERE (:type = 'DEFAULT' OR p.type = :type) AND " +
         "(:capacity = 0 OR p.capacity = :capacity) AND p.id NOT IN " +
         "(SELECT b.placeId FROM BookingModel b WHERE (b.startAt <= :end AND b.endAt >= :start)" +
-        " AND b.status != 'OVERDUE')")
+        " AND (b.status != 'OVERDUE' OR b.status != 'CANCELED'))")
 List<PlaceModel> findFreePlacesByTypeAndCapacity(@Param("type") PlaceType type,
                                                  @Param("capacity") Integer capacity,
                                                  @Param("start") LocalDateTime start,
