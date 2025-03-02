@@ -95,10 +95,10 @@ const BookingList = () => {
     return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   };
 
-  const cancelBooking = async (id) => {
+  const cancelUserMeeting = async (id) => {
     try {
       console.log(id);
-      const response = await bookingService.cancelBooking(id);
+      const response = await bookingService.cancelUserMeeting(id);
 
       console.log(response.data);
 
@@ -426,7 +426,7 @@ const BookingList = () => {
                               <div className="flex justify-end gap-2">
                                 <button
                                   className="text-red-600 hover:text-red-900 py-1 px-2 rounded hover:bg-red-50"
-                                  onClick={() => cancelBooking(booking.bookingId)}
+                                  onClick={() => cancelUserMeeting(booking.bookingId)}
                                 >
                                   Отменить
                                 </button>
