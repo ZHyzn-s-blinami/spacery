@@ -1,96 +1,65 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { authService } from "../../services/authService";
-import { addUser } from "./slice";
-import { bookingService } from "../../services/bookingService";
+import axios from 'axios';
 
-export const registerUser = createAsyncThunk(
-  'users/register',
-  async (userData, { dispatch, rejectWithValue }) => {
-    try {
-      const response = await authService.register(userData);
+const API_URL = 'https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api';
 
-      dispatch(addUser(userData));
-      localStorage.setItem('userToken', response.token);
-      return response.user;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || { message: error.message });
-    }
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+
+apiClient.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', error.response ? error.response.data : error.message);
+    return Promise.reject(error);
   }
 )
 
-export const loginUser = createAsyncThunk(
-  'users/login',
-  async (credentials, { rejectWithValue }) => {
+export const authService = {
+  register: async (userData) => {
     try {
-      const response = await authService.login(credentials);
-      localStorage.setItem('userToken', response.token);
-      return response.user;
+      const response = await apiClient.post('/user/sign-up', userData);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || { message: error.message });
+      throw error;
     }
-  }
-)
+  },
 
-export const logoutUser = createAsyncThunk(
-  'users/logout',
-  async (_, { rejectWithValue }) => {
+  login: async (credentials) => {
     try {
-      authService.logout();
-      return null;
+      const response = await apiClient.post('/user/sign-in', credentials);
+      if (response.data.token) {
+        localStorage.setItem('userToken', response.data.token);
+        apiClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+      }
     } catch (error) {
-      return rejectWithValue(error.message);
+      throw error;
     }
-  }
-)
+  },
 
-export const fetchUserData = createAsyncThunk(
-  'users/fetchUserData',
-  async (_, { rejectWithValue }) => {
+  logout: async () => {
+    localStorage.removeItem('userToken');
+    delete apiClient.defaults.headers.common['Authorization'];
+  },
+
+  getUser: async () => {
     try {
-      const response = await authService.getUser();
-      console.log(response);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.message);
+      const token = localStorage.getItem('userToken');
+      const response = await apiClient.get('/user/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
+      localStorage.setItem('userInfo', JSON.stringify(response.data));
+      return response.data;
     }
-  }
-);
-
-export const fetchUserMeetings = createAsyncThunk(
-  "booking/fetchUserMeetings",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await bookingService.getMeetings();
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.message);
+    catch (error) {
+      throw error;
     }
-  }
-);
-
-export const cancelUserMeeting = createAsyncThunk(
-  "booking/cancelUserMeeting",
-  async (uuid, { rejectWithValue }) => {
-    try {
-      await bookingService.cancelBooking(uuid);
-      const response = await bookingService.getMeetings();
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-
-export const fetchQrCode = createAsyncThunk(
-  'users/fetchQrCode',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await bookingService.getQrCode();
-      console.log(response);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
+  },
+}
