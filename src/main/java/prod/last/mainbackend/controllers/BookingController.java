@@ -214,6 +214,20 @@ public class BookingController {
         }
     }
 
+    @Operation(
+            summary = "Получение всех бронирований пользователя по статусу",
+            description = "Возвращает список всех бронирований текущего пользователя с указанным статусом"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Список бронирований успешно получен",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingModel.class))
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Бронирования не найдены",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
+    )
     @GetMapping("/booking/status/{status}")
     public ResponseEntity<?> getAllBookingByUserIdAndStatus(@Valid @PathVariable BookingStatus status, Principal principal) {
         try {

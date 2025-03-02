@@ -52,7 +52,7 @@ public class BookingService {
 
         List<BookingModel> existingBookings = bookingRepository.findAllByUserId(userId);
         for (BookingModel booking : existingBookings) {
-            if (booking.getStartAt().isBefore(end) && booking.getEndAt().isAfter(start)) {
+            if (booking.getStartAt().isBefore(end) && booking.getEndAt().isAfter(start) && booking.getStatus() == BookingStatus.PENDING) {
                 throw new IllegalArgumentException("User already has a booking in the specified time range");
             }
         }
