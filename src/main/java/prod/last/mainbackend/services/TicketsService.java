@@ -1,10 +1,12 @@
 package prod.last.mainbackend.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import prod.last.mainbackend.models.TicketStatus;
 import prod.last.mainbackend.models.TicketType;
 import prod.last.mainbackend.models.TicketsModel;
+import prod.last.mainbackend.models.request.TicketCreate;
 import prod.last.mainbackend.repositories.TicketsRepository;
 import prod.last.mainbackend.repositories.UserRepository;
 
@@ -14,14 +16,20 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class TicketsService {
+
     private final TicketsRepository ticketsRepository;
 
-    public TicketsModel createTicket(TicketsModel ticket) {
-        return ticketsRepository.save(ticket);
+    public TicketsModel createTicket(TicketCreate create) {
+        return ticketsRepository.save(new TicketsModel(
+                create.getUserId(),
+                create.getPlaceId(),
+                create.getTicketType(),
+                create.getDescription()
+        ));
     }
 
-    public List<TicketsModel> findAllByTicketType(String ticketType) {
-        return ticketsRepository.findAllByTicketType(TicketType.valueOf(ticketType));
+    public List<TicketsModel> findAllByTicketType(TicketType type) {
+        return ticketsRepository.findAllByTicketType(type);
     }
 
     public List<TicketsModel> findAll() {

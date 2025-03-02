@@ -27,4 +27,14 @@ public class TicketsModel {
 
     @Enumerated(EnumType.STRING)
     private TicketStatus status = TicketStatus.OPEN;
+
+    public TicketsModel() {
+    }
+
+    public TicketsModel(UUID userId, UUID placeId, TicketType ticketType, String description) {
+        this.userId = userId;
+        this.placeId = placeId;
+        this.ticketType = ticketType;
+        this.description = description;
+    }
 }
