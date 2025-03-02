@@ -5,10 +5,10 @@ import CoworkingMap from './CoworkingMap.jsx';
 import SeatPopover from './SeatPopover.jsx';
 import TimeRangeSlider from './TimeRangeSlider.jsx';
 import { useDebounce } from '../hooks/useDebounce.js';
-
+import toast from 'react-hot-toast';
 
 const CoworkingBooking = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [selectedZone, setSelectedZone] = useState('all');
   const [isToday, setIsToday] = useState(true);
@@ -90,11 +90,12 @@ const CoworkingBooking = () => {
       };
 
       const result = await placeService.post(placeData);
-      console.log('Booking result:', result);
       await fetchFreePlaces();
+      toast.success('Успешно забронировано');
       return result;
     } catch (error) {
       console.error('Ошибка при создании бронирования: ', error);
+      toast.error('Ошибка при бронировании');
       throw error;
     }
   };
@@ -149,7 +150,8 @@ const CoworkingBooking = () => {
       const minTotalMinutes = minTime.hour * 60 + minTime.minute;
       const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
 
-      const outsideHours = currentTotalMinutes < minTotalMinutes || currentTotalMinutes >= maxTotalMinutes;
+      const outsideHours =
+        currentTotalMinutes < minTotalMinutes || currentTotalMinutes >= maxTotalMinutes;
       setIsOutsideWorkingHours(outsideHours);
     } else {
       setIsOutsideWorkingHours(false);
@@ -175,19 +177,20 @@ const CoworkingBooking = () => {
       if (startMinutes < currentMinutes || timeRange.start.hour === 0) {
         // Устанавливаем новое время начала и конца
         const endMinutes = currentMinutes + 60;
-        const endTime = endMinutes > maxTime.hour * 60 + maxTime.minute
+        const endTime =
+          endMinutes > maxTime.hour * 60 + maxTime.minute
             ? maxTime
             : { hour: Math.floor(endMinutes / 60), minute: endMinutes % 60 };
 
         setTimeRange({
           start: current,
-          end: endTime
+          end: endTime,
         });
       }
     } else if (timeRange.start.hour === 0 || timeRange.end.hour === 0) {
       setTimeRange({
         start: { hour: 9, minute: 0 },
-        end: { hour: 10, minute: 0 }
+        end: { hour: 10, minute: 0 },
       });
     }
   }, [selectedDate]);
@@ -340,155 +343,155 @@ const CoworkingBooking = () => {
   };
 
   return (
-      <div className="max-w-5xl mx-auto p-4 lg:p-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Бронирование коворкинга</h1>
+    <div className="max-w-5xl mx-auto p-4 lg:p-6">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Бронирование коворкинга</h1>
 
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex items-center mb-6">
-            <Calendar className="w-6 h-6 text-blue-600 mr-3" />
-            <h2 className="text-xl font-semibold text-gray-900">Дата и время</h2>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <div className="flex gap-3 mb-4">
-                <button
-                    onClick={handleToday}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                        selectedDate.toDateString() === new Date().toDateString()
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                  Сегодня
-                </button>
-                <button
-                    onClick={handleTomorrow}
-                    className={`px-4 py-2 rounded-lg transition-colors ${
-                        selectedDate.toDateString() ===
-                        new Date(new Date().setDate(new Date().getDate() + 1)).toDateString()
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                >
-                  Завтра
-                </button>
-              </div>
-
-              <div className="relative">
-                <input
-                    type="date"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={selectedDate.toISOString().split('T')[0]}
-                    onChange={handleDateChange}
-                    min={minDate}
-                    onKeyDown={(e) => e.preventDefault()}
-                />
-                <span className="absolute top-3 right-4 text-gray-400"></span>
-              </div>
-              <p className="mt-3 text-sm text-gray-500 font-medium">{formatDate(selectedDate)}</p>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-sm font-medium text-gray-700">Время бронирования</span>
-              </div>
-
-              <TimeRangeSlider
-                  startTime={timeRange.start}
-                  endTime={timeRange.end}
-                  onStartTimeChange={handleStartTimeChange}
-                  onEndTimeChange={handleEndTimeChange}
-                  minTime={minTime}
-                  maxTime={maxTime}
-                  isToday={isToday}
-                  disabled={false}
-                  currentTime={new Date()}
-              />
-
-              <div className="flex flex-wrap gap-2 mt-4">
-                {timePresets.map((preset, i) => {
-                  const isAvailable = preset.isAvailable();
-                  const range = preset.getRange();
-                  const isActive =
-                      timeRange.start.hour === range.start.hour &&
-                      timeRange.start.minute === range.start.minute &&
-                      timeRange.end.hour === range.end.hour &&
-                      timeRange.end.minute === range.end.minute;
-
-                  return (
-                      <button
-                          key={i}
-                          onClick={() => setTimeRange(range)}
-                          disabled={!isAvailable || isOutsideWorkingHours}
-                          className={`px-3 py-1 text-xs rounded-lg transition-colors ${
-                              isActive
-                                  ? 'bg-blue-600 text-white'
-                                  : isAvailable && !isOutsideWorkingHours
-                                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                      : 'bg-gray-100 text-gray-300 cursor-not-allowed'
-                          }`}
-                      >
-                        {preset.label}
-                      </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="flex items-center mb-6">
+          <Calendar className="w-6 h-6 text-blue-600 mr-3" />
+          <h2 className="text-xl font-semibold text-gray-900">Дата и время</h2>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <MapPin className="w-6 h-6 text-blue-600 mr-3" />
-              <h2 className="text-xl font-semibold text-gray-900">Схема коворкинга</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <div className="flex gap-3 mb-4">
+              <button
+                onClick={handleToday}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedDate.toDateString() === new Date().toDateString()
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Сегодня
+              </button>
+              <button
+                onClick={handleTomorrow}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  selectedDate.toDateString() ===
+                  new Date(new Date().setDate(new Date().getDate() + 1)).toDateString()
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Завтра
+              </button>
             </div>
+
+            <div className="relative">
+              <input
+                type="date"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={selectedDate.toISOString().split('T')[0]}
+                onChange={handleDateChange}
+                min={minDate}
+                onKeyDown={(e) => e.preventDefault()}
+              />
+              <span className="absolute top-3 right-4 text-gray-400"></span>
+            </div>
+            <p className="mt-3 text-sm text-gray-500 font-medium">{formatDate(selectedDate)}</p>
           </div>
 
-          <div ref={mapContainerRef} className="mb-6 coworking-map-container relative">
-            <CoworkingMap
-                selectedSeat={selectedSeat}
-                onSeatSelect={handleSeatSelect}
-                freePlaces={freePlaces}
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-sm font-medium text-gray-700">Время бронирования</span>
+            </div>
+
+            <TimeRangeSlider
+              startTime={timeRange.start}
+              endTime={timeRange.end}
+              onStartTimeChange={handleStartTimeChange}
+              onEndTimeChange={handleEndTimeChange}
+              minTime={minTime}
+              maxTime={maxTime}
+              isToday={isToday}
+              disabled={false}
+              currentTime={new Date()}
             />
 
-            {popoverSeat && (
-                <SeatPopover
-                    seat={popoverSeat}
-                    timeRange={timeRange}
-                    selectedDate={selectedDate}
-                    onClose={() => setPopoverSeat(null)}
-                    onBook={handleBooking}
-                    containerRef={mapContainerRef}
-                />
-            )}
-          </div>
+            <div className="flex flex-wrap gap-2 mt-4">
+              {timePresets.map((preset, i) => {
+                const isAvailable = preset.isAvailable();
+                const range = preset.getRange();
+                const isActive =
+                  timeRange.start.hour === range.start.hour &&
+                  timeRange.start.minute === range.start.minute &&
+                  timeRange.end.hour === range.end.hour &&
+                  timeRange.end.minute === range.end.minute;
 
-          <div className="flex flex-wrap justify-center gap-6 mt-4">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">Рабочее место</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-teal-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">Кабинет</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">Переговорная</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-              <span className="text-sm text-gray-600">Тихая зона</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-              <span className="text-sm text-gray-600">Занято</span>
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setTimeRange(range)}
+                    disabled={!isAvailable || isOutsideWorkingHours}
+                    className={`px-3 py-1 text-xs rounded-lg transition-colors ${
+                      isActive
+                        ? 'bg-blue-600 text-white'
+                        : isAvailable && !isOutsideWorkingHours
+                        ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
       </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <MapPin className="w-6 h-6 text-blue-600 mr-3" />
+            <h2 className="text-xl font-semibold text-gray-900">Схема коворкинга</h2>
+          </div>
+        </div>
+
+        <div ref={mapContainerRef} className="mb-6 coworking-map-container relative">
+          <CoworkingMap
+            selectedSeat={selectedSeat}
+            onSeatSelect={handleSeatSelect}
+            freePlaces={freePlaces}
+          />
+
+          {popoverSeat && (
+            <SeatPopover
+              seat={popoverSeat}
+              timeRange={timeRange}
+              selectedDate={selectedDate}
+              onClose={() => setPopoverSeat(null)}
+              onBook={handleBooking}
+              containerRef={mapContainerRef}
+            />
+          )}
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-6 mt-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Рабочее место</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-teal-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Кабинет</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Переговорная</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Тихая зона</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+            <span className="text-sm text-gray-600">Занято</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
