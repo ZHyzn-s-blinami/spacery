@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Calendar,
   Clock,
@@ -12,80 +12,20 @@ import {
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { bookingService } from '../services/bookingService';
+import { pingService } from '../services/pingService';
 
 const BookingList = () => {
   const { name } = useParams();
-  const fetchBooks = async (name) => {
-    try {
-      const response = await bookingService.get(name);
-      console.log(place);
-    } catch (error) {
-      console.error('Ошибка:', error);
-    }
-  };
-
-  React.useEffect(() => {
-    fetchBooks(name);
-  }, []);
-
   const [place, setPlace] = useState({
-    id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    name: 'Переговорная 4',
-    location: '3 этаж, Восточное крыло',
-    capacity: 8,
-    amenities: ['Проектор', 'Флипчарт', 'Видеоконференция'],
+    id: '',
+    name: '',
+    location: '',
+    capacity: 0,
+    amenities: [],
   });
-
-  // Примерные данные бронирований для этого места
-  const initialBookings = [
-    {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      userId: 'user-1',
-      userName: 'Алексей Петров',
-      placeId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      startAt: '2025-03-01T10:00:00.000Z',
-      endAt: '2025-03-01T12:00:00.000Z',
-      status: 'CONFIRMED',
-      createdAt: '2025-02-25T15:30:00.000Z',
-      updatedAt: '2025-02-25T16:45:00.000Z',
-    },
-    {
-      id: '4fa85f64-5717-4562-b3fc-2c963f66afa7',
-      userId: 'user-2',
-      userName: 'Мария Иванова',
-      placeId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      startAt: '2025-03-01T14:00:00.000Z',
-      endAt: '2025-03-01T15:30:00.000Z',
-      status: 'PENDING',
-      createdAt: '2025-02-28T09:15:00.000Z',
-      updatedAt: '2025-02-28T09:15:00.000Z',
-    },
-    {
-      id: '5fa85f64-5717-4562-b3fc-2c963f66afa8',
-      userId: 'user-3',
-      userName: 'Сергей Кузнецов',
-      placeId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      startAt: '2025-03-02T11:00:00.000Z',
-      endAt: '2025-03-02T13:00:00.000Z',
-      status: 'CONFIRMED',
-      createdAt: '2025-02-26T14:22:00.000Z',
-      updatedAt: '2025-02-27T10:05:00.000Z',
-    },
-    {
-      id: '6fa85f64-5717-4562-b3fc-2c963f66afa9',
-      userId: 'user-4',
-      userName: 'Елена Смирнова',
-      placeId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      startAt: '2025-03-03T09:00:00.000Z',
-      endAt: '2025-03-03T11:30:00.000Z',
-      status: 'CANCELLED',
-      createdAt: '2025-02-25T11:10:00.000Z',
-      updatedAt: '2025-02-28T16:30:00.000Z',
-    },
-  ];
-
-  // Состояние для бронирований
-  const [bookings, setBookings] = useState(initialBookings);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filterOptions, setFilterOptions] = useState({
     status: 'ALL',
     dateFrom: '',
@@ -98,6 +38,43 @@ const BookingList = () => {
     action: null,
     bookingId: null,
   });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await pingService.pong();
+      } catch (error) {
+        console.error('Auth check failed: ', error);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        await checkAuth();
+
+        // Fetch place details
+        const placeData = await bookingService.getPlace(name);
+        setPlace(placeData);
+
+        // Fetch bookings for this place
+        const bookingsData = await bookingService.getBooks(name);
+        setBookings(bookingsData);
+        console.log(place);
+
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError('Не удалось загрузить данные. Пожалуйста, попробуйте позже.');
+        setLoading(false);
+      }
+    };
+
+    if (name) {
+      fetchData();
+    }
+  }, [name]);
 
   // Форматирование даты и времени
   const formatDate = (dateString) => {
@@ -112,6 +89,8 @@ const BookingList = () => {
 
   // Обработчики действий с бронированиями
   const confirmBooking = (id) => {
+    // Here you would typically call an API to update the booking status
+    // For now, we'll just update the local state
     setBookings(
       bookings.map((booking) =>
         booking.id === id
@@ -122,32 +101,26 @@ const BookingList = () => {
     closeModal();
   };
 
-  const cancelBooking = (id) => {
-    setBookings(
-      bookings.map((booking) =>
-        booking.id === id
-          ? { ...booking, status: 'CANCELLED', updatedAt: new Date().toISOString() }
-          : booking,
-      ),
-    );
-    closeModal();
-  };
+  const cancelBooking = async (id) => {
+    try {
+      console.log(id);
+      const response = await bookingService.cancelBooking(id);
 
-  // Открытие и закрытие модального окна
-  const openModal = (action, bookingId) => {
-    setConfirmModal({
-      open: true,
-      action,
-      bookingId,
-    });
-  };
+      console.log(response.data);
 
-  const closeModal = () => {
-    setConfirmModal({
-      open: false,
-      action: null,
-      bookingId: null,
-    });
+      setBookings(
+        bookings.map((booking) =>
+          booking.bookingId === id
+            ? { ...booking, status: 'REJECTED', updatedAt: new Date().toISOString() }
+            : booking,
+        ),
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Ошибка при отмене брони:', error);
+      throw error;
+    }
   };
 
   // Фильтрация бронирований
@@ -193,7 +166,7 @@ const BookingList = () => {
         return 'bg-green-100 text-green-800';
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
-      case 'CANCELLED':
+      case 'REJECTED':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -207,7 +180,7 @@ const BookingList = () => {
         return 'Подтверждено';
       case 'PENDING':
         return 'Ожидает подтверждения';
-      case 'CANCELLED':
+      case 'REJECTED':
         return 'Отменено';
       default:
         return status;
@@ -221,7 +194,7 @@ const BookingList = () => {
         return <CheckCircle className="h-5 w-5 text-green-600" />;
       case 'PENDING':
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
-      case 'CANCELLED':
+      case 'REJECTED':
         return <XCircle className="h-5 w-5 text-red-600" />;
       default:
         return null;
@@ -237,6 +210,29 @@ const BookingList = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Загрузка данных...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center p-6 bg-white rounded-lg shadow-sm max-w-md">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Ошибка</h2>
+          <p className="text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Шапка */}
@@ -245,12 +241,24 @@ const BookingList = () => {
           <div className="flex flex-col md:flex-row md:justify-between md:items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{place.name}</h1>
-              <p className="mt-1 text-sm text-gray-500">{place.location}</p>
+              <p className="mt-1 text-sm text-gray-500">{place.description}</p>
             </div>
             <div className="mt-4 md:mt-0 flex items-center gap-2">
               <span className="text-sm text-gray-600 mr-2">
                 Вместимость: {place.capacity} человек
               </span>
+              {place.amenities && place.amenities.length > 0 && (
+                <div className="flex gap-1 flex-wrap">
+                  {place.amenities.map((amenity, index) => (
+                    <span
+                      key={index}
+                      className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                    >
+                      {amenity}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -304,7 +312,7 @@ const BookingList = () => {
                       <option value="ALL">Все статусы</option>
                       <option value="CONFIRMED">Подтверждено</option>
                       <option value="PENDING">Ожидает подтверждения</option>
-                      <option value="CANCELLED">Отменено</option>
+                      <option value="REJECTED">Отменено</option>
                     </select>
                   </div>
                   <div>
@@ -372,13 +380,13 @@ const BookingList = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredBookings.map((booking) => {
+                    {filteredBookings.map((booking, i) => {
                       const startDate = formatDate(booking.startAt);
                       const startTime = formatTime(booking.startAt);
                       const endTime = formatTime(booking.endAt);
 
                       return (
-                        <tr key={booking.id} className="hover:bg-gray-50">
+                        <tr key={i} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
@@ -386,10 +394,13 @@ const BookingList = () => {
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-medium text-gray-900">
-                                  {booking.userName}
+                                  {booking.name}
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  ID: {booking.userId.substring(0, 8)}...
+                                  ID:{' '}
+                                  {booking.user.id
+                                    ? booking.user.id.substring(0, 8) + '...'
+                                    : 'N/A'}
                                 </div>
                               </div>
                             </div>
@@ -425,24 +436,16 @@ const BookingList = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex justify-end gap-2">
-                              {booking.status === 'PENDING' && (
+                            {booking.status !== 'REJECTED' && booking.status !== 'CONFIRMED' && (
+                              <div className="flex justify-end gap-2">
                                 <button
-                                  onClick={() => openModal('confirm', booking.id)}
-                                  className="text-green-600 hover:text-green-900 py-1 px-2 rounded hover:bg-green-50"
-                                >
-                                  Подтвердить
-                                </button>
-                              )}
-                              {booking.status !== 'CANCELLED' && (
-                                <button
-                                  onClick={() => openModal('cancel', booking.id)}
                                   className="text-red-600 hover:text-red-900 py-1 px-2 rounded hover:bg-red-50"
+                                  onClick={() => cancelBooking(booking.bookingId)}
                                 >
                                   Отменить
                                 </button>
-                              )}
-                            </div>
+                              </div>
+                            )}
                           </td>
                         </tr>
                       );
@@ -469,46 +472,6 @@ const BookingList = () => {
           </div>
         </div>
       </main>
-
-      {/* Модальное окно подтверждения действия */}
-      {confirmModal.open && (
-        <div className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg w-full max-w-md p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {confirmModal.action === 'confirm'
-                ? 'Подтверждение бронирования'
-                : 'Отмена бронирования'}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {confirmModal.action === 'confirm'
-                ? 'Вы уверены, что хотите подтвердить это бронирование?'
-                : 'Вы уверены, что хотите отменить это бронирование? Эту операцию нельзя будет отменить.'}
-            </p>
-            <div className="flex gap-4">
-              <button
-                onClick={closeModal}
-                className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Отмена
-              </button>
-              <button
-                onClick={() =>
-                  confirmModal.action === 'confirm'
-                    ? confirmBooking(confirmModal.bookingId)
-                    : cancelBooking(confirmModal.bookingId)
-                }
-                className={`flex-1 py-2 px-4 text-white rounded-lg transition-colors ${
-                  confirmModal.action === 'confirm'
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : 'bg-red-600 hover:bg-red-700'
-                }`}
-              >
-                {confirmModal.action === 'confirm' ? 'Подтвердить' : 'Отменить'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

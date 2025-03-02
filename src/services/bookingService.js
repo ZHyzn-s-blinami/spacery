@@ -18,7 +18,7 @@ apiClient.interceptors.response.use(
 )
 
 export const bookingService = {
-  get: async (name) => {
+  getBooks: async (name) => {
     try {
       const token = localStorage.getItem('userToken');
     
@@ -35,6 +35,8 @@ export const bookingService = {
     }
   },
   getPlace: async (name) => {
+    const token = localStorage.getItem('userToken');
+
     const response = await apiClient.get(`/api/place/${name}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -42,5 +44,26 @@ export const bookingService = {
         'Access-Control-Allow-Origin': '*',
       }
     })
+
+    console.log(response.data);
+    return response.data;
+  },
+  cancelBooking: async (uuid) => {
+    try {
+      const token = localStorage.getItem('userToken');
+
+      const response = await apiClient.post(`/api/booking/${uuid}/cancel`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      },
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 }
