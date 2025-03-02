@@ -9,6 +9,7 @@ const TimeRangeSlider = ({
                              maxTime = { hour: 22, minute: 0 },
                              currentTime = new Date(),
                              isToday = true,
+                             disabled = false,
                          }) => {
     const sliderRef = useRef(null);
     const startHandleRef = useRef(null);
@@ -17,13 +18,28 @@ const TimeRangeSlider = ({
     const [isDraggingEnd, setIsDraggingEnd] = useState(false);
     const [sliderWidth, setSliderWidth] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
+    const [isOutsideWorkingHours, setIsOutsideWorkingHours] = useState(false);
+
+    useEffect(() => {
+        if (isToday) {
+            const current = getCurrentTimeObj();
+            const currentTotalMinutes = current.hour * 60 + current.minute;
+            const minTotalMinutes = minTime.hour * 60 + minTime.minute;
+            const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
+
+            setIsOutsideWorkingHours(currentTotalMinutes < minTotalMinutes || currentTotalMinutes >= maxTotalMinutes);
+        } else {
+            setIsOutsideWorkingHours(false);
+        }
+    }, [isToday, currentTime]);
 
     const timeToPercent = (time) => {
         const totalMinutesMin = minTime.hour * 60 + minTime.minute;
         const totalMinutesMax = maxTime.hour * 60 + maxTime.minute;
         const totalMinutesTime = time.hour * 60 + time.minute;
 
-        return ((totalMinutesTime - totalMinutesMin) / (totalMinutesMax - totalMinutesMin)) * 100;
+        const percent = ((totalMinutesTime - totalMinutesMin) / (totalMinutesMax - totalMinutesMin)) * 100;
+        return Math.max(0, Math.min(100, percent));
     };
 
     const positionToTime = (position) => {
@@ -31,11 +47,26 @@ const TimeRangeSlider = ({
         const totalMinutesMax = maxTime.hour * 60 + maxTime.minute;
         const totalRange = totalMinutesMax - totalMinutesMin;
 
+        // Защита от отрицательной позиции
+        position = Math.max(0, Math.min(sliderWidth, position));
+
         const percent = Math.max(0, Math.min(100, (position / sliderWidth) * 100));
         const totalMinutes = totalMinutesMin + (percent / 100) * totalRange;
 
         const quarterHours = Math.round(totalMinutes / 15);
         const roundedMinutes = quarterHours * 15;
+
+        if (roundedMinutes < totalMinutesMin) {
+            return {
+                hour: minTime.hour,
+                minute: minTime.minute,
+            };
+        } else if (roundedMinutes > totalMinutesMax) {
+            return {
+                hour: maxTime.hour,
+                minute: maxTime.minute,
+            };
+        }
 
         return {
             hour: Math.floor(roundedMinutes / 60),
@@ -48,14 +79,20 @@ const TimeRangeSlider = ({
     };
 
     const handleStartDragStart = (e) => {
-        e.preventDefault();
+        if (disabled || isOutsideWorkingHours) return;
+        if (e.type !== 'touchstart') {
+            e.preventDefault();
+        }
         setIsDraggingStart(true);
         setIsDragging(true);
         document.body.style.userSelect = 'none';
     };
 
     const handleEndDragStart = (e) => {
-        e.preventDefault();
+        if (disabled || isOutsideWorkingHours) return;
+        if (e.type !== 'touchstart') {
+            e.preventDefault();
+        }
         setIsDraggingEnd(true);
         setIsDragging(true);
         document.body.style.userSelect = 'none';
@@ -94,7 +131,13 @@ const TimeRangeSlider = ({
         const roundedCurrent = getRoundedCurrentTime();
         const currentMinutes = roundedCurrent.hour * 60 + roundedCurrent.minute;
         const timeMinutes = time.hour * 60 + time.minute;
-        return timeMinutes >= currentMinutes;
+
+        const minTotalMinutes = minTime.hour * 60 + minTime.minute;
+        const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
+
+        return timeMinutes >= currentMinutes &&
+            timeMinutes >= minTotalMinutes &&
+            timeMinutes <= maxTotalMinutes;
     };
 
     const getRoundedCurrentTime = () => {
@@ -102,10 +145,19 @@ const TimeRangeSlider = ({
         const totalMinutes = current.getHours() * 60 + current.getMinutes();
         const quarterHours = Math.ceil(totalMinutes / 15);
         const roundedMinutes = quarterHours * 15;
-        return {
-            hour: Math.floor(roundedMinutes / 60),
-            minute: roundedMinutes % 60,
-        };
+
+        const hour = Math.floor(roundedMinutes / 60);
+        const minute = roundedMinutes % 60;
+
+        if (hour > maxTime.hour || (hour === maxTime.hour && minute > maxTime.minute)) {
+            return { hour: maxTime.hour, minute: maxTime.minute };
+        }
+
+        if (hour < minTime.hour || (hour === minTime.hour && minute < minTime.minute)) {
+            return { hour: minTime.hour, minute: minTime.minute };
+        }
+
+        return { hour, minute };
     };
 
     const timeMarkers = generateTimeMarkers();
@@ -124,15 +176,32 @@ const TimeRangeSlider = ({
 
     useEffect(() => {
         if (isToday) {
-            const current = getCurrentTimeObj();
+            const roundedCurrent = getRoundedCurrentTime();
             if (!isTimeAvailable(startTime)) {
-                onStartTimeChange(current);
+                onStartTimeChange(roundedCurrent);
             }
             if (!isTimeAvailable(endTime)) {
-                onEndTimeChange(current);
+                onEndTimeChange(roundedCurrent);
+            }
+
+            const startTotalMinutes = startTime.hour * 60 + startTime.minute;
+            const endTotalMinutes = endTime.hour * 60 + endTime.minute;
+
+            if (endTotalMinutes < startTotalMinutes) {
+                const newEndTotalMinutes = startTotalMinutes + 60;
+                const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
+
+                if (newEndTotalMinutes <= maxTotalMinutes) {
+                    onEndTimeChange({
+                        hour: Math.floor(newEndTotalMinutes / 60),
+                        minute: newEndTotalMinutes % 60
+                    });
+                } else {
+                    onEndTimeChange(maxTime);
+                }
             }
         }
-    }, [isToday]);
+    }, [isToday, startTime, endTime]);
 
     useEffect(() => {
         const isInitialRender =
@@ -141,13 +210,28 @@ const TimeRangeSlider = ({
         if (isInitialRender) {
             if (isToday) {
                 const roundedCurrent = getRoundedCurrentTime();
-                onStartTimeChange(roundedCurrent);
 
-                const endMinutes = roundedCurrent.hour * 60 + roundedCurrent.minute + 60;
-                onEndTimeChange({
-                    hour: Math.floor(endMinutes / 60),
-                    minute: endMinutes % 60,
-                });
+                if (isOutsideWorkingHours) {
+                    onStartTimeChange(minTime);
+                    onEndTimeChange({
+                        hour: minTime.hour + 1,
+                        minute: minTime.minute,
+                    });
+                } else {
+                    onStartTimeChange(roundedCurrent);
+
+                    const endMinutes = roundedCurrent.hour * 60 + roundedCurrent.minute + 60;
+                    const maxMinutes = maxTime.hour * 60 + maxTime.minute;
+
+                    if (endMinutes > maxMinutes) {
+                        onEndTimeChange(maxTime);
+                    } else {
+                        onEndTimeChange({
+                            hour: Math.floor(endMinutes / 60),
+                            minute: endMinutes % 60,
+                        });
+                    }
+                }
             } else {
                 onStartTimeChange({ hour: 9, minute: 0 });
                 onEndTimeChange({ hour: 10, minute: 0 });
@@ -162,62 +246,146 @@ const TimeRangeSlider = ({
 
                 if (endMinutes < startMinutes + 60) {
                     const newEndMinutes = startMinutes + 60;
-                    onEndTimeChange({
-                        hour: Math.floor(newEndMinutes / 60),
-                        minute: newEndMinutes % 60,
-                    });
+                    const maxMinutes = maxTime.hour * 60 + maxTime.minute;
+
+                    if (newEndMinutes > maxMinutes) {
+                        onEndTimeChange(maxTime);
+                    } else {
+                        onEndTimeChange({
+                            hour: Math.floor(newEndMinutes / 60),
+                            minute: newEndMinutes % 60,
+                        });
+                    }
                 }
             }
         }
-    }, [isToday]);
+    }, [isToday, isOutsideWorkingHours]);
 
     useEffect(() => {
         const handleMouseMove = (e) => {
-            if (!isDragging || !sliderRef.current) return;
+            if (!isDragging || !sliderRef.current || disabled || isOutsideWorkingHours) return;
 
             const rect = sliderRef.current.getBoundingClientRect();
             const position = e.clientX - rect.left;
 
             if (isDraggingStart) {
-                const newTime = positionToTime(position);
+                const rect = sliderRef.current.getBoundingClientRect();
+                const sliderWidth = rect.width;
 
-                if (isToday && !isTimeAvailable(newTime)) {
-                    onStartTimeChange(getCurrentTimeObj());
-                    return;
-                }
+                const currentTimeObj = getCurrentTimeObj();
+                const currentTotalMinutes = isToday ?
+                    (currentTimeObj.hour * 60 + currentTimeObj.minute) :
+                    (minTime.hour * 60 + minTime.minute);
+
+                const effectiveMinTime = isToday ?
+                    Math.max(currentTotalMinutes, minTime.hour * 60 + minTime.minute) :
+                    (minTime.hour * 60 + minTime.minute);
+
+                const minTotalMinutes = minTime.hour * 60 + minTime.minute;
+                const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
+                const totalRange = maxTotalMinutes - minTotalMinutes;
+
+                const effectiveMinPercent = ((effectiveMinTime - minTotalMinutes) / totalRange) * 100;
+                const effectiveMinPx = (effectiveMinPercent / 100) * sliderWidth;
 
                 const endTotalMinutes = endTime.hour * 60 + endTime.minute;
-                const newTotalMinutes = newTime.hour * 60 + newTime.minute;
+                const endPositionPercent = timeToPercent(endTime);
+                const endPositionPx = (endPositionPercent / 100) * sliderWidth;
 
-                if (newTotalMinutes < endTotalMinutes - 15) {
-                    onStartTimeChange(newTime);
-                } else {
-                    const adjustedTime = {
-                        hour: Math.floor((endTotalMinutes - 15) / 60),
-                        minute: (endTotalMinutes - 15) % 60,
-                    };
-                    onStartTimeChange(adjustedTime);
-                }
-            } else if (isDraggingEnd) {
-                const newTime = positionToTime(position);
+                const fifteenMinutesInPixels = (15 / totalRange) * sliderWidth;
 
-                if (isToday && !isTimeAvailable(newTime)) {
-                    onEndTimeChange(getCurrentTimeObj());
+                const maxAllowedPosition = endPositionPx - fifteenMinutesInPixels;
+
+                const limitedPosition = Math.min(maxAllowedPosition, Math.max(effectiveMinPx, position));
+
+                const newTime = positionToTime(limitedPosition);
+
+                onStartTimeChange(newTime);
+            } else             if (isDraggingEnd) {
+                const rect = sliderRef.current.getBoundingClientRect();
+                const sliderWidth = rect.width;
+
+                const startTotalMinutes = startTime.hour * 60 + startTime.minute;
+                const startPositionPercent = timeToPercent(startTime);
+                const startPositionPx = (startPositionPercent / 100) * sliderWidth;
+
+                const totalMinutesMin = minTime.hour * 60 + minTime.minute;
+                const totalMinutesMax = maxTime.hour * 60 + maxTime.minute;
+                const totalRange = totalMinutesMax - totalMinutesMin;
+
+                const fifteenMinutesInPixels = (15 / totalRange) * sliderWidth;
+
+                const minAllowedPosition = startPositionPx + fifteenMinutesInPixels;
+                const limitedPosition = Math.max(minAllowedPosition, position);
+
+                const newTime = positionToTime(limitedPosition);
+
+                const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
+
+                if (newTime.hour * 60 + newTime.minute > maxTotalMinutes) {
+                    onEndTimeChange(maxTime);
                     return;
                 }
 
-                const startTotalMinutes = startTime.hour * 60 + startTime.minute;
-                const newTotalMinutes = newTime.hour * 60 + newTime.minute;
+                onEndTimeChange(newTime);
+            }
+        };
 
-                if (newTotalMinutes > startTotalMinutes + 15) {
-                    onEndTimeChange(newTime);
-                } else {
-                    const adjustedTime = {
-                        hour: Math.floor((startTotalMinutes + 15) / 60),
-                        minute: (startTotalMinutes + 15) % 60,
-                    };
-                    onEndTimeChange(adjustedTime);
+        const handleTouchMove = (e) => {
+            if (!isDragging || !sliderRef.current || disabled || isOutsideWorkingHours) return;
+
+            const touch = e.touches[0];
+            const rect = sliderRef.current.getBoundingClientRect();
+            const position = touch.clientX - rect.left;
+            const sliderWidth = rect.width;
+
+            const minTotalMinutes = minTime.hour * 60 + minTime.minute;
+            const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
+            const totalRange = maxTotalMinutes - minTotalMinutes;
+            const fifteenMinutesInPixels = (15 / totalRange) * sliderWidth;
+
+            if (isDraggingStart) {
+                const currentTimeObj = getCurrentTimeObj();
+                const currentTotalMinutes = isToday ?
+                    (currentTimeObj.hour * 60 + currentTimeObj.minute) :
+                    (minTime.hour * 60 + minTime.minute);
+
+                const effectiveMinTime = isToday ?
+                    Math.max(currentTotalMinutes, minTotalMinutes) :
+                    minTotalMinutes;
+
+                const effectiveMinPercent = ((effectiveMinTime - minTotalMinutes) / totalRange) * 100;
+                const effectiveMinPx = (effectiveMinPercent / 100) * sliderWidth;
+
+                const endTotalMinutes = endTime.hour * 60 + endTime.minute;
+                const endPositionPercent = timeToPercent(endTime);
+                const endPositionPx = (endPositionPercent / 100) * sliderWidth;
+
+                const maxAllowedPosition = endPositionPx - fifteenMinutesInPixels;
+
+                const limitedPosition = Math.min(maxAllowedPosition, Math.max(effectiveMinPx, position));
+
+                const newTime = positionToTime(limitedPosition);
+
+                onStartTimeChange(newTime);
+            } else if (isDraggingEnd) {
+                const startTotalMinutes = startTime.hour * 60 + startTime.minute;
+                const startPositionPercent = timeToPercent(startTime);
+                const startPositionPx = (startPositionPercent / 100) * sliderWidth;
+
+                const minAllowedPosition = startPositionPx + fifteenMinutesInPixels;
+
+                const limitedPosition = Math.max(minAllowedPosition, Math.min(sliderWidth, position));
+
+                const newTime = positionToTime(limitedPosition);
+
+                if (newTime.hour * 60 + newTime.minute > maxTotalMinutes) {
+                    onEndTimeChange(maxTime);
+                    return;
                 }
+
+                // Устанавливаем новое время
+                onEndTimeChange(newTime);
             }
         };
 
@@ -231,14 +399,14 @@ const TimeRangeSlider = ({
         if (isDragging) {
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
-            document.addEventListener('touchmove', handleMouseMove);
+            document.addEventListener('touchmove', handleTouchMove, { passive: false });
             document.addEventListener('touchend', handleMouseUp);
         }
 
         return () => {
             document.removeEventListener('mousemove', handleMouseMove);
             document.removeEventListener('mouseup', handleMouseUp);
-            document.removeEventListener('touchmove', handleMouseMove);
+            document.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('touchend', handleMouseUp);
         };
     }, [
@@ -250,10 +418,53 @@ const TimeRangeSlider = ({
         onStartTimeChange,
         onEndTimeChange,
         isToday,
+        disabled,
+        isOutsideWorkingHours,
     ]);
 
+    useEffect(() => {
+        const preventScroll = (e) => {
+            if (isDragging) {
+                let target = e.target;
+                let isPartOfSlider = false;
+
+                while (target) {
+                    if (target === sliderRef.current ||
+                        target === startHandleRef.current ||
+                        target === endHandleRef.current) {
+                        isPartOfSlider = true;
+                        break;
+                    }
+                    target = target.parentElement;
+                }
+
+                if (isPartOfSlider) {
+                    e.preventDefault();
+                }
+            }
+        };
+
+        if (sliderRef.current) {
+            sliderRef.current.addEventListener('touchmove', preventScroll, { passive: false });
+        }
+
+        return () => {
+            if (sliderRef.current) {
+                sliderRef.current.removeEventListener('touchmove', preventScroll);
+            }
+        };
+    }, [isDragging, sliderRef.current]);
+
     return (
-        <div className="relative h-32 mb-4">
+        <div className={`relative h-40 md:h-32 mb-4 ${(disabled || isOutsideWorkingHours) ? 'opacity-50 pointer-events-none' : ''}`}>
+            {isOutsideWorkingHours && isToday && (
+                <div className="absolute inset-0 flex items-center justify-center z-10 bg-white bg-opacity-70 rounded">
+                    <div className="text-center bg-red-100 px-4 py-2 rounded-lg">
+                        <p className="font-medium text-red-700">Бронирование доступно с {formatTime(minTime)} до {formatTime(maxTime)}</p>
+                    </div>
+                </div>
+            )}
+
             <div className="absolute top-0 w-full flex justify-between px-1 text-xs text-gray-500">
                 {timeMarkers.map((marker, i) => (
                     <div
@@ -264,6 +475,7 @@ const TimeRangeSlider = ({
                         }`}
                     >
                         <div className={`h-2 w-0.5 bg-gray-300 mb-1 ${marker.isHour ? 'h-3' : 'h-2'}`}></div>
+                        {marker.isHour && <span className="text-xs">{marker.time.split(':')[0]}</span>}
                     </div>
                 ))}
             </div>
@@ -289,7 +501,7 @@ const TimeRangeSlider = ({
 
             <div
                 ref={startHandleRef}
-                className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none"
+                className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none active:scale-110"
                 style={{ left: `${timeToPercent(startTime)}%` }}
                 onMouseDown={handleStartDragStart}
                 onTouchStart={handleStartDragStart}
@@ -299,7 +511,7 @@ const TimeRangeSlider = ({
 
             <div
                 ref={endHandleRef}
-                className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none"
+                className="absolute top-7 w-10 h-10 bg-white border-2 border-blue-600 rounded-full shadow-lg transform -translate-x-1/2 cursor-pointer flex items-center justify-center transition-all hover:scale-110 touch-none active:scale-110"
                 style={{ left: `${timeToPercent(endTime)}%` }}
                 onMouseDown={handleEndDragStart}
                 onTouchStart={handleEndDragStart}
@@ -307,20 +519,20 @@ const TimeRangeSlider = ({
                 <span className="text-xs select-none font-bold text-blue-600">{formatTime(endTime)}</span>
             </div>
 
-            <div className="absolute top-20 left-0 right-0 text-center">
+            <div className="absolute top-20 md:top-20 left-0 right-0 text-center">
                 <div className="inline-block bg-blue-100 px-4 py-2 rounded-full text-sm font-medium text-blue-800 shadow-sm">
                     <span className="mr-2 font-bold">С:</span> {formatTime(startTime)}
                     <span className="mx-2 font-bold">До:</span> {formatTime(endTime)}
                     <span className="text-blue-600 ml-2 font-bold">
-            (
-                        {Math.round(
-                            endTime.hour * 60 + endTime.minute - (startTime.hour * 60 + startTime.minute),
-                        )}{' '}
+                        ({Math.round(
+                        endTime.hour * 60 + endTime.minute - (startTime.hour * 60 + startTime.minute),
+                    )}{' '}
                         мин)
-          </span>
+                    </span>
                 </div>
             </div>
         </div>
     );
 };
+
 export default TimeRangeSlider;
