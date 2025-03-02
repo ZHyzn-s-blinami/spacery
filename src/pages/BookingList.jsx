@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import {
   Calendar,
   Clock,
@@ -93,9 +94,10 @@ const BookingList = () => {
             : booking,
         ),
       );
-
+      toast.success('Бронь отменена');
       return response.data;
     } catch (error) {
+      toast.error('Ошибка при отмене брони');
       console.error('Ошибка при отмене брони:', error);
       throw error;
     }
