@@ -29,7 +29,7 @@ const MeetingList = () => {
                     }
                     acc[date].push(meeting);
                 } catch (error) {
-                    console.error("Ошибка при обработке встречи:", error);
+                    console.error("Ошибка при обработке брони:", error);
                 }
                 return acc;
             }, {});
@@ -60,7 +60,7 @@ const MeetingList = () => {
     if (error) {
         return (
             <div className="rounded-lg bg-red-50 p-4 text-center">
-                <p className="text-red-600 mb-3">Не удалось загрузить встречи: {error}</p>
+                <p className="text-red-600 mb-3">Не удалось загрузить брони: {error}</p>
                 <button
                     onClick={refreshMeetings}
                     className="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
@@ -76,7 +76,7 @@ const MeetingList = () => {
         return (
             <div className="text-center py-12">
                 <CalendarIcon size={48} className="mx-auto mb-4 text-gray-300" />
-                <h3 className="text-xl font-medium text-gray-700 mb-2">У вас нет предстоящих встреч</h3>
+                <h3 className="text-xl font-medium text-gray-700 mb-2">У вас нет предстоящих броней</h3>
                 <p className="text-gray-500 mb-6">Забронируйте место для вашей следующей встречи</p>
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
                     Забронировать место

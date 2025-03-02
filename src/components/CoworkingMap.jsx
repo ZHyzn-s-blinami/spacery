@@ -16,6 +16,9 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
     const pinchCenterRef = useRef({ clientX: 0, clientY: 0, mapX: 0, mapY: 0 });
     const lastScaleRef = useRef(1);
     const navigate = useNavigate();
+    const controlsRef = useRef(null);
+
+
 
 
     const generateSeats = () => {
@@ -95,7 +98,10 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
     };
 
     const handleTouchStart = (e) => {
-        // Проверяем, не является ли цель местом
+        if (controlsRef.current && controlsRef.current.contains(e.target)) {
+            return;
+        }
+
         let target = e.target;
         while (target && target !== mapRef.current) {
             if (target.getAttribute('data-seat') === 'true') {
@@ -104,18 +110,14 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
             target = target.parentElement;
         }
 
-        // Обработка двойного касания
         const currentTime = new Date().getTime();
         const tapTimeDiff = currentTime - lastTapTime;
 
         if (tapTimeDiff < 300 && e.touches.length === 1) {
-            // Двойное касание для приближения
             if (scale >= 1.8) {
-                // Если уже в приближенном состоянии, возвращаем к обзору всей карты
                 setScale(1);
                 setPosition({ x: 0, y: 0 });
             } else {
-                // Иначе приближаем к месту касания
                 const touchX = e.touches[0].clientX;
                 const touchY = e.touches[0].clientY;
                 const rect = mapRef.current.getBoundingClientRect();
@@ -137,7 +139,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
         setLastTapTime(currentTime);
 
         if (e.touches.length === 2) {
-            // Запоминаем начальное расстояние для масштабирования
             const dist = getDistance(
                 e.touches[0].clientX,
                 e.touches[0].clientY,
@@ -148,7 +149,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
 
             e.preventDefault();
         } else if (e.touches.length === 1) {
-            // Перетаскивание
             setIsDragging(true);
             setDragStart({
                 x: e.touches[0].clientX - position.x,
@@ -165,7 +165,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
         e.preventDefault();
 
         if (e.touches.length === 2 && lastDistance !== null) {
-            // Вычисляем текущее расстояние между пальцами
             const dist = getDistance(
                 e.touches[0].clientX,
                 e.touches[0].clientY,
@@ -173,19 +172,14 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
                 e.touches[1].clientY
             );
 
-            // Вычисляем коэффициент изменения расстояния
             const ratio = dist / lastDistance;
 
-            // Рассчитываем новый масштаб
             const newScale = Math.max(0.5, Math.min(2, scale * ratio));
 
-            // Обновляем только масштаб, сохраняя текущую позицию
             setScale(newScale);
 
-            // Обновляем расстояние для следующего расчета
             setLastDistance(dist);
         } else if (e.touches.length === 1 && isDragging) {
-            // Стандартное перетаскивание одним пальцем
             setPosition({
                 x: e.touches[0].clientX - dragStart.x,
                 y: e.touches[0].clientY - dragStart.y,
@@ -263,15 +257,27 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
     const moveToZone = (zone) => {
         setSelectedZone(zone);
 
-        const zoneCoordinates = {
-            A: { x: -40, y: -30, scale: 2.0 },
-            B: { x: -260, y: -30, scale: 2.0 },
-            C: { x: -40, y: -230, scale: 2.0 },
-            D: { x: -260, y: -230, scale: 2.0 },
-            E: { x: -460, y: -30, scale: 2.0 },
-            coffee: { x: -460, y: -230, scale: 2.0 },
-            all: { x: 0, y: 0, scale: 1 }
-        };
+        const isMobile = window.innerWidth <= 768;
+
+        const zoneCoordinates = isMobile
+            ? {
+                A: { x: -20, y: -40, scale: 1.7 },
+                B: { x: -220, y: -30, scale: 1.5 },
+                C: { x: -18, y: -220, scale: 1.7 },
+                D: { x: -240, y: -220, scale: 1.7 },
+                E: { x: -420, y: -25, scale: 1.7 },
+                coffee: { x: -400, y: -220, scale: 1.7 },
+                all: { x: 0, y: 0, scale: 1 }
+            }
+            : {
+                A: { x: -40, y: -30, scale: 2.0 },
+                B: { x: -260, y: -30, scale: 2.0 },
+                C: { x: -40, y: -230, scale: 2.0 },
+                D: { x: -260, y: -230, scale: 2.0 },
+                E: { x: -460, y: -30, scale: 2.0 },
+                coffee: { x: -460, y: -230, scale: 2.0 },
+                all: { x: 0, y: 0, scale: 1 }
+            };
 
         setScale(zoneCoordinates[zone].scale);
         setPosition({
@@ -303,7 +309,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
                 WebkitOverflowScrolling: 'touch',
             }}
         >
-            <div className="absolute top-3 left-3 bg-white p-2 rounded-md shadow-sm z-20">
+            <div className="absolute top-3 left-3 bg-white p-2 rounded-md shadow-sm z-20" ref={controlsRef}>
                 <div className="flex gap-4">
                     <button
                         className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"

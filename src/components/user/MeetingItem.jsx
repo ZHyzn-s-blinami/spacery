@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 const MeetingItem = ({ item }) => {
-    // Проверка на валидность данных
     if (!item || !item.startAt || !item.endAt) {
         return (
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 text-center">
@@ -47,10 +46,8 @@ const MeetingItem = ({ item }) => {
     const startTime = new Date(item.startAt);
     const endTime = new Date(item.endAt);
 
-    // Эффекты для анимации модальных окон
     useEffect(() => {
         if (showRescheduleModal && !isRescheduleModalClosing) {
-            // Добавляем небольшую задержку для анимации появления
             const timer = setTimeout(() => {
                 setRescheduleModalMounted(true);
             }, 10);
@@ -63,7 +60,6 @@ const MeetingItem = ({ item }) => {
 
     useEffect(() => {
         if (showCancelModal && !isCancelModalClosing) {
-            // Добавляем небольшую задержку для анимации появления
             const timer = setTimeout(() => {
                 setCancelModalMounted(true);
             }, 10);
@@ -74,19 +70,16 @@ const MeetingItem = ({ item }) => {
         }
     }, [showCancelModal, isCancelModalClosing]);
 
-    // Форматирование времени с ведущими нулями
     const formatTime = (date) => {
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     };
 
-    // Функция для получения времени до встречи
     const getTimeUntilMeeting = () => {
         const now = new Date();
         const diff = startTime - now;
 
-        // Если встреча уже началась
         if (diff <= 0) return "Сейчас";
 
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -98,7 +91,6 @@ const MeetingItem = ({ item }) => {
         return `через ${minutes} ${getMinuteText(minutes)}`;
     };
 
-    // Вспомогательные функции для склонения слов
     const getDayText = (days) => {
         if (days === 1) return "день";
         if (days >= 2 && days <= 4) return "дня";
@@ -159,7 +151,6 @@ const MeetingItem = ({ item }) => {
     const handleStartTimeChange = (e) => {
         setSelectedStartTime(e.target.value);
 
-        // Автоматически обновляем время окончания в зависимости от выбранного начала и продолжительности
         const [hours, minutes] = e.target.value.split(':').map(Number);
         const startDate = new Date();
         startDate.setHours(hours, minutes, 0);
@@ -178,7 +169,6 @@ const MeetingItem = ({ item }) => {
         const newDuration = parseInt(e.target.value, 10);
         setSelectedDuration(newDuration);
 
-        // Автоматически обновляем время окончания в зависимости от выбранного начала и продолжительности
         const [hours, minutes] = selectedStartTime.split(':').map(Number);
         const startDate = new Date();
         startDate.setHours(hours, minutes, 0);
@@ -203,17 +193,11 @@ const MeetingItem = ({ item }) => {
             const newEndDate = new Date(selectedDate);
             newEndDate.setHours(endHours, endMinutes, 0);
 
-            console.log("Перенос встречи:", item.bookingId);
-            console.log("Новая дата начала:", newStartDate.toISOString());
-            console.log("Новая дата окончания:", newEndDate.toISOString());
 
-            // Имитация запроса к серверу
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // Здесь должна быть логика для переноса встречи с новым временем
             setRescheduleStatus('success');
 
-            // Закрываем модальное окно после небольшой задержки
             setTimeout(() => {
                 closeRescheduleModal();
             }, 1000);
@@ -229,7 +213,6 @@ const MeetingItem = ({ item }) => {
         setShowDetails(!showDetails);
     };
 
-    // Получение статуса встречи с соответствующим стилем
     const getStatusBadge = () => {
         switch (item.status) {
             case "CANCELLED":
@@ -429,7 +412,7 @@ const MeetingItem = ({ item }) => {
                                         <AlertCircleIcon size={20} className="text-blue-500 mr-2 flex-shrink-0" />
                                         <div>
                                             <p className="text-sm text-blue-700">
-                                                Выберите новую дату и время для вашей встречи
+                                                Выберите новую дату и время для вашей брони
                                             </p>
                                         </div>
                                     </div>
@@ -590,7 +573,7 @@ const MeetingItem = ({ item }) => {
 
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
                             <p className="text-lg mb-2 text-center font-medium text-gray-700">
-                                Вы уверены, что хотите отменить встречу?
+                                Вы уверены, что хотите отменить бронь?
                             </p>
                             <div className="text-sm text-gray-600 space-y-2">
                                 <div className="flex">
