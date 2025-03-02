@@ -12,6 +12,7 @@ import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.BookingStatus;
 import prod.last.mainbackend.models.PlaceModel;
 import prod.last.mainbackend.models.UserModel;
+import prod.last.mainbackend.models.request.BookingTime;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
 import prod.last.mainbackend.models.response.BookingWithUserResponse;
 import prod.last.mainbackend.repositories.BookingRepository;

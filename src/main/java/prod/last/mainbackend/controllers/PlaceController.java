@@ -1,6 +1,7 @@
 package prod.last.mainbackend.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,7 +13,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import prod.last.mainbackend.models.PlaceModel;
 import prod.last.mainbackend.models.PlaceType;
+import prod.last.mainbackend.models.request.BookingTime;
 import prod.last.mainbackend.models.request.PlaceCreate;
+import prod.last.mainbackend.models.response.BookingCreateResponse;
 import prod.last.mainbackend.services.PlaceService;
 
 import java.time.LocalDateTime;
@@ -140,4 +143,27 @@ public class PlaceController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
+
+    @Operation(
+            summary = "Получение времени бронирования по имени места",
+            description = "Возвращает время бронирования для указанного места по его имени"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Время бронирования успешно получено",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BookingTime.class)))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Ошибка при получении времени бронирования"
+    )
+    @GetMapping("/booking-time/{name}")
+    public ResponseEntity<?> findBookingTimeByPlaceId(@PathVariable String name) {
+        try {
+            return ResponseEntity.ok(placeService.findBookingTimeByPlaceId(name));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
 }
