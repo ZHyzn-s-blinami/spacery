@@ -48,6 +48,14 @@ public class BookingService {
 
     public BookingModel create(UUID userId, String name, LocalDateTime start, LocalDateTime end) {
         log.info("Creating booking for user {} and place {}", userId, name);
+
+        List<BookingModel> existingBookings = bookingRepository.findAllByUserId(userId);
+        for (BookingModel booking : existingBookings) {
+            if (booking.getStartAt().isBefore(end) && booking.getEndAt().isAfter(start)) {
+                throw new IllegalArgumentException("User already has a booking in the specified time range");
+            }
+        }
+
         PlaceModel place = placeRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("Place not found"));
         return bookingRepository.save(new BookingModel(userId, place.getId(), start, end));
