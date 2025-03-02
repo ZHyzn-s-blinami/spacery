@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import {
   Calendar,
@@ -35,7 +36,21 @@ const BookingList = () => {
   });
   const [showFilters, setShowFilters] = useState(false);
 
+  const navigate = useNavigate();
+
+  const checkAdminAccess = async () => {
+    try {
+      const response = await adminService.admin_only();
+      if (response.status !== 200) {
+        navigate('/');
+      }
+    } catch (error) {
+      navigate('/');
+    }
+  };
+
   useEffect(() => {
+    checkAdminAccess();
     const checkAuth = async () => {
       try {
         await pingService.pong();
@@ -65,7 +80,7 @@ const BookingList = () => {
       }
     };
 
-    if (name) {
+    if ((name && location.pathname !== '/') || location.pathname !== '/admin') {
       fetchData();
     }
   }, [name]);
