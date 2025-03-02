@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import prod.last.mainbackend.models.TicketStatus;
 import prod.last.mainbackend.models.TicketType;
 import prod.last.mainbackend.models.TicketsModel;
+import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.TicketCreate;
 import prod.last.mainbackend.services.TicketsService;
+import prod.last.mainbackend.services.UserService;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -23,6 +26,7 @@ import java.util.UUID;
 public class TicketsController {
 
     private final TicketsService ticketsService;
+    private final UserService userService;
 
     @Operation(
             summary = "Create a new ticket",
@@ -39,9 +43,11 @@ public class TicketsController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
     @PostMapping("/create")
-    public ResponseEntity<?> createTicket(@Valid @RequestBody TicketCreate request) {
+    public ResponseEntity<?> createTicket(@Valid @RequestBody TicketCreate ticketCreate, Principal principal) {
         try {
-            return ResponseEntity.ok(ticketsService.createTicket(request));
+            UserModel user = userService.getUserById(UUID.fromString(principal.getName()));
+
+            return ResponseEntity.ok(ticketsService.createTicket(ticketCreate, user.getId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -61,7 +67,7 @@ public class TicketsController {
             description = "Invalid ticket type",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
-    @GetMapping("/{type}")
+    @GetMapping("/get/{type}")
     public ResponseEntity<?> findAllByTicketType(@Valid @PathVariable TicketType type) {
         try {
             return ResponseEntity.ok(ticketsService.findAllByTicketType(type));
@@ -107,7 +113,7 @@ public class TicketsController {
             description = "Invalid ticket status",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
-    @GetMapping("/{status}")
+    @GetMapping("/getByStatus/{status}")
     public ResponseEntity<?> findAllByStatus(@Valid @PathVariable TicketStatus status) {
         try {
             return ResponseEntity.ok(ticketsService.findAllByStatus(status));
@@ -130,7 +136,7 @@ public class TicketsController {
             description = "Invalid request data",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
-    @PostMapping("/{ticketId}/status/{status}")
+    @PostMapping("/setStatus/{ticketId}/{status}")
     public ResponseEntity<?> changeStatus(@Valid @PathVariable UUID ticketId, @Valid @PathVariable TicketStatus status) {
         try {
             return ResponseEntity.ok(ticketsService.changeStatus(ticketId, status));
