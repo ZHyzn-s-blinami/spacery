@@ -67,6 +67,18 @@ public class BookingService {
         String formattedStart = start.format(formatter);
         String formattedEnd = end.format(formatter);
 
+        if (start.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Booking start time is in the past");
+        }
+
+        if (end.isBefore(start)) {
+            throw new IllegalArgumentException("Booking end time is before start time");
+        }
+
+        if (start.equals(end)) {
+            throw new IllegalArgumentException("Booking start time is equal to end time");
+        }
+
         emailService.sendSimpleMessage(
                 userModel.getEmail(),
                 "Создание бронирования",
