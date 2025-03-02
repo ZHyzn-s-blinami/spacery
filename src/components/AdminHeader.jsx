@@ -55,18 +55,6 @@ const Header = () => {
                             <span className="font-medium">Пользователи</span>
                         </div>
                     </Link>
-                    <Link to="/profile" className="w-full">
-                        <div
-                            className={`px-6 py-2 rounded-xl flex justify-center items-center transition-all duration-300 ${
-                                isActive('/profile')
-                                    ? 'bg-indigo-600 text-white shadow-md'
-                                    : 'bg-white text-gray-700 hover:bg-indigo-50 border border-gray-200'
-                            }`}
-                        >
-                            <User size={18} className="mr-2" />
-                            <span className="font-medium">Профиль</span>
-                        </div>
-                    </Link>
                 </div>
             </nav>
         </header>
