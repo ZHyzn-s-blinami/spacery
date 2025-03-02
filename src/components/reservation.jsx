@@ -5,6 +5,7 @@ import CoworkingMap from './CoworkingMap.jsx';
 import SeatPopover from './SeatPopover.jsx';
 import TimeRangeSlider from './TimeRangeSlider.jsx';
 import toast from 'react-hot-toast';
+import { useDebounce } from '../hooks/useDebounce.js';
 
 const CoworkingBooking = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -18,6 +19,8 @@ const CoworkingBooking = () => {
     end: { hour: 13, minute: 0 },
   });
   const [freePlaces, setFreePlaces] = useState([]);
+
+  const debouncedTimeRange = useDebounce(timeRange, 500);
 
   const formatDateTimeForAPI = (date, time) => {
     const year = date.getFullYear();
@@ -40,10 +43,10 @@ const CoworkingBooking = () => {
   };
 
   useEffect(() => {
-    if (selectedDate && timeRange.start && timeRange.end) {
+    if (selectedDate && debouncedTimeRange.start && debouncedTimeRange.end) {
       fetchFreePlaces();
     }
-  }, [selectedDate, timeRange.start, timeRange.end]);
+  }, [selectedDate, debouncedTimeRange]);
 
   const handleSeatSelect = (seat) => {
     setSelectedSeat(seat);
