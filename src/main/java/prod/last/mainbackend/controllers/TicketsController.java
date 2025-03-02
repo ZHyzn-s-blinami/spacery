@@ -28,20 +28,13 @@ public class TicketsController {
     private final TicketsService ticketsService;
     private final UserService userService;
 
-    @Operation(
-            summary = "Create a new ticket",
-            description = "Creates a new ticket with the provided details"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Ticket created successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
-    )
-    @ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
-    )
+    @Operation(summary = "Создать новый тикет")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Тикет успешно создан",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TicketCreate.class)) }),
+            @ApiResponse(responseCode = "400", description = "Неверный ввод",
+                    content = @Content) })
     @PostMapping("/create")
     public ResponseEntity<?> createTicket(@Valid @RequestBody TicketCreate ticketCreate, Principal principal) {
         try {
@@ -53,20 +46,13 @@ public class TicketsController {
         }
     }
 
-    @Operation(
-            summary = "Get tickets by type",
-            description = "Retrieves all tickets of the specified type"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Tickets retrieved successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
-    )
-    @ApiResponse(
-            responseCode = "400",
-            description = "Invalid ticket type",
-            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
-    )
+    @Operation(summary = "Найти все тикеты по типу")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Тикеты найдены",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TicketType.class)) }),
+            @ApiResponse(responseCode = "400", description = "Неверный ввод",
+                    content = @Content) })
     @GetMapping("/get/{type}")
     public ResponseEntity<?> findAllByTicketType(@Valid @PathVariable TicketType type) {
         try {
@@ -76,20 +62,12 @@ public class TicketsController {
         }
     }
 
-    @Operation(
-            summary = "Get all tickets",
-            description = "Retrieves all tickets"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Tickets retrieved successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
-    )
-    @ApiResponse(
-            responseCode = "400",
-            description = "Error retrieving tickets",
-            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
-    )
+    @Operation(summary = "Найти все тикеты")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Тикеты найдены",
+                    content = { @Content(mediaType = "application/json") }),
+            @ApiResponse(responseCode = "400", description = "Неверный ввод",
+                    content = @Content) })
     @GetMapping("/all")
     public ResponseEntity<?> findAll() {
         try {
@@ -99,20 +77,13 @@ public class TicketsController {
         }
     }
 
-    @Operation(
-            summary = "Get tickets by status",
-            description = "Retrieves all tickets with the specified status"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Tickets retrieved successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
-    )
-    @ApiResponse(
-            responseCode = "400",
-            description = "Invalid ticket status",
-            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
-    )
+    @Operation(summary = "Найти все тикеты по статусу")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Тикеты найдены",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TicketStatus.class)) }),
+            @ApiResponse(responseCode = "400", description = "Неверный ввод",
+                    content = @Content) })
     @GetMapping("/getByStatus/{status}")
     public ResponseEntity<?> findAllByStatus(@Valid @PathVariable TicketStatus status) {
         try {
@@ -122,20 +93,13 @@ public class TicketsController {
         }
     }
 
-    @Operation(
-            summary = "Change ticket status",
-            description = "Changes the status of the specified ticket"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "Ticket status changed successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
-    )
-    @ApiResponse(
-            responseCode = "400",
-            description = "Invalid request data",
-            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
-    )
+    @Operation(summary = "Изменить статус тикета")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Статус успешно изменен",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TicketStatus.class)) }),
+            @ApiResponse(responseCode = "400", description = "Неверный ввод",
+                    content = @Content) })
     @PostMapping("/setStatus/{ticketId}/{status}")
     public ResponseEntity<?> changeStatus(@Valid @PathVariable UUID ticketId, @Valid @PathVariable TicketStatus status) {
         try {
