@@ -13,4 +13,9 @@ public interface TicketsRepository extends JpaRepository<TicketsModel, UUID> {
     List<TicketsModel> findAllByTicketType(TicketType ticketType);
 
     List<TicketsModel> findAllByStatus(TicketStatus status);
+
+    TicketsModel findByPlaceId(UUID placeId);
+
+    List<TicketsModel> findAllByPlaceId(UUID id);
+
 }

@@ -3,10 +3,12 @@ package prod.last.mainbackend.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import prod.last.mainbackend.models.PlaceModel;
 import prod.last.mainbackend.models.TicketStatus;
 import prod.last.mainbackend.models.TicketType;
 import prod.last.mainbackend.models.TicketsModel;
 import prod.last.mainbackend.models.request.TicketCreate;
+import prod.last.mainbackend.repositories.PlaceRepository;
 import prod.last.mainbackend.repositories.TicketsRepository;
 import prod.last.mainbackend.repositories.UserRepository;
 
@@ -18,6 +20,7 @@ import java.util.UUID;
 public class TicketsService {
 
     private final TicketsRepository ticketsRepository;
+    private final PlaceRepository placeRepository;
 
     public TicketsModel createTicket(TicketCreate create, UUID userId) {
         return ticketsRepository.save(new TicketsModel(
@@ -47,5 +50,11 @@ public class TicketsService {
         }
         ticket.setStatus(status);
         return ticketsRepository.save(ticket);
+    }
+
+    public List<TicketsModel> findByPlaceId(String name) {
+        PlaceModel place = placeRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("Place with name " + name + " not found"));
+        return ticketsRepository.findAllByPlaceId(place.getId());
     }
 }

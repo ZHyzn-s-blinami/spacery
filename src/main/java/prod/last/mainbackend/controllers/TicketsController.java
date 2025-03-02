@@ -150,4 +150,28 @@ public class TicketsController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @Operation(
+        summary = "Получить тикет по месту",
+        description = "Получает тикет по указанному месту",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Тикет успешно получен",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Ошибка при получении тикета",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
+    )
+    @GetMapping("/getByPlace/{name}")
+    public ResponseEntity<?> findByPlaceId(@Valid @PathVariable String name) {
+        try {
+            return ResponseEntity.ok(ticketsService.findByPlaceId(name));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
