@@ -31,7 +31,7 @@ const Header = () => {
                 className={`${menuOpen ? 'max-h-[200px] opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0 sm:max-h-[200px] sm:opacity-100'} overflow-hidden sm:overflow-visible w-full sm:w-auto sm:mt-0 transition-all duration-500 ease-in-out`}
             >
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    <Link to="/" className="w-full">
+                    <Link to="/admin" className="w-full">
                         <div
                             className={`px-6 py-2 rounded-xl flex justify-center items-center  ${
                                 isActive('/')
