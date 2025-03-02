@@ -28,7 +28,8 @@ public class PingController {
 
     @Operation(
             summary = "Эндпойнт для проверки авторизации",
-            description = "Просто проверяет авторизации. Пример заголовка: `Authorization: Bearer YOUR_JWT_TOKEN`"
+            description = "Просто проверяет авторизации. Пример заголовка: `Authorization: Bearer YOUR_JWT_TOKEN`",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,8 @@ public class PlaceController {
 
     @Operation(
             summary = "Получение списка свободных мест",
-            description = "Возвращает список свободных мест по типу и вместимости"
+            description = "Возвращает список свободных мест по типу и вместимости",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -63,7 +65,8 @@ public class PlaceController {
 
     @Operation(
             summary = "Создание нового места",
-            description = "Создаёт новое место. Доступно только для администраторов"
+            description = "Создаёт новое место. Доступно только для администраторов",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -92,7 +95,8 @@ public class PlaceController {
 
     @Operation(
             summary = "Получение информации о месте по name",
-            description = "Возвращает информацию о месте по name"
+            description = "Возвращает информацию о месте по name",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -123,7 +127,8 @@ public class PlaceController {
 
     @Operation(
             summary = "Создание новых мест",
-            description = "Создаёт новые места. Доступно только для администраторов"
+            description = "Создаёт новые места. Доступно только для администраторов",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -146,7 +151,8 @@ public class PlaceController {
 
     @Operation(
             summary = "Получение времени бронирования по имени места",
-            description = "Возвращает время бронирования для указанного места по его имени"
+            description = "Возвращает время бронирования для указанного места по его имени",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",

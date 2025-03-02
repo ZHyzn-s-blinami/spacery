@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,18 @@ public class TicketsController {
     private final UserService userService;
 
     @Operation(
-            summary = "Create a new ticket",
-            description = "Creates a new ticket with the provided details"
+            summary = "Создать тикет",
+            description = "Создаёт тикет с указанными данными",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Ticket created successfully",
+            description = "Тикет успешно создан",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid request data",
+            description = "Ошибка при создании тикета",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
     @PostMapping("/create")
@@ -54,17 +56,18 @@ public class TicketsController {
     }
 
     @Operation(
-            summary = "Get tickets by type",
-            description = "Retrieves all tickets of the specified type"
+            summary = "Получить тикеты по типу",
+            description = "Получает все тикеты с указанным типом",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Tickets retrieved successfully",
+            description = "Тикеты успешно получены",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid ticket type",
+            description = "Неправильный тип тикета",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
     @GetMapping("/get/{type}")
@@ -77,8 +80,9 @@ public class TicketsController {
     }
 
     @Operation(
-            summary = "Get all tickets",
-            description = "Retrieves all tickets"
+            summary = "Получить информацию о тикетах",
+            description = "Получает информацию о всех тикетах",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -100,17 +104,18 @@ public class TicketsController {
     }
 
     @Operation(
-            summary = "Get tickets by status",
-            description = "Retrieves all tickets with the specified status"
+            summary = "Получить тикет по статусу",
+            description = "Получает все тикеты с указанным статусом",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Tickets retrieved successfully",
+            description = "Тикеты успешно получены",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid ticket status",
+            description = "Неправильный статус тикета",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
     @GetMapping("/getByStatus/{status}")
@@ -123,17 +128,18 @@ public class TicketsController {
     }
 
     @Operation(
-            summary = "Change ticket status",
-            description = "Changes the status of the specified ticket"
+            summary = "Изменить статус тикета",
+            description = "Изменяет статус тикета на указанный",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Ticket status changed successfully",
+            description = "Статус тикета успешно изменён",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = TicketsModel.class))
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Invalid request data",
+            description = "Ошибка при изменении статуса тикета",
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"message\"}"))
     )
     @PostMapping("/setStatus/{ticketId}/{status}")

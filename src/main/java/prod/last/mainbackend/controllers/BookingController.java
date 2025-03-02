@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,8 @@ public class BookingController {
 
     @Operation(
             summary = "Создание бронирования",
-            description = "Создает бронирование"
+            description = "Создает бронирование",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "201",
@@ -66,7 +68,8 @@ public class BookingController {
 
     @Operation(
             summary = "Отмена бронирования",
-            description = "Отменяет бронирование"
+            description = "Отменяет бронирование",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -91,7 +94,8 @@ public class BookingController {
 
     @Operation(
             summary = "Получение qr-кода бронирования",
-            description = "Получает qr-код бронирования"
+            description = "Получает qr-код бронирования",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -116,7 +120,8 @@ public class BookingController {
 
     @Operation(
             summary = "Проверка qr-кода бронирования",
-            description = "Проверяет qr-код бронирования"
+            description = "Проверяет qr-код бронирования",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -140,7 +145,8 @@ public class BookingController {
 
     @Operation(
             summary = "Получение всех бронирований",
-            description = "Получает все бронирования"
+            description = "Получает все бронирования",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -164,7 +170,8 @@ public class BookingController {
 
     @Operation(
             summary = "Получение всех бронирований пользователя",
-            description = "Возвращает список всех бронирований текущего пользователя"
+            description = "Возвращает список всех бронирований текущего пользователя",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -189,7 +196,8 @@ public class BookingController {
 
     @Operation(
             summary = "Обновление времени бронирования",
-            description = "Обновляет время бронирования"
+            description = "Обновляет время бронирования",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -216,7 +224,8 @@ public class BookingController {
 
     @Operation(
             summary = "Получение всех бронирований пользователя по статусу",
-            description = "Возвращает список всех бронирований текущего пользователя с указанным статусом"
+            description = "Возвращает список всех бронирований текущего пользователя с указанным статусом",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",

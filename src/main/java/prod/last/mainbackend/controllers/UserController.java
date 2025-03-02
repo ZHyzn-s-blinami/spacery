@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -111,7 +112,8 @@ public class UserController {
 
     @Operation(
             summary = "Получение информации о текущем пользователе",
-            description = "Возвращает информацию о текущем пользователе на основе его токена"
+            description = "Возвращает информацию о текущем пользователе на основе его токена",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
@@ -133,7 +135,8 @@ public class UserController {
 
     @Operation(
             summary = "Получение списка всех пользователей",
-            description = "Возвращает список всех пользователей. Доступно только для администраторов"
+            description = "Возвращает список всех пользователей. Доступно только для администраторов",
+            security = @SecurityRequirement(name = "bearerAuth")
     )
     @ApiResponse(
             responseCode = "200",
