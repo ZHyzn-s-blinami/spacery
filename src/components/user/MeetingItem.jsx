@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
 import { useDispatch } from "react-redux";
 import { cancelUserMeeting } from "../../store/user/thunks";
+import { updateMeeting } from "../../store/booking/thunks"
 import {
     ClockIcon,
     MapPinIcon,
@@ -190,7 +191,7 @@ const MeetingItem = ({ item }) => {
     };
 
     const confirmReschedule = async () => {
-        console.log('confirmed')
+        console.log('confirmed');
         setReschedulingLoading(true);
         setRescheduleStatus(null);
 
@@ -204,29 +205,29 @@ const MeetingItem = ({ item }) => {
             const newEndDate = new Date(selectedDate);
             newEndDate.setHours(endHours, endMinutes, 0);
 
-            console.log("Перенос встречи:", item.bookingId);
-            console.log("Новая дата начала:", newStartDate.toISOString());
-            console.log("Новая дата окончания:", newEndDate.toISOString());
+            const formattedStartAt = newStartDate.toISOString().split('.')[0];
+            const formattedEndAt = newEndDate.toISOString().split('.')[0];
 
-            await 
 
-            // Имитация запроса к серверу
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await dispatch(updateMeeting({ uuid: item.bookingId, startAt: formattedStartAt, endAt: formattedEndAt }));
 
-            // Здесь должна быть логика для переноса встречи с новым временем
-            setRescheduleStatus('success');
+            // const response = await dispatch(updateMeeting({ uuid: item.bookingId, startAt: newStartDate, endAt: newEndDate })).unwrap(); // unwrap() позволяет обработать ошибки в try/catch
 
-            // Закрываем модальное окно после небольшой задержки
-            setTimeout(() => {
-                closeRescheduleModal();
-            }, 1000);
+            // console.log("Ответ сервера:", response);
+
+            if (response) {
+                setRescheduleStatus("success");
+                // toast.success("Встреча успешно перенесена!");
+            }
         } catch (error) {
-            console.error("Ошибка при изменении времени встречи:", error);
-            setRescheduleStatus('error');
+            console.error("Ошибка при переносе встречи:", error);
+            setRescheduleStatus("error");
+            // toast.error("Ошибка при переносе встречи");
         } finally {
             setReschedulingLoading(false);
         }
     };
+
 
     const toggleDetails = () => {
         setShowDetails(!showDetails);
@@ -288,7 +289,7 @@ const MeetingItem = ({ item }) => {
                     className="w-full flex items-center justify-center text-blue-600 hover:text-blue-800 text-sm py-2 mt-2 border-t border-gray-100 transition-all duration-200 hover:bg-blue-50"
                 >
                     <div className="flex items-center transition-transform duration-300 ease-in-out transform"
-                         style={{ transform: showDetails ? 'translateY(0)' : 'translateY(0)' }}
+                        style={{ transform: showDetails ? 'translateY(0)' : 'translateY(0)' }}
                     >
                         {showDetails ? (
                             <>
@@ -306,15 +307,14 @@ const MeetingItem = ({ item }) => {
             </div>
 
             <div
-                className={`bg-gray-50 border-t border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${
-                    showDetails ? 'max-h-[2000px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
-                }`}
+                className={`bg-gray-50 border-t border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${showDetails ? 'max-h-[2000px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
+                    }`}
             >
                 <div className={`bg-white p-4 rounded-lg shadow-sm mb-4 transition-all duration-300 ease-in-out 
                     ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                     style={{
-                         transitionDelay: showDetails ? '0.05s' : '0s'
-                     }}
+                    style={{
+                        transitionDelay: showDetails ? '0.05s' : '0s'
+                    }}
                 >
                     <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                         <CalendarIcon size={16} className="mr-2 text-blue-600" />
@@ -354,9 +354,9 @@ const MeetingItem = ({ item }) => {
 
                 <div className={`bg-white p-4 rounded-lg shadow-sm mb-4 flex justify-center transition-all duration-300 ease-in-out 
                     ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                     style={{
-                         transitionDelay: showDetails ? '0.1s' : '0s'
-                     }}
+                    style={{
+                        transitionDelay: showDetails ? '0.1s' : '0s'
+                    }}
                 >
                     <div className="text-center">
                         <div className="mb-3">
@@ -375,9 +375,9 @@ const MeetingItem = ({ item }) => {
 
                 <div className={`flex flex-col sm:flex-row gap-2 transition-all duration-300 ease-in-out
                     ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                     style={{
-                         transitionDelay: showDetails ? '0.15s' : '0s'
-                     }}
+                    style={{
+                        transitionDelay: showDetails ? '0.15s' : '0s'
+                    }}
                 >
                     <button
                         onClick={handleReschedule}
@@ -407,13 +407,12 @@ const MeetingItem = ({ item }) => {
                         onClick={closeRescheduleModal}
                     ></div>
                     <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${
-                            isRescheduleModalClosing
-                                ? 'opacity-0 transform scale-95'
-                                : rescheduleModalMounted
-                                    ? 'opacity-100 transform scale-100'
-                                    : 'opacity-0 transform scale-95'
-                        }`}
+                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${isRescheduleModalClosing
+                            ? 'opacity-0 transform scale-95'
+                            : rescheduleModalMounted
+                                ? 'opacity-100 transform scale-100'
+                                : 'opacity-0 transform scale-95'
+                            }`}
                     >
                         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
                             <h3 className="text-lg font-medium">Изменить время встречи</h3>
@@ -509,24 +508,21 @@ const MeetingItem = ({ item }) => {
                                 <button
                                     onClick={confirmReschedule}
                                     disabled={reschedulingLoading}
-                                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${
-                                        rescheduleStatus === 'success'
-                                            ? 'bg-green-600 hover:bg-green-700'
-                                            : rescheduleStatus === 'error'
-                                                ? 'bg-red-600 hover:bg-red-700'
-                                                : 'bg-blue-600 hover:bg-blue-700'
-                                    } text-white`}
+                                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${rescheduleStatus === 'success'
+                                        ? 'bg-green-600 hover:bg-green-700'
+                                        : rescheduleStatus === 'error'
+                                            ? 'bg-red-600 hover:bg-red-700'
+                                            : 'bg-blue-600 hover:bg-blue-700'
+                                        } text-white`}
                                 >
                                     <div className="relative flex items-center justify-center">
-                                        <span className={`transition-all duration-300 ${
-                                            reschedulingLoading || rescheduleStatus ? 'opacity-0' : 'opacity-100'
-                                        }`}>
+                                        <span className={`transition-all duration-300 ${reschedulingLoading || rescheduleStatus ? 'opacity-0' : 'opacity-100'
+                                            }`}>
                                             Подтвердить
                                         </span>
 
-                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                                            reschedulingLoading ? 'opacity-100' : 'opacity-0'
-                                        }`}>
+                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${reschedulingLoading ? 'opacity-100' : 'opacity-0'
+                                            }`}>
                                             <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -534,18 +530,16 @@ const MeetingItem = ({ item }) => {
                                             <span>Обработка...</span>
                                         </div>
 
-                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                                            !reschedulingLoading && rescheduleStatus === 'success' ? 'opacity-100' : 'opacity-0'
-                                        }`}>
+                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'success' ? 'opacity-100' : 'opacity-0'
+                                            }`}>
                                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
                                             <span>Успешно</span>
                                         </div>
 
-                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
-                                            !reschedulingLoading && rescheduleStatus === 'error' ? 'opacity-100' : 'opacity-0'
-                                        }`}>
+                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'error' ? 'opacity-100' : 'opacity-0'
+                                            }`}>
                                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
@@ -570,13 +564,12 @@ const MeetingItem = ({ item }) => {
                         onClick={closeCancelModal}
                     ></div>
                     <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${
-                            isCancelModalClosing
-                                ? 'opacity-0 transform scale-95'
-                                : cancelModalMounted
-                                    ? 'opacity-100 transform scale-100'
-                                    : 'opacity-0 transform scale-95'
-                        }`}
+                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${isCancelModalClosing
+                            ? 'opacity-0 transform scale-95'
+                            : cancelModalMounted
+                                ? 'opacity-100 transform scale-100'
+                                : 'opacity-0 transform scale-95'
+                            }`}
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-800 flex items-center">
@@ -602,7 +595,7 @@ const MeetingItem = ({ item }) => {
                                 </div>
                                 <div className="flex">
                                     <CalendarIcon size={16} className="mr-2 flex-shrink-0 text-gray-500" />
-                                    <span>{startTime.toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'})}</span>
+                                    <span>{startTime.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</span>
                                 </div>
                                 <div className="flex">
                                     <ClockIcon size={16} className="mr-2 flex-shrink-0 text-gray-500" />

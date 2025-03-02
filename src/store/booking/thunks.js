@@ -5,12 +5,14 @@ export const updateMeeting = createAsyncThunk(
     'booking/updateMeeting',
     async ({ uuid, startAt, endAt }, { rejectWithValue }) => {
         try {
-            const response = await bookingService.updateMeeting(uuid, startAt, endAt);
+            console.log({uuid, startAt, endAt})
+            const response = await bookingService.updateMeeting({ uuid, startAt, endAt });
             return response;
         } catch (error) {
             return rejectWithValue(error.response?.data || { message: error.message });
         }
     }
 );
+
 
 
