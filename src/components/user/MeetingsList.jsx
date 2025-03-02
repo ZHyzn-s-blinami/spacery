@@ -34,7 +34,6 @@ const MeetingList = () => {
                 return acc;
             }, {});
 
-            // Сортировка дат
             const sortedGrouped = Object.keys(grouped)
                 .sort((a, b) => new Date(a) - new Date(b))
                 .reduce((acc, date) => {
@@ -113,11 +112,16 @@ const MeetingList = () => {
                         <div className="ml-3 h-px bg-gray-200 flex-grow"></div>
                     </div>
 
-                    <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
+                    <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 auto-rows-auto">
                         {groupedMeetings[date].map(meeting => {
-                            // Проверяем, что meeting и необходимые свойства существуют
                             if (meeting && meeting.bookingId && meeting.startAt && meeting.endAt) {
-                                return <MeetingItem key={meeting.bookingId} item={meeting} />;
+                                return (
+                                    <div key={meeting.bookingId} className="h-auto flex">
+                                        <div className="w-full">
+                                            <MeetingItem item={meeting} />
+                                        </div>
+                                    </div>
+                                );
                             }
                             return null;
                         })}
