@@ -8,7 +8,7 @@ import { useDebounce } from '../hooks/useDebounce.js';
 
 
 const CoworkingBooking = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
   const [selectedSeat, setSelectedSeat] = useState(null);
   const [selectedZone, setSelectedZone] = useState('all');
   const [isToday, setIsToday] = useState(true);
