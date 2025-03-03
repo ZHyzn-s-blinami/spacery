@@ -71,8 +71,8 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/meetings" element={<MeetingsPage />} />
-            <Route path="/userConfirm/:jwt" element={<UserConfirm />} />
         </Route>
+          <Route path="/userConfirm/:jwt" element={<UserConfirm />} />
         <Route path="/checkQr/:jwt" element={<CheckQr />} />
         <Route
           path="/admin"
