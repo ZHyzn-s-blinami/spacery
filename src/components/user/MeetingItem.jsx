@@ -329,7 +329,7 @@ const MeetingItem = ({ item }) => {
 
     const getStatusBadge = () => {
         switch (item.status) {
-            case "CANCELLED":
+            case "REJECTED":
                 return (
                     <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-red-100 text-sm">
                         <span className="relative flex h-2 w-2">
@@ -338,28 +338,46 @@ const MeetingItem = ({ item }) => {
                         <span className="text-red-600">Отменено</span>
                     </div>
                 );
-            case "COMPLETED":
+            case "ACCEPTED":
+                return (
+                    <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-green-100 text-sm">
+                        <span className="relative flex h-2 w-2">
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span className="text-green-600">Подтверждено</span>
+                    </div>
+                );
+            case "OVERDUE":
+                return (
+                    <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-gray-100 text-sm">
+                        <span className="relative flex h-2 w-2">
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
+                        </span>
+                        <span className="text-gray-600">Просрочено</span>
+                    </div>
+                );
+            case "PENDING":
                 return (
                     <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-blue-100 text-sm">
                         <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                         </span>
-                        <span className="text-blue-600">Завершено</span>
+                        <span className="text-blue-600">Ожидается</span>
                     </div>
                 );
             default:
                 return (
-                    <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-green-100 text-sm">
+                    <div className="flex items-center space-x-1 px-2 py-1 rounded-full bg-blue-100 text-sm">
                         <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                         </span>
-                        <span className="text-green-600">Ожидается</span>
+                        <span className="text-blue-600">Ожидается</span>
                     </div>
                 );
         }
     };
-
     const formatDateForDisplay = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('ru-RU', {
