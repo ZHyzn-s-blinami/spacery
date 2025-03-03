@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import {Link, useLocation, useNavigate} from 'react-router-dom';
-import {Map, User, Menu, X, Calendar, LogOutIcon} from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Map, User, Menu, X, Calendar, LogOutIcon, Ticket } from 'lucide-react';
 
 const Header = () => {
   const location = useLocation();
@@ -11,7 +11,8 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('userToken');
-    navigate('/auth');6
+    navigate('/auth');
+    6;
   };
 
   return (
@@ -65,9 +66,21 @@ const Header = () => {
               <span className="font-medium">Пользователи</span>
             </div>
           </Link>
+          <Link to="/admin/tickets" className="w-full">
+            <div
+              className={`px-6 py-2 rounded-xl flex justify-center items-center transition-all duration-300 ${
+                isActive('/admin/tickets')
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'bg-white text-gray-700 hover:bg-indigo-50 border border-gray-200'
+              }`}
+            >
+              <Ticket size={18} className="mr-2" />
+              <span className="font-medium">Тикеты</span>
+            </div>
+          </Link>
           <button
-              onClick={handleLogout}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center transition-all cursor-pointer"
+            onClick={handleLogout}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center transition-all cursor-pointer"
           >
             <LogOutIcon size={18} className="mr-2" />
             <span>Выйти</span>

@@ -38,7 +38,7 @@ export const ticketService = {
   updateTicketStatus: async(ticketId, status) => {
     const token = localStorage.getItem('userToken');
 
-    const response = await apiClient.post(`/api/tickets/setStatus/${ticketId}/${status}`, {
+    const response = await apiClient.post(`/api/tickets/setStatus/${ticketId}/${status}`, {}, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
@@ -47,6 +47,19 @@ export const ticketService = {
     })
 
     console.log(response.data);
+    return response.data;
+  },
+  getAll: async () => {
+    const token = localStorage.getItem('userToken');
+
+    const response = await apiClient.get('/api/tickets/all', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      }
+    });
+
     return response.data;
   }
 }

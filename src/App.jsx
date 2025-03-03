@@ -11,7 +11,7 @@ import ProtectedUserRoute from './components/ProtectedUserRoute';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import UserControl from './pages/UserControl';
 import TicketList from './pages/TicketList';
-import CheckQr from "./pages/CheckQr.jsx";
+import CheckQr from './pages/CheckQr.jsx';
 
 function App() {
   return (
@@ -57,6 +57,7 @@ function App() {
         }}
       />
       <Routes>
+        <Route path="/auth" element={<Auth />} />
         <Route
           path="/"
           element={
@@ -66,10 +67,9 @@ function App() {
           }
         >
           <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
-          <Route path="/checkQr/:jwt" element={<CheckQr />} />
+        <Route path="/checkQr/:jwt" element={<CheckQr />} />
         <Route
           path="/admin"
           element={
@@ -81,7 +81,7 @@ function App() {
           <Route path="/admin" element={<HomeAdmin />} />
           <Route path="/admin/booking/:name/place" element={<BookingList />} />
           <Route path="/admin/userControl" element={<UserControl />} />
-          <Route path="/admin/ticket/:name/place" element={<TicketList />} />
+          <Route path="/admin/tickets" element={<TicketList />} />
         </Route>
       </Routes>
     </>
