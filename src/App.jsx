@@ -83,7 +83,7 @@ function App() {
           <Route path="/admin" element={<HomeAdmin />} />
           <Route path="/admin/booking/:name/place" element={<BookingList />} />
           <Route path="/admin/userControl" element={<UserControl />} />
-          <Route path="/admin/ticket/:name/place" element={<TicketList />} />
+          <Route path="/admin/tickets" element={<TicketList />} />
         </Route>
       </Routes>
     </>
