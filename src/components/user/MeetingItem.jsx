@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 
 const MeetingItem = ({ item }) => {
+
+    console.log(item.bookingId)
     if (!item || !item.startAt || !item.endAt) {
         return (
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 text-center">
@@ -74,11 +76,31 @@ const MeetingItem = ({ item }) => {
         }
     }, [showCancelModal, isCancelModalClosing]);
 
+
+
+    useEffect(() => {
+        const getQrCode = async () => {
+          try {
+            const response = await dispatch(fetchQrCode(item.bookingId))
+            // console.log("Ответ QR-кода:", response.payload.qrCode);
+            setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
+          } catch (error) {
+            console.error("Ошибка при получении QR-кода:", error);
+            setQrCode("");
+          }
+        };
+      
+        if (item.bookingId) {
+          getQrCode();
+        }
+      }, [dispatch, item.bookingId]);
+      
   
     useEffect(() => {
       const getQrCode = async () => {
         try {
           const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
+          console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa',response)
           setQrCode(typeof response === "string" ? response : response.qrCode || "");
         } catch (error) {
           console.error("Ошибка при получении QR-кода:", error);
@@ -90,7 +112,6 @@ const MeetingItem = ({ item }) => {
         getQrCode();
       }
     }, [dispatch, item.uuid]);
-
 
     const formatTime = (date) => {
         const hours = date.getHours().toString().padStart(2, '0');

@@ -87,7 +87,8 @@ export const fetchQrCode = createAsyncThunk(
   async (uuid, { rejectWithValue }) => {
     try {
       const response = await bookingService.getQrCode(uuid);
-      return response.data;
+      // console.log("fetchQrCode: raw response", response);
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }

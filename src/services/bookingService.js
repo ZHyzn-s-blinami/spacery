@@ -94,8 +94,6 @@ export const bookingService = {
                 endAt,
             };
 
-            console.log("Отправляемые данные:", payload);
-
             const response = await apiClient.post(
                 `/api/booking/${uuid}/update`,
                 payload,
