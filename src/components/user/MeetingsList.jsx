@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUserMeetings } from "../../store/user/thunks";
+import React, {useEffect, useState, useRef} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchUserMeetings} from "../../store/user/thunks";
 import MeetingItem from "./MeetingItem";
-import { CalendarIcon, RefreshCwIcon } from "lucide-react";
+import {CalendarIcon, RefreshCwIcon} from "lucide-react";
 
 const MeetingList = () => {
     const dispatch = useDispatch();
@@ -10,6 +10,33 @@ const MeetingList = () => {
     const loading = useSelector(state => state.booking.loading);
     const error = useSelector(state => state.booking.error);
     const [groupedMeetings, setGroupedMeetings] = useState({});
+
+    // State for controlled loading with minimum time
+    const [showLoading, setShowLoading] = useState(false);
+    const loadingTimerRef = useRef(null);
+    const MIN_LOADING_TIME = 800; // 800ms minimum loading animation time
+
+    // Manage loading state with minimum display time
+    useEffect(() => {
+        if (loading) {
+            setShowLoading(true);
+            // Clear any existing timer
+            if (loadingTimerRef.current) {
+                clearTimeout(loadingTimerRef.current);
+            }
+        } else if (showLoading) {
+            // Set minimum display time when loading has finished
+            loadingTimerRef.current = setTimeout(() => {
+                setShowLoading(false);
+            }, MIN_LOADING_TIME);
+        }
+
+        return () => {
+            if (loadingTimerRef.current) {
+                clearTimeout(loadingTimerRef.current);
+            }
+        };
+    }, [loading]);
 
     useEffect(() => {
         dispatch(fetchUserMeetings());
@@ -53,8 +80,7 @@ const MeetingList = () => {
         dispatch(fetchUserMeetings());
     };
 
-
-    if (loading) {
+    if (showLoading) {
         return (
             <div className="flex justify-center items-center py-12">
                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
@@ -70,7 +96,7 @@ const MeetingList = () => {
                     onClick={refreshMeetings}
                     className="inline-flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
                 >
-                    <RefreshCwIcon size={16} className="mr-2" />
+                    <RefreshCwIcon size={16} className="mr-2"/>
                     Попробовать снова
                 </button>
             </div>
@@ -80,17 +106,16 @@ const MeetingList = () => {
     if (Object.keys(groupedMeetings).length === 0) {
         return (
             <div className="text-center py-12">
-                <CalendarIcon size={48} className="mx-auto mb-4 text-gray-300" />
+                <CalendarIcon size={48} className="mx-auto mb-4 text-gray-300"/>
                 <h3 className="text-xl font-medium text-gray-700 mb-2">У вас нет предстоящих броней</h3>
                 <p className="text-gray-500 mb-6">Забронируйте место для вашей следующей встречи</p>
-                <button onClick={handleRedirect} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
+                <button onClick={handleRedirect}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
                     Забронировать место
                 </button>
             </div>
         );
     }
-
-    console.log(groupedMeetings)
 
     return (
         <div>
@@ -101,8 +126,10 @@ const MeetingList = () => {
                 <button
                     onClick={refreshMeetings}
                     className="text-blue-600 hover:text-blue-800 flex items-center text-sm bg-blue-50 px-3 py-2 rounded-lg"
+                    disabled={showLoading}
                 >
-                    <RefreshCwIcon size={14} className="mr-2" /> Обновить
+                    <RefreshCwIcon size={14} className={`mr-2 ${showLoading ? 'animate-spin' : ''}`}/>
+                    Обновить
                 </button>
             </div>
 
@@ -110,7 +137,7 @@ const MeetingList = () => {
                 <div key={date} className="mb-8">
                     <div className="flex items-center mb-4">
                         <div className="bg-blue-100 text-blue-800 rounded-full px-4 py-1.5 text-sm font-medium">
-                            {Object.keys(groupedMeetings)[index]}
+                            {date}
                         </div>
                         <div className="ml-3 h-px bg-gray-200 flex-grow"></div>
                     </div>
@@ -121,7 +148,7 @@ const MeetingList = () => {
                                 return (
                                     <div key={meeting.bookingId} className="h-auto flex">
                                         <div className="w-full">
-                                            <MeetingItem item={meeting} />
+                                            <MeetingItem item={meeting}/>
                                         </div>
                                     </div>
                                 );

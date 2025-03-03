@@ -11,7 +11,8 @@ import ProtectedUserRoute from './components/ProtectedUserRoute';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import UserControl from './pages/UserControl';
 import TicketList from './pages/TicketList';
-import CheckQr from "./pages/CheckQr.jsx";
+import CheckQr from "./pages/CheckQr.jsx";8
+import MeetingsPage from "./pages/MeetingsList.jsx";
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/meetings" element={<MeetingsPage />} />
         </Route>
           <Route path="/checkQr/:jwt" element={<CheckQr />} />
         <Route

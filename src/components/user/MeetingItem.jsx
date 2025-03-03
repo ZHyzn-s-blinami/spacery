@@ -384,7 +384,7 @@ const MeetingItem = ({ item }) => {
                         {getStatusBadge()}
                     </div>
                     <div>
-                        <div className="text-gray-500 mb-1">{`Место: ${item.place.description} - ${item.place.name}`}</div>
+                        <div className="text-gray-500 mb-1">{`Место: ${item.place.name}`}</div>
                         <div className="font-medium">{item.address}</div>
                     </div>
                     <div className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full">
