@@ -17,6 +17,7 @@ import {
   Clock,
   Calendar,
   RefreshCw,
+  ServerCrash,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { ticketService } from '../services/ticketService';
@@ -242,7 +243,7 @@ function TicketList() {
       case 'CLEANING':
         return <Trash className="h-4 w-4 text-blue-600" />;
       case 'TECHNICAL_PROBLEM':
-        return <Tool className="h-4 w-4 text-orange-600" />;
+        return <ServerCrash className="h-4 w-4 text-orange-600" />;
       case 'FOOD':
         return <Coffee className="h-4 w-4 text-green-600" />;
       case 'PLACE_TAKEN':
