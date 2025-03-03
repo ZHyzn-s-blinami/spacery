@@ -99,7 +99,7 @@ public class TicketsController {
     @GetMapping("/all")
     public ResponseEntity<?> findAll() {
         try {
-            return ResponseEntity.ok(ticketsService.findAll());
+            return ResponseEntity.ok(ticketsService.findAllOrderByCreatedAtDesc());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
