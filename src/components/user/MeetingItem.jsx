@@ -480,7 +480,7 @@ const MeetingItem = ({item}) => {
 
 // Modify the useEffect for ticket type changes to reset selection
     useEffect(() => {
-        switch(ticketData.ticketType) {
+        switch (ticketData.ticketType) {
             case "CLEANING":
                 setPredefinedDescriptions([
                     "Не убрано помещение",
@@ -628,7 +628,7 @@ const MeetingItem = ({item}) => {
                                     className="inline-block p-3 rounded-md border-2 border-dotted border-gray-200 relative">
                                     {/* Blurred placeholder QR code */}
                                     <div className="filter blur-md opacity-50">
-                                        <QRCode value="placeholder-qr-value" size={120} />
+                                        <QRCode value="placeholder-qr-value" size={120}/>
                                     </div>
 
                                     <div
@@ -952,7 +952,8 @@ const MeetingItem = ({item}) => {
 
                         {ticketData.ticketType !== "OTHER" ? (
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-3">Выберите проблему</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-3">Выберите
+                                    проблему</label>
                                 <div className="space-y-2">
                                     {predefinedDescriptions.map((desc, index) => (
                                         <div
@@ -964,16 +965,18 @@ const MeetingItem = ({item}) => {
                                                     : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
                                             }`}
                                         >
-                                            <div className={`w-4 h-4 rounded-full border mr-3 flex items-center justify-center ${
-                                                selectedIssue === desc
-                                                    ? 'border-blue-500 bg-white'
-                                                    : 'border-gray-400'
-                                            }`}>
+                                            <div
+                                                className={`w-4 h-4 rounded-full border mr-3 flex items-center justify-center ${
+                                                    selectedIssue === desc
+                                                        ? 'border-blue-500 bg-white'
+                                                        : 'border-gray-400'
+                                                }`}>
                                                 {selectedIssue === desc && (
                                                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                                                 )}
                                             </div>
-                                            <span className={`text-sm ${selectedIssue === desc ? 'text-blue-700 font-medium' : 'text-gray-700'}`}>
+                                            <span
+                                                className={`text-sm ${selectedIssue === desc ? 'text-blue-700 font-medium' : 'text-gray-700'}`}>
             {desc}
           </span>
                                         </div>
@@ -982,7 +985,8 @@ const MeetingItem = ({item}) => {
                             </div>
                         ) : (
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mt-4 mb-1">Описание проблемы</label>
+                                <label className="block text-sm font-medium text-gray-700 mt-4 mb-1">Описание
+                                    проблемы</label>
                                 <textarea
                                     value={ticketData.description}
                                     onChange={(e) => setTicketData({...ticketData, description: e.target.value})}
