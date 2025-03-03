@@ -25,7 +25,9 @@ public class TicketsService {
     public TicketsModel createTicket(TicketCreate create, UUID userId) {
         return ticketsRepository.save(new TicketsModel(
                 userId,
-                create.getPlaceId(),
+                placeRepository.findByName(create.getPlaceName())
+                        .orElseThrow(() -> new IllegalArgumentException("Place with name " + create.getPlaceName() + " not found"))
+                        .getId(),
                 create.getTicketType(),
                 create.getDescription()
         ));

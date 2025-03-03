@@ -13,7 +13,7 @@ import java.util.UUID;
 public class TicketCreate {
 
     @NotNull
-    private UUID placeId;
+    private String placeName;
 
     @NotNull
     private TicketType ticketType;
