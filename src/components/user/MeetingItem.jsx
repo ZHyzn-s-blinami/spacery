@@ -140,44 +140,10 @@ const MeetingItem = ({ item }) => {
           try {
             const response = await dispatch(fetchQrCode(item.bookingId))
             // console.log("Ответ QR-кода:", response.payload.qrCode);
-            setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
-          } catch (error) {
-            console.error("Ошибка при получении QR-кода:", error);
-            setQrCode("");
-          }
-        };
-      
-        if (item.bookingId) {
-          getQrCode();
-        }
-      }, [dispatch, item.bookingId]);
-      
-  
-    useEffect(() => {
-      const getQrCode = async () => {
-        try {
-          const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
-          console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa',response)
-          setQrCode(typeof response === "string" ? response : response.qrCode || "");
-        } catch (error) {
-          console.error("Ошибка при получении QR-кода:", error);
-          setQrCode("");
-        }
-      };
-  
-      if (item.uuid) {
-        getQrCode();
-      }
-    }, [dispatch, item.uuid]);
-
-
-
-    useEffect(() => {
-        const getQrCode = async () => {
-          try {
-            const response = await dispatch(fetchQrCode(item.bookingId))
-            // console.log("Ответ QR-кода:", response.payload.qrCode);
-            setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
+            setQrCode(typeof response === "string" ? response :
+                "https://prod-team-5-qnkvbg7c.final.prodcontest.ru/checkQr/" + response.payload.qrCode
+                || "");
+            console.log(qrCode)
           } catch (error) {
             console.error("Ошибка при получении QR-кода:", error);
             setQrCode("");
