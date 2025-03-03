@@ -58,8 +58,9 @@ public class UserService {
             throw new IllegalArgumentException("User not found");
         }
 
-        String token = Base64.getEncoder().encodeToString((user.getId().toString() + ":" + UUID.randomUUID().toString()).getBytes());
-        user.setTokenUUID(UUID.fromString(token.split(":")[1]));
+        UUID tokenUUID = UUID.randomUUID();
+        user.setTokenUUID(tokenUUID);
+        String token = Base64.getEncoder().encodeToString((user.getId().toString() + ":" + tokenUUID.toString()).getBytes());
         userRepository.save(user);
 
         String verificationLink = "http://" + domain + "/api/user/confirm?token=" + token;

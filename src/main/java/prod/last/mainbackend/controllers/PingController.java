@@ -22,7 +22,7 @@ public class PingController {
             description = "да, это прям просто пинг"
     )
     @GetMapping("/ping")
-    private ResponseEntity<?> ping() {
+    public ResponseEntity<?> ping() {
         return ResponseEntity.ok("PROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOD");
     }
 
@@ -42,7 +42,7 @@ public class PingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\":\"Full authentication is required to access this resource\",\"status\":401}"))
     )
     @GetMapping("/pong")
-    private ResponseEntity<?> pong() {
+    public ResponseEntity<?> pong() {
         return ResponseEntity.ok("PONG");
     }
 

@@ -33,4 +33,6 @@ public class BookingWithUserAndPlaceResponse {
         this.createdAt = booking.getCreatedAt().toString();
         this.updatedAt = booking.getUpdatedAt().toString();
     }
+
+    public BookingWithUserAndPlaceResponse() {}
 }

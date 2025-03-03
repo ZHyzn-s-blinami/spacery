@@ -23,4 +23,15 @@ public class PlaceCreate {
     @NotBlank
     private String name;
 
+    public PlaceCreate() {
+    }
+
+    public PlaceCreate(PlaceType type, Integer capacity, String description, Long placeId, String name) {
+        this.type = type;
+        this.capacity = capacity;
+        this.description = description;
+        this.placeId = placeId;
+        this.name = name;
+    }
+
 }

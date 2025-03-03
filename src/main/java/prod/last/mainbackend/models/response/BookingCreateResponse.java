@@ -1,7 +1,6 @@
 package prod.last.mainbackend.models.response;
 
 import lombok.Data;
-import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.PlaceModel;
 
 @Data
