@@ -20,7 +20,7 @@ import TimeRangeSlider from "../../components/TimeRangeSlider";
 
 
 const MeetingItem = ({ item }) => {
-
+    console.log("meeting item", item);
     console.log(item.bookingId)
     if (!item || !item.startAt || !item.endAt) {
         return (
@@ -97,7 +97,9 @@ const MeetingItem = ({ item }) => {
         // Only fetch QR code if we should show it
         if (shouldShowQr() && item.bookingId) {
           try {
+              console.log("bookingid", item.bookingId);
             const response = await dispatch(fetchQrCode(item.bookingId));
+            console.log("payload", response)
             setQrCode(typeof response === "string" ? response :
                 "https://prod-team-5-qnkvbg7c.final.prodcontest.ru/checkQr/" + response.payload.qrCode
                 || "");
@@ -203,80 +205,6 @@ const MeetingItem = ({ item }) => {
 
         fetchUnavailableSlots();
     }, [selectedDate]);
-
-
-
-    useEffect(() => {
-        const getQrCode = async () => {
-            try {
-                const response = await dispatch(fetchQrCode(item.bookingId))
-                // console.log("Ответ QR-кода:", response.payload.qrCode);
-                setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
-            } catch (error) {
-                console.error("Ошибка при получении QR-кода:", error);
-                setQrCode("");
-            }
-        };
-
-        if (item.bookingId) {
-            getQrCode();
-        }
-    }, [dispatch, item.bookingId]);
-
-
-    useEffect(() => {
-        const getQrCode = async () => {
-            try {
-                const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
-                console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa', response)
-                setQrCode(typeof response === "string" ? response : response.qrCode || "");
-            } catch (error) {
-                console.error("Ошибка при получении QR-кода:", error);
-                setQrCode("");
-            }
-        };
-
-        if (item.uuid) {
-            getQrCode();
-        }
-    }, [dispatch, item.uuid]);
-
-
-
-    useEffect(() => {
-        const getQrCode = async () => {
-            try {
-                const response = await dispatch(fetchQrCode(item.bookingId))
-                // console.log("Ответ QR-кода:", response.payload.qrCode);
-                setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
-            } catch (error) {
-                console.error("Ошибка при получении QR-кода:", error);
-                setQrCode("");
-            }
-        };
-
-        if (item.bookingId) {
-            getQrCode();
-        }
-    }, [dispatch, item.bookingId]);
-
-
-    useEffect(() => {
-        const getQrCode = async () => {
-            try {
-                const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
-                console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa', response)
-                setQrCode(typeof response === "string" ? response : response.qrCode || "");
-            } catch (error) {
-                console.error("Ошибка при получении QR-кода:", error);
-                setQrCode("");
-            }
-        };
-
-        if (item.uuid) {
-            getQrCode();
-        }
-    }, [dispatch, item.uuid]);
 
     const formatTime = (date) => {
         const hours = date.getHours().toString().padStart(2, '0');
