@@ -3,7 +3,6 @@ import { Calendar, Lock, Info, Coffee, Wifi, Users, MapPin, Filter } from 'lucid
 import { placeService } from '../services/placeService';
 import { useNavigate } from 'react-router-dom';
 
-
 const SeatPopover = ({ seat, timeRange, selectedDate, onClose, onBook, position }) => {
   const popoverRef = useRef(null);
   const [mounted, setMounted] = useState(false);
@@ -1215,7 +1214,6 @@ const CoworkingBookingAdmin = () => {
     <div className="max-w-5xl mx-auto p-4 lg:p-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Администрирование коворкинга</h1>
 
-
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
@@ -1267,10 +1265,7 @@ const CoworkingBookingAdmin = () => {
         </div>
 
         <div className="mb-6 coworking-map-container">
-          <CoworkingMap
-            selectedSeat={selectedSeat}
-            onSeatSelect={handleSeatSelect}
-          />
+          <CoworkingMap selectedSeat={selectedSeat} onSeatSelect={handleSeatSelect} />
         </div>
 
         {popoverSeat && (

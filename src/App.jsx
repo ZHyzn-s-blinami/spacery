@@ -10,6 +10,7 @@ import { Toaster } from 'react-hot-toast';
 import ProtectedUserRoute from './components/ProtectedUserRoute';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import UserControl from './pages/UserControl';
+import TicketList from './pages/TicketList';
 
 function App() {
   return (
@@ -78,6 +79,7 @@ function App() {
           <Route path="/admin" element={<HomeAdmin />} />
           <Route path="/admin/booking/:name/place" element={<BookingList />} />
           <Route path="/admin/userControl" element={<UserControl />} />
+          <Route path="/admin/ticket/:name/place" element={<TicketList />} />
         </Route>
       </Routes>
     </>

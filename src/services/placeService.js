@@ -39,6 +39,26 @@ export const placeService = {
       throw error;
     }
   },
+  getByName: async (name) => {
+    try {
+      const token = localStorage.getItem('userToken');
+
+      const response = await apiClient.get(`/api/place/${name}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        params: {
+          name
+        }
+      })
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  },
   post: async (placeData) => {
     try {
       const token = localStorage.getItem('userToken');
