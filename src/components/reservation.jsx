@@ -475,6 +475,7 @@ const CoworkingBooking = ({ isAdmin }) => {
 
         <div ref={mapContainerRef} className="mb-6 coworking-map-container relative">
           <CoworkingMap
+
             selectedSeat={selectedSeat}
             onSeatSelect={handleSeatSelect}
             freePlaces={freePlaces}

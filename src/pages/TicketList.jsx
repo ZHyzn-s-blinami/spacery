@@ -8,6 +8,7 @@ import {
   CheckCircle,
   XCircle,
   ChevronDown,
+  ChevronUp,
   Filter,
   Search,
   Trash,
@@ -18,9 +19,12 @@ import {
   Calendar,
   RefreshCw,
   ServerCrash,
+  MoreHorizontal,
 } from 'lucide-react';
+
 import { ticketService } from '../services/ticketService';
 import { showLimitedToast } from '../hooks/showLimitedToast';
+
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -29,16 +33,18 @@ function TicketList() {
   const [filterOptions, setFilterOptions] = useState({
     status: 'ALL',
     ticketType: 'ALL',
-    zone: 'ALL', // Added zone filter
+    zone: 'ALL',
     dateFrom: '',
     dateTo: '',
     searchQuery: '',
   });
   const [showFilters, setShowFilters] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [zones, setZones] = useState([]); // Store unique zones
+  const [zones, setZones] = useState([]);
 
   const navigate = useNavigate();
+  const [expandedTickets, setExpandedTickets] = useState({});
+
 
   const checkAdminAccess = async () => {
     try {
@@ -191,6 +197,8 @@ function TicketList() {
     }
   };
 
+
+
   const getStatusText = (status) => {
     switch (status) {
       case 'CLOSED':
@@ -287,6 +295,14 @@ function TicketList() {
     });
   };
 
+  const toggleTicketExpand = (ticketId) => {
+    setExpandedTickets(prev => ({
+      ...prev,
+      [ticketId]: !prev[ticketId]
+    }));
+  };
+
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -318,8 +334,7 @@ function TicketList() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Шапка */}
-      <header className="bg-white shadow-md sticky top-0 z-10">
+      <header className="bg-white pb-4 shadow-sm shadow-b-2 top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center">
             <div className="flex items-start md:items-center">
@@ -339,7 +354,6 @@ function TicketList() {
         </div>
       </header>
 
-      {/* Основное содержимое */}
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
@@ -360,7 +374,6 @@ function TicketList() {
             </button>
           </div>
 
-          {/* Панель фильтров */}
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="relative w-full sm:w-64">
@@ -376,29 +389,33 @@ function TicketList() {
               </div>
 
               <button
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                onClick={() => setShowFilters(!showFilters)}
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 duration-200 transition-colors"
+                  onClick={() => setShowFilters(!showFilters)}
               >
                 <Filter className="h-4 w-4" />
                 <span>Фильтры</span>
                 <ChevronDown
-                  className={`h-4 w-4 transition-transform ${
-                    showFilters ? 'transform rotate-180' : ''
-                  }`}
+                    className={`h-4 w-4 transition-transform duration-300 ${
+                        showFilters ? 'transform rotate-180' : ''
+                    }`}
                 />
               </button>
             </div>
 
-            {showFilters && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
+            <div
+                className={`overflow-hidden transition-all duration-400 ease ${
+                    showFilters ? 'max-h-126 opacity-100 mt-4' : 'max-h-0 opacity-0 mt-0'
+                }`}
+            >
+              <div className="pt-4 border-t border-gray-200">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Статус</label>
                     <select
-                      name="status"
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                      value={filterOptions.status}
-                      onChange={handleFilterChange}
+                        name="status"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        value={filterOptions.status}
+                        onChange={handleFilterChange}
                     >
                       <option value="ALL">Все статусы</option>
                       <option value="OPEN">Открыт</option>
@@ -411,10 +428,10 @@ function TicketList() {
                       Тип тикета
                     </label>
                     <select
-                      name="ticketType"
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                      value={filterOptions.ticketType}
-                      onChange={handleFilterChange}
+                        name="ticketType"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        value={filterOptions.ticketType}
+                        onChange={handleFilterChange}
                     >
                       <option value="ALL">Все типы</option>
                       <option value="CLEANING">Уборка</option>
@@ -424,20 +441,19 @@ function TicketList() {
                       <option value="OTHER">Другое</option>
                     </select>
                   </div>
-                  {/* Added Zone filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Зона</label>
                     <select
-                      name="zone"
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                      value={filterOptions.zone}
-                      onChange={handleFilterChange}
+                        name="zone"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        value={filterOptions.zone}
+                        onChange={handleFilterChange}
                     >
                       <option value="ALL">Все зоны</option>
                       {zones.map((zone) => (
-                        <option key={zone} value={zone}>
-                          {zone}
-                        </option>
+                          <option key={zone} value={zone}>
+                            {zone}
+                          </option>
                       ))}
                     </select>
                   </div>
@@ -447,11 +463,11 @@ function TicketList() {
                       Дата от
                     </label>
                     <input
-                      type="date"
-                      name="dateFrom"
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                      value={filterOptions.dateFrom}
-                      onChange={handleFilterChange}
+                        type="date"
+                        name="dateFrom"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        value={filterOptions.dateFrom}
+                        onChange={handleFilterChange}
                     />
                   </div>
                   <div>
@@ -460,115 +476,177 @@ function TicketList() {
                       Дата до
                     </label>
                     <input
-                      type="date"
-                      name="dateTo"
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                      value={filterOptions.dateTo}
-                      onChange={handleFilterChange}
+                        type="date"
+                        name="dateTo"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                        value={filterOptions.dateTo}
+                        onChange={handleFilterChange}
                     />
                   </div>
                 </div>
                 <div className="mt-4 flex justify-end">
                   <button
-                    onClick={clearFilters}
-                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                      onClick={clearFilters}
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     Сбросить фильтры
                   </button>
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Список тикетов (карточки) */}
+
           <div className="space-y-4 mb-6 lg:hidden">
             {filteredTickets.length > 0 ? (
-              filteredTickets.map((ticket) => (
-                <div key={ticket.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex items-center">
-                        <div
-                          className={`inline-flex items-center px-2 py-1 rounded-lg border ${getTicketTypeClass(
-                            ticket.ticketType,
-                          )}`}
-                        >
-                          {getTicketTypeIcon(ticket.ticketType)}
-                          <span className="ml-1 text-xs font-medium">
-                            {getTicketTypeText(ticket.ticketType)}
-                          </span>
+                filteredTickets.map((ticket) => (
+                    <div key={ticket.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                      <div className="p-4">
+                        {/* Верхняя часть карточки с типом и статусом */}
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center">
+                            <div
+                                className={`inline-flex items-center px-2 py-1 rounded-lg border ${getTicketTypeClass(
+                                    ticket.ticketType,
+                                )}`}
+                            >
+                              {getTicketTypeIcon(ticket.ticketType)}
+                              <span className="ml-1 text-xs font-medium">
+                  {getTicketTypeText(ticket.ticketType)}
+                </span>
+                            </div>
+                            <div
+                                className={`ml-2 inline-flex items-center px-2 py-1 rounded-lg border ${getStatusClass(
+                                    ticket.status,
+                                )}`}
+                            >
+                              {getStatusIcon(ticket.status)}
+                              <span className="ml-1 text-xs font-medium">
+                  {getStatusText(ticket.status)}
+                </span>
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-500 flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {getTimeAgo(ticket.createdAt)}
+                          </div>
                         </div>
-                        <div
-                          className={`ml-2 inline-flex items-center px-2 py-1 rounded-lg border ${getStatusClass(
-                            ticket.status,
-                          )}`}
-                        >
-                          {getStatusIcon(ticket.status)}
-                          <span className="ml-1 text-xs font-medium">
-                            {getStatusText(ticket.status)}
-                          </span>
+
+                        <div className="mb-2">
+                          <p className={`text-sm text-gray-800 ${!expandedTickets[ticket.id] && ticket.description.length > 50 ? 'line-clamp-2' : ''}`}>
+                            {ticket.description}
+                          </p>
                         </div>
-                      </div>
-                      <div className="text-xs text-gray-500 flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {getTimeAgo(ticket.createdAt)}
+
+                        <button
+                            onClick={() => toggleTicketExpand(ticket.id)}
+                            className={`w-full flex items-center justify-center py-1.5 px-3 mb-3 rounded-md border transition-all duration-300 ${
+                                expandedTickets[ticket.id]
+                                    ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                    : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                            }`}
+                        >
+                          <span className="text-xs font-medium mr-1.5">
+                            {expandedTickets[ticket.id] ? 'Скрыть детали' : 'Показать детали'}
+                          </span>
+                          <div className="relative w-4 h-4 flex items-center justify-center">
+                            <ChevronDown size={14}
+                                className={`absolute transition-transform duration-300 ease-in-out ${
+                                    expandedTickets[ticket.id] ? 'opacity-0 transform rotate-180' : 'opacity-100'
+                                }`}
+                            />
+                            <ChevronUp size={14}
+                                className={`absolute transition-transform duration-300 ease-in-out ${
+                                    expandedTickets[ticket.id] ? 'opacity-100' : 'opacity-0 transform -rotate-180'
+                                }`}
+                            />
+                          </div>
+                        </button>
+
+                        <div className={`grid transition-all duration-300 ease-in-out ${
+                            expandedTickets[ticket.id] ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                        }`}>
+                          <div className="overflow-hidden min-h-0">
+                            <div className={`space-y-3 p-3 rounded-lg bg-gray-50 border border-gray-100 mb-3 transition-opacity duration-300 ${
+                                expandedTickets[ticket.id] ? 'opacity-100' : 'opacity-0'
+                            }`}>
+                              <div className="text-xs text-gray-600">
+                                <span className="font-medium">Создано:</span> {formatDate(ticket.createdAt)} в {formatTime(ticket.createdAt)}
+                              </div>
+                              <div className="text-xs text-gray-600">
+                                <span className="font-medium">Последнее обновление:</span> {ticket.updatedAt ? `${formatDate(ticket.updatedAt)} в ${formatTime(ticket.updatedAt)}` : 'Не обновлялся'}
+                              </div>
+                              {ticket.assignedTo && (
+                                  <div className="text-xs text-gray-600">
+                                    <span className="font-medium">Назначен:</span> {ticket.assignedTo}
+                                  </div>
+                              )}
+                              {ticket.zone && (
+                                  <div className="text-xs text-gray-600 flex items-center">
+                                    <MapPin className="h-3 w-3 mr-1" />
+                                    <span className="font-medium">Зона:</span> {ticket.zone}
+                                  </div>
+                              )}
+                              <div className="text-xs text-gray-600">
+                                <span className="font-medium">ID тикета:</span> {ticket.id}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {!expandedTickets[ticket.id] && ticket.zone && (
+                            <div className="mb-3 text-xs text-gray-600 flex items-center">
+                              <MapPin className="h-3 w-3 mr-1" />
+                              Зона: {ticket.zone}
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center">
+                          <div className="text-xs text-gray-500">
+                            ID: {ticket.id.substring(0, 8)}...
+                          </div>
+                          <div className="flex space-x-2">
+                            {ticket.status === 'OPEN' && (
+                                <button
+                                    className="text-xs bg-yellow-50 text-yellow-700 py-1 px-3 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition-colors"
+                                    onClick={() => updateTicketStatus(ticket.id, 'IN_PROGRESS')}
+                                >
+                                  Взять в работу
+                                </button>
+                            )}
+                            {(ticket.status === 'IN_PROGRESS' || ticket.status === 'OPEN') && (
+                                <button
+                                    className="text-xs bg-green-50 text-green-700 py-1 px-3 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+                                    onClick={() => updateTicketStatus(ticket.id, 'CLOSED')}
+                                >
+                                  Закрыть
+                                </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-800 mb-3">{ticket.description}</p>
-                    {/* Added Zone display */}
-                    {ticket.zone && (
-                      <div className="mb-3 text-xs text-gray-600 flex items-center">
-                        <MapPin className="h-3 w-3 mr-1" />
-                        Зона: {ticket.zone}
-                      </div>
-                    )}
-                    <div className="flex justify-between items-center">
-                      <div className="text-xs text-gray-500">
-                        ID: {ticket.id.substring(0, 8)}...
-                      </div>
-                      <div className="flex space-x-2">
-                        {ticket.status === 'OPEN' && (
-                          <button
-                            className="text-xs bg-yellow-50 text-yellow-700 py-1 px-3 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition-colors"
-                            onClick={() => updateTicketStatus(ticket.id, 'IN_PROGRESS')}
-                          >
-                            Взять в работу
-                          </button>
-                        )}
-                        {(ticket.status === 'IN_PROGRESS' || ticket.status === 'OPEN') && (
-                          <button
-                            className="text-xs bg-green-50 text-green-700 py-1 px-3 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
-                            onClick={() => updateTicketStatus(ticket.id, 'CLOSED')}
-                          >
-                            Закрыть
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
+                ))
             ) : (
-              <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                <div className="inline-block p-4 rounded-full bg-gray-100 mb-4">
-                  <Ticket className="h-8 w-8 text-gray-500" />
+                <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                  <div className="inline-block p-4 rounded-full bg-gray-100 mb-4">
+                    <Ticket className="h-8 w-8 text-gray-500" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Тикетов не найдено</h3>
+                  <p className="text-gray-500">
+                    {filterOptions.searchQuery ||
+                    filterOptions.status !== 'ALL' ||
+                    filterOptions.ticketType !== 'ALL' ||
+                    filterOptions.zone !== 'ALL' ||
+                    filterOptions.dateFrom ||
+                    filterOptions.dateTo
+                        ? 'Попробуйте изменить параметры фильтрации'
+                        : 'Для этого места пока нет тикетов'}
+                  </p>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Тикетов не найдено</h3>
-                <p className="text-gray-500">
-                  {filterOptions.searchQuery ||
-                  filterOptions.status !== 'ALL' ||
-                  filterOptions.ticketType !== 'ALL' ||
-                  filterOptions.zone !== 'ALL' || // Added zone check
-                  filterOptions.dateFrom ||
-                  filterOptions.dateTo
-                    ? 'Попробуйте изменить параметры фильтрации'
-                    : 'Для этого места пока нет тикетов'}
-                </p>
-              </div>
             )}
           </div>
 
-          {/* Таблица тикетов (для десктопа) */}
           <div className="bg-white shadow-md rounded-lg overflow-hidden hidden lg:block">
             {filteredTickets.length > 0 ? (
               <div className="overflow-x-auto">

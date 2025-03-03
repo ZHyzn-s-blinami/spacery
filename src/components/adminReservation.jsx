@@ -180,7 +180,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           name: `A${idx + 1}`,
           x: 53 + (idx % 6) * 25,
           y: 60 + Math.floor(idx / 6) * 25,
-          // Если в freePlaces нет объекта с таким name, считаем место занятым
           isOccupied: false,
           zone: 'A',
           type: 'desk',
@@ -234,7 +233,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
     return rooms;
   };
 
-  // Обновляем список мест, когда меняются freePlaces
   useEffect(() => {
     setSeats(generateSeats());
   }, [freePlaces]);

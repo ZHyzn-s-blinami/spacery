@@ -11,21 +11,17 @@ import React, { useEffect, useState, useRef } from "react";
                     const error = useSelector(state => state.booking.error);
                     const [groupedMeetings, setGroupedMeetings] = useState({});
 
-                    // State for controlled loading with minimum time
                     const [showLoading, setShowLoading] = useState(false);
                     const loadingTimerRef = useRef(null);
-                    const MIN_LOADING_TIME = 800; // 800ms minimum loading animation time
+                    const MIN_LOADING_TIME = 800;
 
-                    // Manage loading state with minimum display time
                     useEffect(() => {
                         if (loading) {
                             setShowLoading(true);
-                            // Clear any existing timer
                             if (loadingTimerRef.current) {
                                 clearTimeout(loadingTimerRef.current);
                             }
                         } else if (showLoading) {
-                            // Set minimum display time when loading has finished
                             loadingTimerRef.current = setTimeout(() => {
                                 setShowLoading(false);
                             }, MIN_LOADING_TIME);
@@ -44,7 +40,6 @@ import React, { useEffect, useState, useRef } from "react";
 
                     useEffect(() => {
                         if (meetings && meetings.length > 0) {
-                            // Filter meetings by status
                             const filteredMeetings = meetings.filter(item =>
                                 item && item.status === statusFilter && item.startAt && item.endAt
                             );
@@ -120,10 +115,10 @@ import React, { useEffect, useState, useRef } from "react";
                                 </h3>
                                 {statusFilter === "PENDING" && (
                                     <>
-                                        <p className="text-gray-500 mb-6">Забронируйте место для вашей с��едующей встречи</p>
+                                        <p className="text-gray-500 mb-6">Забронируйте место для вашей следующей встречи</p>
                                         <button onClick={handleRedirect}
                                                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
-                                            Забронироват�� место
+                                            Забронировать место
                                         </button>
                                     </>
                                 )}

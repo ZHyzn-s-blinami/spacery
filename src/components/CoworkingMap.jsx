@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SeatPopup } from './SeatPopup';
+import {
+  Plus,
+  Minus,
+  RotateCcw,
+  Filter,
+  FilterX,
+  Lock,
+  Tv
+} from 'lucide-react';
 
 const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
   const [scale, setScale] = useState(1);
@@ -322,13 +331,13 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
             onClick={() => setScale((prev) => Math.min(2, prev + 0.2))}
           >
-            +
+            <Plus size={14} />
           </button>
           <button
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
             onClick={() => setScale((prev) => Math.max(0.5, prev - 0.2))}
           >
-            -
+            <Minus size={14} />
           </button>
           <button
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
@@ -337,13 +346,13 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
               setPosition({ x: 0, y: 0 });
             }}
           >
-            ↺
+            <RotateCcw size={14} />
           </button>
           <button
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
             onClick={toggleFilters}
           >
-            {filtersExpanded ? '↑' : '↓'}
+            {filtersExpanded ? <FilterX size={14} /> : <Filter size={14} />}
           </button>
         </div>
 
@@ -1211,20 +1220,22 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
             ВХОД
           </text>
 
+
           {seats.map((seat) => (
             <>
               <g
-                key={seat.id}
-                onClick={() =>
-                  !isAdmin ? !seat.isOccupied && onSeatSelect(seat) : navigate(`/admin/ticket/${seat.name}/place`)
-                }
-                style={{
-                  cursor: isAdmin ? 'pointer' : !seat.isOccupied ? 'pointer' : 'not-allowed',
-                  pointerEvents: 'auto',
-                }}
-                data-seat="true"
-                data-seat-id={seat.id}
+                  key={seat.id}
+                  onClick={() =>
+                      !isAdmin ? !seat.isOccupied && onSeatSelect(seat) : navigate(`/admin/booking/${seat.name}/place`)
+                  }
+                  style={{
+                    cursor: isAdmin ? 'pointer' : !seat.isOccupied ? 'pointer' : 'not-allowed',
+                    pointerEvents: 'auto',
+                  }}
+                  data-seat="true"
+                  data-seat-id={seat.id}
               >
+
                 <rect
                   x={seat.x - 9}
                   y={seat.y - 9}
@@ -1290,14 +1301,17 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
                   {seat.name}
                 </text>
                 {seat.isOccupied && (
-                  <path
-                    transform={`translate(${seat.x - 3}, ${seat.y + 5}) scale(0.4)`}
-                    d="M4 8V6a4 4 0 118 0v2m1 0h2v8a2 2 0 01-2 2H3a2 2 0 01-2-2v-8h2m2 0h8"
-                    stroke="#9ca3af"
-                    strokeWidth="2"
-                    fill="none"
-                    data-seat="true"
-                  />
+                    <Lock
+                        className="text-gray-400"
+                        size={10}
+                        data-seat="true"
+                        style={{
+                          position: 'absolute',
+                          transform: 'translate(-50%, -50%)',
+                          left: `${seat.x}px`,
+                          top: `${seat.y + 5}px`
+                        }}
+                    />
                 )}
               </g>
               {showPopup && <SeatPopup seat={seat} onClose={closePopup} />}

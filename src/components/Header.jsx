@@ -9,7 +9,7 @@ const Header = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-      <header className="px-5 py-4 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-md mx-auto flex flex-col sm:flex-row items-center justify-between border border-gray-200 rounded-[25px] mb-6">
+      <header className="px-5 py-4 bg-gradient-to-r  from-blue-50 to-indigo-100 shadow-md mx-auto flex flex-col sm:flex-row items-center justify-between border border-gray-200 rounded-[25px] mb-6">
         <div className="flex items-center w-full sm:w-auto justify-between">
           <div className="flex items-center">
             <Calendar className="text-indigo-600 mr-2" size={28} />

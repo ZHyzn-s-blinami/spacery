@@ -15,7 +15,7 @@ const TimeRangeSlider = ({
                          }) => {
     const trackRef = useRef(null);
 
-    const [activeHandle, setActiveHandle] = useState(null); // 'start', 'end' или null
+    const [activeHandle, setActiveHandle] = useState(null);
     const [dragStartPos, setDragStartPos] = useState(0);
     const [initialStartPx, setInitialStartPx] = useState(0);
     const [initialEndPx, setInitialEndPx] = useState(0);
