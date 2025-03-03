@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import { adminService } from '../services/adminService';
 import {
   Calendar,
@@ -16,6 +15,7 @@ import {
 import { useParams } from 'react-router-dom';
 import { bookingService } from '../services/bookingService';
 import { pingService } from '../services/pingService';
+import { showLimitedToast } from '../hooks/showLimitedToast';
 
 const BookingList = () => {
   const { name } = useParams();
@@ -109,10 +109,10 @@ const BookingList = () => {
             : booking,
         ),
       );
-      toast.success('Бронь отменена');
+      showLimitedToast('Бронь отменена', 'success');
       return response.data;
     } catch (error) {
-      toast.error('Ошибка при отмене брони');
+      showLimitedToast('Ошибка при отмене брони', 'error');
       console.error('Ошибка при отмене брони:', error);
       throw error;
     }
