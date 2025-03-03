@@ -190,7 +190,7 @@ public class BookingService {
             );
         } catch (JwtException e) {
             log.warn("Invalid booking token: {}", e.getMessage());
-            throw new IllegalArgumentException("Invalid booking token");
+            throw new IllegalArgumentException("Invalid booking token: " + e.getMessage());
         }
     }
 
