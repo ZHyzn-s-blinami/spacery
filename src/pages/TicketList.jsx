@@ -14,9 +14,11 @@ import {
   Coffee,
   MapPin,
   HelpCircle,
+  Clock,
+  Calendar,
+  RefreshCw,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
-import { pingService } from '../services/pingService';
 import { ticketService } from '../services/ticketService';
 import { placeService } from '../services/placeService';
 
@@ -39,6 +41,7 @@ function TicketList() {
     searchQuery: '',
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigate = useNavigate();
 
@@ -55,33 +58,44 @@ function TicketList() {
     }
   };
 
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      // Получаем информацию о месте
+      if (name) {
+        const placeData = await placeService.getByName(name);
+        setPlace(placeData);
+      }
+
+      // Получаем список тикетов
+      const ticketsData = await ticketService.getByPlace(name);
+      setTickets(ticketsData);
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError('Не удалось загрузить данные. Пожалуйста, попробуйте позже.');
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     checkAdminAccess();
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-
-        // Получаем информацию о месте
-        if (name) {
-          const placeData = await placeService.getByName(name);
-          setPlace(placeData);
-        }
-
-        // Получаем список тикетов
-        const ticketsData = await ticketService.getByPlace(name);
-        setTickets(ticketsData);
-
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Не удалось загрузить данные. Пожалуйста, попробуйте позже.');
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [name]);
+
+  const refreshData = async () => {
+    setRefreshing(true);
+    try {
+      await fetchData();
+      toast.success('Данные обновлены');
+    } catch (err) {
+      toast.error('Не удалось обновить данные');
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -91,6 +105,25 @@ function TicketList() {
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const getTimeAgo = (dateString) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) {
+      return 'только что';
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} мин. назад`;
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours} ч. назад`;
+    } else {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days} д. назад`;
+    }
   };
 
   const updateTicketStatus = async (id, newStatus) => {
@@ -151,13 +184,13 @@ function TicketList() {
   const getStatusClass = (status) => {
     switch (status) {
       case 'CLOSED':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 border-green-200';
       case 'IN_PROGRESS':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'OPEN':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border-red-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -177,11 +210,11 @@ function TicketList() {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'CLOSED':
-        return <CheckCircle className="h-5 w-5 text-green-600" />;
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
       case 'IN_PROGRESS':
-        return <AlertCircle className="h-5 w-5 text-yellow-600" />;
+        return <AlertCircle className="h-4 w-4 text-yellow-600" />;
       case 'OPEN':
-        return <XCircle className="h-5 w-5 text-red-600" />;
+        return <XCircle className="h-4 w-4 text-red-600" />;
       default:
         return null;
     }
@@ -207,17 +240,34 @@ function TicketList() {
   const getTicketTypeIcon = (type) => {
     switch (type) {
       case 'CLEANING':
-        return <Trash className="h-5 w-5 text-blue-600" />;
+        return <Trash className="h-4 w-4 text-blue-600" />;
       case 'TECHNICAL_PROBLEM':
-        return <Tool className="h-5 w-5 text-orange-600" />;
+        return <Tool className="h-4 w-4 text-orange-600" />;
       case 'FOOD':
-        return <Coffee className="h-5 w-5 text-green-600" />;
+        return <Coffee className="h-4 w-4 text-green-600" />;
       case 'PLACE_TAKEN':
-        return <MapPin className="h-5 w-5 text-red-600" />;
+        return <MapPin className="h-4 w-4 text-red-600" />;
       case 'OTHER':
-        return <HelpCircle className="h-5 w-5 text-purple-600" />;
+        return <HelpCircle className="h-4 w-4 text-purple-600" />;
       default:
         return null;
+    }
+  };
+
+  const getTicketTypeClass = (type) => {
+    switch (type) {
+      case 'CLEANING':
+        return 'bg-blue-50 text-blue-700 border-blue-100';
+      case 'TECHNICAL_PROBLEM':
+        return 'bg-orange-50 text-orange-700 border-orange-100';
+      case 'FOOD':
+        return 'bg-green-50 text-green-700 border-green-100';
+      case 'PLACE_TAKEN':
+        return 'bg-red-50 text-red-700 border-red-100';
+      case 'OTHER':
+        return 'bg-purple-50 text-purple-700 border-purple-100';
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-100';
     }
   };
 
@@ -226,6 +276,16 @@ function TicketList() {
     setFilterOptions({
       ...filterOptions,
       [name]: value,
+    });
+  };
+
+  const clearFilters = () => {
+    setFilterOptions({
+      status: 'ALL',
+      ticketType: 'ALL',
+      dateFrom: '',
+      dateTo: '',
+      searchQuery: '',
     });
   };
 
@@ -243,10 +303,16 @@ function TicketList() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center p-6 bg-white rounded-lg shadow-sm max-w-md">
+        <div className="text-center p-6 bg-white rounded-lg shadow-md max-w-md">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">Ошибка</h2>
           <p className="text-gray-600">{error}</p>
+          <button
+            onClick={refreshData}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Попробовать снова
+          </button>
         </div>
       </div>
     );
@@ -255,22 +321,30 @@ function TicketList() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Шапка */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <header className="bg-white shadow-md sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Список тикетов{place.name ? `: ${place.name}` : ''}
-              </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                {place.description || 'Управление заявками на обслуживание помещений'}
-              </p>
+            <div className="flex items-start md:items-center">
+              <div className="bg-blue-100 p-2 rounded-lg mr-3 hidden sm:block">
+                <Ticket className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                  Список тикетов{place.name ? `: ${place.name}` : ''}
+                </h1>
+                <p className="mt-1 text-sm text-gray-500">
+                  {place.description || 'Управление заявками на обслуживание помещений'}
+                </p>
+              </div>
             </div>
             {place.id && (
-              <div className="mt-4 md:mt-0 flex items-center gap-2">
-                <span className="text-sm text-gray-600 mr-2">
-                  Вместимость: {place.capacity} человек
-                </span>
+              <div className="mt-4 md:mt-0 flex items-center">
+                <div className="flex items-center px-3 py-1 bg-gray-100 rounded-lg">
+                  <MapPin className="h-4 w-4 text-gray-500 mr-1" />
+                  <span className="text-sm text-gray-600">
+                    Вместимость: <span className="font-medium">{place.capacity}</span> человек
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -280,10 +354,26 @@ function TicketList() {
       {/* Основное содержимое */}
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Заявки на обслуживание</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Заявки
+              {filteredTickets.length > 0 && (
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  ({filteredTickets.length})
+                </span>
+              )}
+            </h2>
+            <button
+              onClick={refreshData}
+              className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+              Обновить
+            </button>
+          </div>
 
           {/* Панель фильтров */}
-          <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -291,14 +381,14 @@ function TicketList() {
                   type="text"
                   name="searchQuery"
                   placeholder="Поиск по описанию..."
-                  className="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   value={filterOptions.searchQuery}
                   onChange={handleFilterChange}
                 />
               </div>
 
               <button
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <Filter className="h-4 w-4" />
@@ -318,7 +408,7 @@ function TicketList() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Статус</label>
                     <select
                       name="status"
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={filterOptions.status}
                       onChange={handleFilterChange}
                     >
@@ -334,7 +424,7 @@ function TicketList() {
                     </label>
                     <select
                       name="ticketType"
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={filterOptions.ticketType}
                       onChange={handleFilterChange}
                     >
@@ -347,32 +437,126 @@ function TicketList() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Дата от</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <Calendar className="h-4 w-4 inline mr-1" />
+                      Дата от
+                    </label>
                     <input
                       type="date"
                       name="dateFrom"
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={filterOptions.dateFrom}
                       onChange={handleFilterChange}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Дата до</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <Calendar className="h-4 w-4 inline mr-1" />
+                      Дата до
+                    </label>
                     <input
                       type="date"
                       name="dateTo"
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                       value={filterOptions.dateTo}
                       onChange={handleFilterChange}
                     />
                   </div>
                 </div>
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={clearFilters}
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                  >
+                    Сбросить фильтры
+                  </button>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Таблица тикетов */}
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+          {/* Список тикетов (карточки) */}
+          <div className="space-y-4 mb-6 lg:hidden">
+            {filteredTickets.length > 0 ? (
+              filteredTickets.map((ticket) => (
+                <div key={ticket.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center">
+                        <div
+                          className={`inline-flex items-center px-2 py-1 rounded-lg border ${getTicketTypeClass(
+                            ticket.ticketType,
+                          )}`}
+                        >
+                          {getTicketTypeIcon(ticket.ticketType)}
+                          <span className="ml-1 text-xs font-medium">
+                            {getTicketTypeText(ticket.ticketType)}
+                          </span>
+                        </div>
+                        <div
+                          className={`ml-2 inline-flex items-center px-2 py-1 rounded-lg border ${getStatusClass(
+                            ticket.status,
+                          )}`}
+                        >
+                          {getStatusIcon(ticket.status)}
+                          <span className="ml-1 text-xs font-medium">
+                            {getStatusText(ticket.status)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500 flex items-center">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {getTimeAgo(ticket.createdAt)}
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-800 mb-3">{ticket.description}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs text-gray-500">
+                        ID: {ticket.id.substring(0, 8)}...
+                      </div>
+                      <div className="flex space-x-2">
+                        {ticket.status === 'OPEN' && (
+                          <button
+                            className="text-xs bg-yellow-50 text-yellow-700 py-1 px-3 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition-colors"
+                            onClick={() => updateTicketStatus(ticket.id, 'IN_PROGRESS')}
+                          >
+                            Взять в работу
+                          </button>
+                        )}
+                        {(ticket.status === 'IN_PROGRESS' || ticket.status === 'OPEN') && (
+                          <button
+                            className="text-xs bg-green-50 text-green-700 py-1 px-3 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+                            onClick={() => updateTicketStatus(ticket.id, 'CLOSED')}
+                          >
+                            Закрыть
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                <div className="inline-block p-4 rounded-full bg-gray-100 mb-4">
+                  <Ticket className="h-8 w-8 text-gray-500" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Тикетов не найдено</h3>
+                <p className="text-gray-500">
+                  {filterOptions.searchQuery ||
+                  filterOptions.status !== 'ALL' ||
+                  filterOptions.ticketType !== 'ALL' ||
+                  filterOptions.dateFrom ||
+                  filterOptions.dateTo
+                    ? 'Попробуйте изменить параметры фильтрации'
+                    : 'Для этого места пока нет тикетов'}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Таблица тикетов (для десктопа) */}
+          <div className="bg-white shadow-md rounded-lg overflow-hidden hidden lg:block">
             {filteredTickets.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -418,14 +602,18 @@ function TicketList() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredTickets.map((ticket) => (
-                      <tr key={ticket.id} className="hover:bg-gray-50">
+                      <tr key={ticket.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {ticket.id.substring(0, 8)}...
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
+                          <div
+                            className={`inline-flex items-center px-2 py-1 rounded-lg border ${getTicketTypeClass(
+                              ticket.ticketType,
+                            )}`}
+                          >
                             {getTicketTypeIcon(ticket.ticketType)}
-                            <span className="ml-2 text-sm font-medium text-gray-900">
+                            <span className="ml-1 text-xs font-medium">
                               {getTicketTypeText(ticket.ticketType)}
                             </span>
                           </div>
@@ -438,19 +626,21 @@ function TicketList() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
+                          <div
+                            className={`inline-flex items-center px-2 py-1 rounded-lg border ${getStatusClass(
+                              ticket.status,
+                            )}`}
+                          >
                             {getStatusIcon(ticket.status)}
-                            <span
-                              className={`ml-1 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(
-                                ticket.status,
-                              )}`}
-                            >
+                            <span className="ml-1 text-xs font-medium">
                               {getStatusText(ticket.status)}
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(ticket.createdAt)}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500">
+                            {formatDate(ticket.createdAt)}
+                          </div>
                           <div className="text-xs text-gray-400">
                             {formatTime(ticket.createdAt)}
                           </div>
@@ -459,23 +649,15 @@ function TicketList() {
                           <div className="flex justify-end gap-2">
                             {ticket.status === 'OPEN' && (
                               <button
-                                className="text-yellow-600 hover:text-yellow-900 py-1 px-2 rounded hover:bg-yellow-50"
+                                className="text-yellow-600 hover:text-yellow-900 py-1 px-3 rounded-lg hover:bg-yellow-50 transition-colors"
                                 onClick={() => updateTicketStatus(ticket.id, 'IN_PROGRESS')}
                               >
                                 Взять в работу
                               </button>
                             )}
-                            {ticket.status === 'IN_PROGRESS' && (
+                            {(ticket.status === 'IN_PROGRESS' || ticket.status === 'OPEN') && (
                               <button
-                                className="text-green-600 hover:text-green-900 py-1 px-2 rounded hover:bg-green-50"
-                                onClick={() => updateTicketStatus(ticket.id, 'CLOSED')}
-                              >
-                                Закрыть
-                              </button>
-                            )}
-                            {ticket.status === 'OPEN' && (
-                              <button
-                                className="text-green-600 hover:text-green-900 py-1 px-2 rounded hover:bg-green-50"
+                                className="text-green-600 hover:text-green-900 py-1 px-3 rounded-lg hover:bg-green-50 transition-colors"
                                 onClick={() => updateTicketStatus(ticket.id, 'CLOSED')}
                               >
                                 Закрыть
