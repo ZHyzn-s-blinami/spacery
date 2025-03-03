@@ -46,12 +46,13 @@ const MeetingList = () => {
     }, [meetings]);
 
     const handleRedirect = () => {
-        location.href ='/'
+        location.href = '/'
     }
 
     const refreshMeetings = () => {
         dispatch(fetchUserMeetings());
     };
+
 
     if (loading) {
         return (
@@ -89,6 +90,8 @@ const MeetingList = () => {
         );
     }
 
+    console.log(groupedMeetings)
+
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
@@ -103,15 +106,11 @@ const MeetingList = () => {
                 </button>
             </div>
 
-            {Object.keys(groupedMeetings).map(date => (
+            {Object.keys(groupedMeetings).map((date, index) => (
                 <div key={date} className="mb-8">
                     <div className="flex items-center mb-4">
                         <div className="bg-blue-100 text-blue-800 rounded-full px-4 py-1.5 text-sm font-medium">
-                            {new Date(date).toLocaleDateString('ru-RU', {
-                                weekday: 'long',
-                                day: 'numeric',
-                                month: 'long'
-                            })}
+                            {Object.keys(groupedMeetings)[index]}
                         </div>
                         <div className="ml-3 h-px bg-gray-200 flex-grow"></div>
                     </div>
