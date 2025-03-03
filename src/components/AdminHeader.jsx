@@ -21,7 +21,9 @@ const Header = () => {
         <div className="flex items-center">
           <Calendar className="text-indigo-600 mr-2" size={28} />
           <span className="text-gray-800 text-[30px] sm:text-[36px] md:text-[42px] font-bold tracking-tight">
-            Book<span className="text-indigo-600">IT</span>
+            <Link to="/admin">
+              Book<span className="text-indigo-600">IT</span>
+            </Link>
           </span>
         </div>
 
