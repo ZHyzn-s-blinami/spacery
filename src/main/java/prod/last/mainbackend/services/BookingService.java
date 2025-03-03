@@ -17,6 +17,7 @@ import prod.last.mainbackend.models.PlaceModel;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.BookingTime;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
+import prod.last.mainbackend.models.response.BookingWithUserAndPlaceResponse;
 import prod.last.mainbackend.models.response.BookingWithUserResponse;
 import prod.last.mainbackend.repositories.BookingRepository;
 import prod.last.mainbackend.repositories.PlaceRepository;
@@ -152,7 +153,7 @@ public class BookingService {
                 .compact();
     }
 
-    public boolean validateBookingCode(String token) {
+    public BookingWithUserAndPlaceResponse validateBookingCode(String token) {
         try {
             Jws<Claims> claimsJws = Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
@@ -163,7 +164,11 @@ public class BookingService {
                     .orElseThrow(() -> new IllegalArgumentException("Booking not found"));
 
             if (booking.getStatus() != BookingStatus.PENDING) {
-                return false;
+                return  new BookingWithUserAndPlaceResponse(
+                        booking,
+                        userRepository.findById(booking.getUserId()).orElseThrow(() -> new IllegalArgumentException("User not found")),
+                        placeRepository.findById(booking.getPlaceId()).orElseThrow(() -> new IllegalArgumentException("Place not found"))
+                );
             }
 
             Date expiration = claimsJws.getBody().getExpiration();
@@ -171,13 +176,21 @@ public class BookingService {
             if (expiration.after(new Date())) {
                 booking.updateStatus(BookingStatus.ACCEPTED);
                 bookingRepository.save(booking);
-                return true;
+                return  new BookingWithUserAndPlaceResponse(
+                        booking,
+                        userRepository.findById(booking.getUserId()).orElseThrow(() -> new IllegalArgumentException("User not found")),
+                        placeRepository.findById(booking.getPlaceId()).orElseThrow(() -> new IllegalArgumentException("Place not found"))
+                );
             }
 
-            return false;
+            return new BookingWithUserAndPlaceResponse(
+                    booking,
+                    userRepository.findById(booking.getUserId()).orElseThrow(() -> new IllegalArgumentException("User not found")),
+                    placeRepository.findById(booking.getPlaceId()).orElseThrow(() -> new IllegalArgumentException("Place not found"))
+            );
         } catch (JwtException e) {
             log.warn("Invalid booking token: {}", e.getMessage());
-            return false;
+            throw new IllegalArgumentException("Invalid booking token");
         }
     }
 

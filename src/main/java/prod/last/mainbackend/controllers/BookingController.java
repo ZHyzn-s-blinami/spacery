@@ -16,6 +16,7 @@ import prod.last.mainbackend.models.BookingStatus;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.BookingRequest;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
+import prod.last.mainbackend.models.response.BookingWithUserAndPlaceResponse;
 import prod.last.mainbackend.models.response.BookingWithUserResponse;
 import prod.last.mainbackend.services.BookingService;
 import prod.last.mainbackend.services.UserService;
@@ -126,21 +127,21 @@ public class BookingController {
     @ApiResponse(
             responseCode = "200",
             description = "Успешная проверка qr-кода бронирования",
-            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": true}"))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookingWithUserAndPlaceResponse.class))
     )
     @ApiResponse(
             responseCode = "404",
             description = "Бронирование не найдено",
-            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"status\": false}"))
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "Error message"))
     )
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/booking/{token}/qr/check")
     public ResponseEntity<?> qrCheck(@PathVariable String token) {
-        if (!bookingService.validateBookingCode(token)) {
-            return ResponseEntity.status(404).body("{\"status\": false}");
+        try {
+            return ResponseEntity.ok(bookingService.validateBookingCode(token));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(e.getMessage());
         }
-
-        return ResponseEntity.ok("{\"status\": true}");
     }
 
     @Operation(
