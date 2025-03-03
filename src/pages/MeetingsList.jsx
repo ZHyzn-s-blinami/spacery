@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fetchUserMeetings} from '../store/user/thunks';
 import MeetingList from '../components/user/MeetingsList';
 import {Link} from 'react-router-dom';
-import {CalendarIcon, CheckCircleIcon, XCircleIcon, ClockIcon, ArrowLeftIcon} from 'lucide-react';
+import {BookKey, CheckCircleIcon, XCircleIcon, ClockIcon, ArrowLeftIcon} from 'lucide-react';
 
 const MeetingsPage = () => {
     const dispatch = useDispatch();
@@ -12,7 +12,7 @@ const MeetingsPage = () => {
     const [showLoading, setShowLoading] = useState(false);
 
     const tabs = [
-        {id: 'PENDING', label: 'Предстоящие', icon: CalendarIcon},
+        {id: 'PENDING', label: 'Предстоящие', icon: BookKey},
         {id: 'ACCEPTED', label: 'Подтвержденные', icon: CheckCircleIcon},
         {id: 'REJECTED', label: 'Отмененные', icon: XCircleIcon},
         {id: 'OVERDUE', label: 'Просроченные', icon: ClockIcon},
@@ -49,7 +49,7 @@ const MeetingsPage = () => {
                             <Link to="/profile" className="mr-3 p-2 hover:bg-blue-100 rounded-full transition-colors">
                                 <ArrowLeftIcon size={20} className="text-gray-700"/>
                             </Link>
-                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Мои брони</h1>
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Мои бронирования</h1>
                         </div>
                     </div>
 

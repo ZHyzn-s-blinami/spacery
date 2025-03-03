@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
-import {Map, User, Menu, X, Calendar} from 'lucide-react';
+import {Map, User, Menu, X, Calendar, BookKey} from 'lucide-react';
 
 const Header = () => {
     const location = useLocation();
@@ -58,8 +58,8 @@ const Header = () => {
                                     : 'bg-white text-gray-700 hover:bg-indigo-50 border border-gray-200'
                             }`}
                         >
-                            <User size={18} className="mr-2"/>
-                            <span className="font-medium">Мои брони</span>
+                            <BookKey size={18} className="mr-2"/>
+                            <span className="font-medium">Бронирования</span>
                         </div>
                     </Link>
                     <Link to="/profile" className="w-full">
