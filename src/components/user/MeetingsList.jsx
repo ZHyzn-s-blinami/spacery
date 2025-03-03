@@ -45,9 +45,14 @@ const MeetingList = () => {
         }
     }, [meetings]);
 
+    const handleRedirect = () => {
+        location.href = '/'
+    }
+
     const refreshMeetings = () => {
         dispatch(fetchUserMeetings());
     };
+
 
     if (loading) {
         return (
@@ -78,12 +83,14 @@ const MeetingList = () => {
                 <CalendarIcon size={48} className="mx-auto mb-4 text-gray-300" />
                 <h3 className="text-xl font-medium text-gray-700 mb-2">У вас нет предстоящих броней</h3>
                 <p className="text-gray-500 mb-6">Забронируйте место для вашей следующей встречи</p>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
+                <button onClick={handleRedirect} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
                     Забронировать место
                 </button>
             </div>
         );
     }
+
+    console.log(groupedMeetings)
 
     return (
         <div>
@@ -99,15 +106,11 @@ const MeetingList = () => {
                 </button>
             </div>
 
-            {Object.keys(groupedMeetings).map(date => (
+            {Object.keys(groupedMeetings).map((date, index) => (
                 <div key={date} className="mb-8">
                     <div className="flex items-center mb-4">
                         <div className="bg-blue-100 text-blue-800 rounded-full px-4 py-1.5 text-sm font-medium">
-                            {new Date(date).toLocaleDateString('ru-RU', {
-                                weekday: 'long',
-                                day: 'numeric',
-                                month: 'long'
-                            })}
+                            {Object.keys(groupedMeetings)[index]}
                         </div>
                         <div className="ml-3 h-px bg-gray-200 flex-grow"></div>
                     </div>
