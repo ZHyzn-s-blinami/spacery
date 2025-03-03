@@ -84,11 +84,10 @@ export const cancelUserMeeting = createAsyncThunk(
 
 export const fetchQrCode = createAsyncThunk(
   'users/fetchQrCode',
-  async (_, { rejectWithValue }) => {
+  async (uuid, { rejectWithValue }) => {
     try {
-      const response = await bookingService.getQrCode();
-      console.log(response);
-      return response;
+      const response = await bookingService.getQrCode(uuid);
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.message);
     }

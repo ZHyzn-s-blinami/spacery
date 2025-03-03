@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { cancelUserMeeting } from "../../store/user/thunks";
 import { fetchUserMeetings } from "../../store/user/thunks";
 import { updateMeeting } from "../../store/booking/thunks"
+import { fetchQrCode } from "../../store/user/thunks";
 import {
     ClockIcon,
     MapPinIcon,
@@ -25,6 +26,7 @@ const MeetingItem = ({ item }) => {
     }
 
     const dispatch = useDispatch();
+    const [qrCode, setQrCode] = useState("");
     const [showDetails, setShowDetails] = useState(false);
     const [showRescheduleModal, setShowRescheduleModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
@@ -71,6 +73,24 @@ const MeetingItem = ({ item }) => {
             setCancelModalMounted(false);
         }
     }, [showCancelModal, isCancelModalClosing]);
+
+  
+    useEffect(() => {
+      const getQrCode = async () => {
+        try {
+          const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
+          setQrCode(typeof response === "string" ? response : response.qrCode || "");
+        } catch (error) {
+          console.error("Ошибка при получении QR-кода:", error);
+          setQrCode("");
+        }
+      };
+  
+      if (item.uuid) {
+        getQrCode();
+      }
+    }, [dispatch, item.uuid]);
+
 
     const formatTime = (date) => {
         const hours = date.getHours().toString().padStart(2, '0');
@@ -353,7 +373,7 @@ const MeetingItem = ({ item }) => {
                             </span>
                         </div>
                         <div className="bg-white inline-block p-3 rounded-md border-2 border-dotted border-gray-200">
-                            <QRCode value={item.bookingId} size={120} />
+                            <QRCode value={qrCode} size={120} />
                         </div>
                         <div className="mt-2 text-xs text-gray-500">
                             Покажите этот код при входе
