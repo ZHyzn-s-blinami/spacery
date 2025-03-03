@@ -20,6 +20,7 @@ import {
   ServerCrash,
 } from 'lucide-react';
 import { ticketService } from '../services/ticketService';
+import { showLimitedToast } from '../hooks/showLimitedToast';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -80,9 +81,9 @@ function TicketList() {
     setRefreshing(true);
     try {
       await fetchData();
-      toast.success('Данные обновлены');
+      showLimitedToast('Данные обновлены', 'success');
     } catch (err) {
-      toast.error('Не удалось обновить данные');
+      showLimitedToast('Не удалось обновить данные', 'error');
     } finally {
       setRefreshing(false);
     }
@@ -128,10 +129,10 @@ function TicketList() {
             : ticket,
         ),
       );
-      toast.success(`Статус тикета изменен на "${getStatusText(newStatus)}"`);
+      showLimitedToast(`Статус тикета изменен на "${getStatusText(newStatus)}"`, 'success');
       return response.data;
     } catch (error) {
-      toast.error('Ошибка при обновлении статуса тикета');
+      showLimitedToast('Ошибка при обновлении статуса тикета', 'error');
       console.error('Ошибка при обновлении статуса тикета:', error);
       throw error;
     }
