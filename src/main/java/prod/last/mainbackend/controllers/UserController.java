@@ -135,7 +135,7 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Получение списка всех пользователей",
+            summary = "Получение списка всех пользователей доступно только для администраторов",
             description = "Возвращает список всех пользователей. Доступно только для администраторов",
             security = @SecurityRequirement(name = "bearerAuth")
     )
@@ -234,7 +234,7 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Блокировка пользователя",
+        summary = "Блокировка пользователя доступно только для администраторов",
         description = "Блокирует пользователя по его ID. Доступно только для администраторов",
         security = @SecurityRequirement(name = "bearerAuth")
     )
@@ -260,7 +260,7 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Разблокировка пользователя",
+        summary = "Разблокировка пользователя доступно только для администраторов",
         description = "Разблокирует пользователя по его ID. Доступно только для администраторов",
         security = @SecurityRequirement(name = "bearerAuth")
     )
@@ -286,7 +286,7 @@ public class UserController {
     }
 
     @Operation(
-        summary = "Удаление пользователя",
+        summary = "Удаление пользователя доступно только для администраторов",
         description = "Удаляет пользователя по его ID. Доступно только для администраторов",
         security = @SecurityRequirement(name = "bearerAuth")
     )

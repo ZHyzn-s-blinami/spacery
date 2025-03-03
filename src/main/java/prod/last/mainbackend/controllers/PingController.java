@@ -46,6 +46,27 @@ public class PingController {
         return ResponseEntity.ok("PONG");
     }
 
+
+    @Operation(
+            summary = "Эндпоинт только для администраторов",
+            description = "Доступен только пользователям с ролью ADMIN",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Успешный доступ к защищенному ресурсу",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "This is an admin-only endpoint"))
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Доступ запрещен (недостаточно прав)",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\":\"Access Denied\",\"status\":403}"))
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Неавторизован",
+            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\":\"Full authentication is required to access this resource\",\"status\":401}"))
+    )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin-only")
     public ResponseEntity<?> adminOnlyEndpoint() {

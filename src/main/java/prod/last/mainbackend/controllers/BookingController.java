@@ -121,7 +121,7 @@ public class BookingController {
     }
 
     @Operation(
-            summary = "Проверка qr-кода бронирования",
+            summary = "Проверка qr-кода бронирования доступно только для администратора",
             description = "Проверяет qr-код бронирования",
             security = @SecurityRequirement(name = "bearerAuth")
     )
@@ -146,7 +146,7 @@ public class BookingController {
     }
 
     @Operation(
-            summary = "Получение всех бронирований",
+            summary = "Получение всех бронирований по месту доступно только для администратора",
             description = "Получает все бронирования",
             security = @SecurityRequirement(name = "bearerAuth")
     )
