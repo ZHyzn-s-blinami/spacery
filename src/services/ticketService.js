@@ -29,10 +29,8 @@ export const ticketService = {
           'Access-Control-Allow-Origin': '*',
         }
       })
-      console.log(response);
       return response.data;
     } catch (error) {
-      console.log(error);
     }
   },
   updateTicketStatus: async(ticketId, status) => {
@@ -46,7 +44,6 @@ export const ticketService = {
       }
     })
 
-    console.log(response.data);
     return response.data;
   },
   getAll: async () => {

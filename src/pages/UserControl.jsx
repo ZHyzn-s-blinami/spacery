@@ -592,26 +592,26 @@ const UserControl = () => {
 
             <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
                 <div className="mb-6">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
                         <h2 className="text-xl font-semibold text-gray-900">
                             Пользователи
                             {filteredUsers.length > 0 && (
                                 <span className="ml-2 text-sm font-normal text-gray-500">
-                  ({filteredUsers.length})
-                </span>
+                ({filteredUsers.length})
+            </span>
                             )}
                         </h2>
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             <button
                                 onClick={refreshData}
-                                className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                className="inline-flex items-center justify-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                             >
                                 <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`}/>
                                 Обновить
                             </button>
                             <button
                                 onClick={handleCreateClick}
-                                className="inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                                className="inline-flex items-center justify-center px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
                             >
                                 <Plus className="h-4 w-4 mr-2"/>
                                 Добавить пользователя
@@ -762,17 +762,17 @@ const UserControl = () => {
                                                 <div
                                                     className={`inline-flex items-center px-2 py-1 rounded-lg border ${getRoleClass(user.role)}`}
                                                 >
-                          <span className="text-xs font-medium">
-                            {user.role === 'ROLE_ADMIN' ? 'Админ' : user.role === 'ROLE_USER' ? 'Пользователь' : 'Аноним'}
-                          </span>
+                                                    <span className="text-xs font-medium">
+                                                      {user.role === 'ROLE_ADMIN' ? 'Админ' : user.role === 'ROLE_USER' ? 'Пользователь' : 'Аноним'}
+                                                    </span>
                                                 </div>
                                                 <div
                                                     className={`ml-2 inline-flex items-center px-2 py-1 rounded-lg border ${getStatusClass(user.active)}`}
                                                 >
                                                     {getStatusIcon(user.active)}
                                                     <span className="ml-1 text-xs font-medium">
-                            {getStatusText(user.active)}
-                          </span>
+                                                      {getStatusText(user.active)}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div className="text-xs text-gray-500 flex items-center">
@@ -786,7 +786,6 @@ const UserControl = () => {
                                             <p className="text-sm text-gray-600">{user.name || '—'}</p>
                                         </div>
 
-                                        {/* Кнопка для разворачивания/сворачивания */}
                                         <button
                                             onClick={() => toggleUserExpand(user.id)}
                                             className={`w-full flex items-center justify-center py-1.5 px-3 mb-3 rounded-md border transition-all duration-300 ${
@@ -795,9 +794,9 @@ const UserControl = () => {
                                                     : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
                                             }`}
                                         >
-                      <span className="text-xs font-medium mr-1.5">
-                        {expandedUsers[user.id] ? 'Скрыть детали' : 'Показать детали'}
-                      </span>
+                                            <span className="text-xs font-medium mr-1.5">
+                                              {expandedUsers[user.id] ? 'Скрыть детали' : 'Показать детали'}
+                                            </span>
                                             <div className="relative w-4 h-4 flex items-center justify-center">
                                                 <ChevronDown size={14}
                                                              className={`absolute transition-transform duration-300 ease-in-out ${
@@ -920,13 +919,6 @@ const UserControl = () => {
                                                     }}
                                                 >
                                                     {column.label}
-                                                    <div
-                                                        className="absolute right-0 top-0 h-full w-4 cursor-col-resize flex items-center justify-center group"
-                                                        onMouseDown={(e) => handleResizeStart(column.id, e)}
-                                                    >
-                                                        <div
-                                                            className="w-0.5 h-4/5 bg-gray-300 group-hover:bg-blue-500"></div>
-                                                    </div>
                                                 </th>
                                             ))}
                                         </tr>
@@ -949,7 +941,7 @@ const UserControl = () => {
                                                                 {user.email}
                                                             </div>
                                                             <div className="text-xs text-gray-400 mt-0.5">
-                                                                ID: {user.id.substring(0, 6)}...
+                                                                ID: {user.id.substring(0, 23)}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1555,26 +1547,6 @@ const UserControl = () => {
                     </div>
                 </div>
             )}
-
-            <style jsx>{`
-  @keyframes modal-appear {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-  }
-  
-  @keyframes backdrop-appear {
-    from { backdrop-filter: blur(0); background-color: rgba(0, 0, 0, 0); }
-    to { backdrop-filter: blur(4px); background-color: rgba(0, 0, 0, 0.4); }
-  }
-  
-  .modal-container {
-    animation: backdrop-appear 0.3s ease-out forwards;
-  }
-  
-  .modal-content {
-    animation: modal-appear 0.3s ease-out forwards;
-  }
-`}</style>
         </div>
     );
 };

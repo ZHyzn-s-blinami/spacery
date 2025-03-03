@@ -47,11 +47,9 @@ function TicketList() {
     try {
       const response = await adminService.admin_only();
       if (response.status !== 200) {
-        console.log(response.status);
         navigate('/');
       }
     } catch (error) {
-      console.log(error);
       navigate('/');
     }
   };

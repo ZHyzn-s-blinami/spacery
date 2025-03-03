@@ -49,7 +49,6 @@ export const fetchUserData = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.getUser();
-      console.log(response);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -88,7 +87,6 @@ export const fetchQrCode = createAsyncThunk(
   async (uuid, { rejectWithValue }) => {
     try {
       const response = await bookingService.getQrCode(uuid);
-      console.log(response);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);

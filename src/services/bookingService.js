@@ -45,7 +45,6 @@ export const bookingService = {
             }
         })
 
-        console.log(response.data);
         return response.data;
     },
 
@@ -79,7 +78,6 @@ export const bookingService = {
                 }
             },
             );
-            console.log(response.data);
             return response.data;
         } catch (error) {
             throw error;

@@ -11,21 +11,17 @@ const MeetingList = ({statusFilter = "PENDING"}) => {
     const error = useSelector(state => state.booking.error);
     const [groupedMeetings, setGroupedMeetings] = useState({});
 
-    // State for controlled loading with minimum time
     const [showLoading, setShowLoading] = useState(false);
     const loadingTimerRef = useRef(null);
-    const MIN_LOADING_TIME = 250; // 300ms minimum loading animation time
+    const MIN_LOADING_TIME = 250;
 
-    // Manage loading state with minimum display time
     useEffect(() => {
         if (loading) {
             setShowLoading(true);
-            // Clear any existing timer
             if (loadingTimerRef.current) {
                 clearTimeout(loadingTimerRef.current);
             }
         } else if (showLoading) {
-            // Set minimum display time when loading has finished
             loadingTimerRef.current = setTimeout(() => {
                 setShowLoading(false);
             }, MIN_LOADING_TIME);
@@ -44,7 +40,6 @@ const MeetingList = ({statusFilter = "PENDING"}) => {
 
     useEffect(() => {
         if (meetings && meetings.length > 0) {
-            // Filter meetings by status
             const filteredMeetings = meetings.filter(item =>
                 item && item.status === statusFilter && item.startAt && item.endAt
             );
