@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserData } from '../store/user/thunks';
 import { addUser } from '../store/user/slice';
 import MeetingList from '../components/user/MeetingsList';
-import { UserIcon, ShieldCheckIcon, CalendarIcon } from 'lucide-react';
+import { UserIcon, ShieldCheckIcon, CalendarIcon, LogOutIcon } from 'lucide-react';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -78,13 +78,22 @@ const Profile = () => {
                                     <p className="text-blue-100">{user.role}</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={handleVerification}
-                                className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg flex items-center transition-all"
-                            >
-                                <ShieldCheckIcon size={18} className="mr-2" />
-                                <span>Верификация</span>
-                            </button>
+                            <div className="flex space-x-3">
+                                <button
+                                    onClick={handleVerification}
+                                    className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg flex items-center transition-all"
+                                >
+                                    <ShieldCheckIcon size={18} className="mr-2" />
+                                    <span>Верификация</span>
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center transition-all"
+                                >
+                                    <LogOutIcon size={18} className="mr-2" />
+                                    <span>Выйти</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,7 +112,6 @@ const Profile = () => {
                         <MeetingList />
                     </div>
                 </div>
-                <button onClick={handleLogout}>Выйти из профиля</button>
             </div>
         </div>
     );

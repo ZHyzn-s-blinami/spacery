@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import QRCode from "react-qr-code";
 import { useDispatch } from "react-redux";
 import { cancelUserMeeting } from "../../store/user/thunks";
@@ -12,14 +12,17 @@ import {
     ChevronUpIcon,
     AlertCircleIcon,
     XIcon,
-    RefreshCwIcon
+    RefreshCwIcon,
+    CalendarDaysIcon
 } from "lucide-react";
+import TimeRangeSlider from "../../components/TimeRangeSlider";
+
 
 const MeetingItem = ({ item }) => {
     if (!item || !item.startAt || !item.endAt) {
         return (
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 text-center">
-                <p className="text-gray-500">Информация о встрече недоступна</p>
+                <p className="text-gray-500">Информация о бронировании недоступна</p>
             </div>
         );
     }
@@ -33,15 +36,10 @@ const MeetingItem = ({ item }) => {
     const [rescheduleModalMounted, setRescheduleModalMounted] = useState(false);
     const [cancelModalMounted, setCancelModalMounted] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date(item.startAt).toISOString().split('T')[0]);
-    const [selectedStartTime, setSelectedStartTime] = useState(
-        `${new Date(item.startAt).getHours().toString().padStart(2, '0')}:${new Date(item.startAt).getMinutes().toString().padStart(2, '0')}`
-    );
-    const [selectedEndTime, setSelectedEndTime] = useState(
-        `${new Date(item.endAt).getHours().toString().padStart(2, '0')}:${new Date(item.endAt).getMinutes().toString().padStart(2, '0')}`
-    );
-    const [selectedDuration, setSelectedDuration] = useState(
-        Math.round((new Date(item.endAt) - new Date(item.startAt)) / (1000 * 60))
-    );
+    const [selectedTimeRange, setSelectedTimeRange] = useState({
+        start: new Date(item.startAt),
+        end: new Date(item.endAt)
+    });
     const [rescheduleStatus, setRescheduleStatus] = useState(null);
     const [reschedulingLoading, setReschedulingLoading] = useState(false);
 
@@ -60,6 +58,46 @@ const MeetingItem = ({ item }) => {
         }
     }, [showRescheduleModal, isRescheduleModalClosing]);
 
+    const [timeSliderState, setTimeSliderState] = useState({
+        startTime: {
+            hour: selectedTimeRange.start.getHours(),
+            minute: selectedTimeRange.start.getMinutes()
+        },
+        endTime: {
+            hour: selectedTimeRange.end.getHours(),
+            minute: selectedTimeRange.end.getMinutes()
+        }
+    });
+
+    const handleStartTimeChange = (newStartTime) => {
+        setTimeSliderState(prev => ({
+            ...prev,
+            startTime: newStartTime
+        }));
+
+        const newDate = new Date(selectedDate);
+        newDate.setHours(newStartTime.hour, newStartTime.minute, 0, 0);
+        setSelectedTimeRange(prev => ({
+            ...prev,
+            start: newDate
+        }));
+    };
+
+    const handleEndTimeChange = (newEndTime) => {
+        setTimeSliderState(prev => ({
+            ...prev,
+            endTime: newEndTime
+        }));
+
+        const newDate = new Date(selectedDate);
+        newDate.setHours(newEndTime.hour, newEndTime.minute, 0, 0);
+        setSelectedTimeRange(prev => ({
+            ...prev,
+            end: newDate
+        }));
+    };
+
+
     useEffect(() => {
         if (showCancelModal && !isCancelModalClosing) {
             const timer = setTimeout(() => {
@@ -71,6 +109,25 @@ const MeetingItem = ({ item }) => {
             setCancelModalMounted(false);
         }
     }, [showCancelModal, isCancelModalClosing]);
+
+    useEffect(() => {
+        const fetchUnavailableSlots = async () => {
+            setTimeout(() => {
+                const newStartDate = new Date(selectedDate);
+                newStartDate.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+
+                const newEndDate = new Date(selectedDate);
+                newEndDate.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
+
+                setSelectedTimeRange({
+                    start: newStartDate,
+                    end: newEndDate
+                });
+            }, 300);
+        };
+
+        fetchUnavailableSlots();
+    }, [selectedDate]);
 
     const formatTime = (date) => {
         const hours = date.getHours().toString().padStart(2, '0');
@@ -150,73 +207,44 @@ const MeetingItem = ({ item }) => {
         setSelectedDate(e.target.value);
     };
 
-    const handleStartTimeChange = (e) => {
-        setSelectedStartTime(e.target.value);
-
-        const [hours, minutes] = e.target.value.split(':').map(Number);
-        const startDate = new Date();
-        startDate.setHours(hours, minutes, 0);
-
-        const endDate = new Date(startDate.getTime() + selectedDuration * 60 * 1000);
-        setSelectedEndTime(
-            `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`
-        );
-    };
-
-    const handleEndTimeChange = (e) => {
-        setSelectedEndTime(e.target.value);
-    };
-
-    const handleDurationChange = (e) => {
-        const newDuration = parseInt(e.target.value, 10);
-        setSelectedDuration(newDuration);
-
-        const [hours, minutes] = selectedStartTime.split(':').map(Number);
-        const startDate = new Date();
-        startDate.setHours(hours, minutes, 0);
-
-        const endDate = new Date(startDate.getTime() + newDuration * 60 * 1000);
-        setSelectedEndTime(
-            `${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`
-        );
-    };
-
     const confirmReschedule = async () => {
-        console.log('confirmed');
         setReschedulingLoading(true);
         setRescheduleStatus(null);
 
+        // Сюда ваши запросики кароч
         try {
-            const [startHours, startMinutes] = selectedStartTime.split(':').map(Number);
-            const [endHours, endMinutes] = selectedEndTime.split(':').map(Number);
+            const formattedStartAt = selectedTimeRange.start.toISOString().split('.')[0];
+            const formattedEndAt = selectedTimeRange.end.toISOString().split('.')[0];
 
-            const newStartDate = new Date(selectedDate);
-            newStartDate.setHours(startHours, startMinutes, 0);
-
-            const newEndDate = new Date(selectedDate);
-            newEndDate.setHours(endHours, endMinutes, 0);
-
-            const formattedStartAt = newStartDate.toISOString().split('.')[0];
-            const formattedEndAt = newEndDate.toISOString().split('.')[0];
-
-            await dispatch(updateMeeting({ uuid: item.bookingId, startAt: formattedStartAt, endAt: formattedEndAt })).unwrap();
+            await dispatch(updateMeeting({
+                uuid: item.bookingId,
+                startAt: formattedStartAt,
+                endAt: formattedEndAt
+            })).unwrap();
 
             const meetingsResponse = await dispatch(fetchUserMeetings()).unwrap();
-            console.log("Обновленные встречи:", meetingsResponse);
+            console.log("Обновленные брони:", meetingsResponse);
 
             setRescheduleStatus("success");
+
+
             setTimeout(() => {
                 closeRescheduleModal();
-            }, 3000);
+            }, 2000);
 
         } catch (error) {
-            console.error("Ошибка при переносе встречи:", error);
+            console.error("Ошибка при переносе брони:", error);
             setRescheduleStatus("error");
+
+            // сообщение об ошибке
+            setTimeout(() => {
+
+                setRescheduleStatus(null);
+            }, 3000);
         } finally {
             setReschedulingLoading(false);
         }
     };
-
 
     const toggleDetails = () => {
         setShowDetails(!showDetails);
@@ -255,6 +283,15 @@ const MeetingItem = ({ item }) => {
         }
     };
 
+    const formatDateForDisplay = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
     return (
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="p-4">
@@ -277,7 +314,7 @@ const MeetingItem = ({ item }) => {
                     className="w-full flex items-center justify-center text-blue-600 hover:text-blue-800 text-sm py-2 mt-2 border-t border-gray-100 transition-all duration-200 hover:bg-blue-50"
                 >
                     <div className="flex items-center transition-transform duration-300 ease-in-out transform"
-                        style={{ transform: showDetails ? 'translateY(0)' : 'translateY(0)' }}
+                         style={{ transform: showDetails ? 'translateY(0)' : 'translateY(0)' }}
                     >
                         {showDetails ? (
                             <>
@@ -295,18 +332,19 @@ const MeetingItem = ({ item }) => {
             </div>
 
             <div
-                className={`bg-gray-50 border-t border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${showDetails ? 'max-h-[2000px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
-                    }`}
+                className={`bg-gray-50 border-t border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${
+                    showDetails ? 'max-h-[2000px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
+                }`}
             >
                 <div className={`bg-white p-4 rounded-lg shadow-sm mb-4 transition-all duration-300 ease-in-out 
-                    ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                    style={{
-                        transitionDelay: showDetails ? '0.05s' : '0s'
-                    }}
+                ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
+                     style={{
+                         transitionDelay: showDetails ? '0.05s' : '0s'
+                     }}
                 >
                     <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                         <CalendarIcon size={16} className="mr-2 text-blue-600" />
-                        Информация о встрече
+                        Информация о бронировании
                     </h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                         <div>
@@ -341,16 +379,16 @@ const MeetingItem = ({ item }) => {
                 </div>
 
                 <div className={`bg-white p-4 rounded-lg shadow-sm mb-4 flex justify-center transition-all duration-300 ease-in-out 
-                    ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                    style={{
-                        transitionDelay: showDetails ? '0.1s' : '0s'
-                    }}
+                ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
+                     style={{
+                         transitionDelay: showDetails ? '0.1s' : '0s'
+                     }}
                 >
                     <div className="text-center">
                         <div className="mb-3">
-                            <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
-                                QR-код для входа
-                            </span>
+                        <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
+                            QR-код для входа
+                        </span>
                         </div>
                         <div className="bg-white inline-block p-3 rounded-md border-2 border-dotted border-gray-200">
                             <QRCode value={item.bookingId} size={120} />
@@ -362,10 +400,10 @@ const MeetingItem = ({ item }) => {
                 </div>
 
                 <div className={`flex flex-col sm:flex-row gap-2 transition-all duration-300 ease-in-out
-                    ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                    style={{
-                        transitionDelay: showDetails ? '0.15s' : '0s'
-                    }}
+                ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
+                     style={{
+                         transitionDelay: showDetails ? '0.15s' : '0s'
+                     }}
                 >
                     <button
                         onClick={handleReschedule}
@@ -395,15 +433,16 @@ const MeetingItem = ({ item }) => {
                         onClick={closeRescheduleModal}
                     ></div>
                     <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${isRescheduleModalClosing
-                            ? 'opacity-0 transform scale-95'
-                            : rescheduleModalMounted
-                                ? 'opacity-100 transform scale-100'
-                                : 'opacity-0 transform scale-95'
-                            }`}
+                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${
+                            isRescheduleModalClosing
+                                ? 'opacity-0 transform scale-95'
+                                : rescheduleModalMounted
+                                    ? 'opacity-100 transform scale-100'
+                                    : 'opacity-0 transform scale-95'
+                        }`}
                     >
                         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-                            <h3 className="text-lg font-medium">Изменить время встречи</h3>
+                            <h3 className="text-lg font-medium">Изменить время брони</h3>
                             <button
                                 onClick={closeRescheduleModal}
                                 className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
@@ -414,7 +453,7 @@ const MeetingItem = ({ item }) => {
 
                         <div className="p-6">
                             <div className="mb-6">
-                                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4 rounded">
+                                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
                                     <div className="flex">
                                         <AlertCircleIcon size={20} className="text-blue-500 mr-2 flex-shrink-0" />
                                         <div>
@@ -425,61 +464,48 @@ const MeetingItem = ({ item }) => {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Дата</label>
+                                <div className="space-y-6">
+                                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                        <div className="flex items-center text-gray-700 font-medium mb-4">
+                                            <CalendarDaysIcon size={18} className="mr-2 text-blue-600" />
+                                            <h4>Выберите дату</h4>
+                                        </div>
                                         <input
                                             type="date"
-                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                             value={selectedDate}
                                             onChange={handleDateChange}
                                             min={new Date().toISOString().split('T')[0]}
                                         />
+                                        <p className="mt-2 text-sm text-gray-500">
+                                            Выбрано: <span className="font-medium">{formatDateForDisplay(selectedDate)}</span>
+                                        </p>
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Время начала</label>
-                                            <input
-                                                type="time"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                value={selectedStartTime}
-                                                onChange={handleStartTimeChange}
-                                            />
+                                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                        <div className="flex items-center text-gray-700 font-medium mb-4">
+                                            <ClockIcon size={18} className="mr-2 text-blue-600" />
+                                            <h4>Выберите время брони</h4>
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Время окончания</label>
-                                            <input
-                                                type="time"
-                                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                value={selectedEndTime}
-                                                onChange={handleEndTimeChange}
-                                            />
-                                        </div>
-                                    </div>
 
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Продолжительность</label>
-                                        <select
-                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            value={selectedDuration}
-                                            onChange={handleDurationChange}
-                                        >
-                                            <option value="30">30 минут</option>
-                                            <option value="60">1 час</option>
-                                            <option value="90">1 час 30 минут</option>
-                                            <option value="120">2 часа</option>
-                                            <option value="180">3 часа</option>
-                                            <option value="240">4 часа</option>
-                                        </select>
+                                        <TimeRangeSlider
+                                            startTime={timeSliderState.startTime}
+                                            endTime={timeSliderState.endTime}
+                                            onStartTimeChange={handleStartTimeChange}
+                                            onEndTimeChange={handleEndTimeChange}
+                                            minTime={{ hour: 8, minute: 0 }}
+                                            maxTime={{ hour: 22, minute: 0 }}
+                                            currentTime={new Date()}
+                                            isToday={selectedDate === new Date().toISOString().split('T')[0]}
+                                        />
                                     </div>
                                 </div>
 
-                                <div className="mt-4 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                                <div className="mt-6 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
                                     <div className="flex items-start">
-                                        <AlertCircleIcon size={18} className="text-yellow-500 mr-2 mt-0.5 flex-shrink-0" />
+                                        <MapPinIcon size={18} className="text-yellow-500 mr-2 mt-0.5 flex-shrink-0" />
                                         <p className="text-sm text-yellow-700">
-                                            Место встречи останется прежним: <span className="font-medium">{item.address}</span>
+                                            Место бронирования останется прежним: <span className="font-medium">{item.address}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -496,21 +522,20 @@ const MeetingItem = ({ item }) => {
                                 <button
                                     onClick={confirmReschedule}
                                     disabled={reschedulingLoading}
-                                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${rescheduleStatus === 'success'
-                                        ? 'bg-green-600 hover:bg-green-700'
-                                        : rescheduleStatus === 'error'
-                                            ? 'bg-red-600 hover:bg-red-700'
-                                            : 'bg-blue-600 hover:bg-blue-700'
-                                        } text-white`}
+                                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${
+                                        rescheduleStatus === 'success'
+                                            ? 'bg-green-600 hover:bg-green-700'
+                                            : rescheduleStatus === 'error'
+                                                ? 'bg-red-600 hover:bg-red-700'
+                                                : 'bg-blue-600 hover:bg-blue-700'
+                                    } text-white`}
                                 >
                                     <div className="relative flex items-center justify-center">
-                                        <span className={`transition-all duration-300 ${reschedulingLoading || rescheduleStatus ? 'opacity-0' : 'opacity-100'
-                                            }`}>
-                                            Подтвердить
-                                        </span>
+        <span className={`transition-all duration-300 ${reschedulingLoading || rescheduleStatus ? 'opacity-0' : 'opacity-100'}`}>
+            Подтвердить
+        </span>
 
-                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${reschedulingLoading ? 'opacity-100' : 'opacity-0'
-                                            }`}>
+                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${reschedulingLoading ? 'opacity-100' : 'opacity-0'}`}>
                                             <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -518,16 +543,14 @@ const MeetingItem = ({ item }) => {
                                             <span>Обработка...</span>
                                         </div>
 
-                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'success' ? 'opacity-100' : 'opacity-0'
-                                            }`}>
+                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'success' ? 'opacity-100' : 'opacity-0'}`}>
                                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
                                             <span>Успешно</span>
                                         </div>
 
-                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'error' ? 'opacity-100' : 'opacity-0'
-                                            }`}>
+                                        <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'error' ? 'opacity-100' : 'opacity-0'}`}>
                                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
@@ -552,12 +575,13 @@ const MeetingItem = ({ item }) => {
                         onClick={closeCancelModal}
                     ></div>
                     <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${isCancelModalClosing
-                            ? 'opacity-0 transform scale-95'
-                            : cancelModalMounted
-                                ? 'opacity-100 transform scale-100'
-                                : 'opacity-0 transform scale-95'
-                            }`}
+                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${
+                            isCancelModalClosing
+                                ? 'opacity-0 transform scale-95'
+                                : cancelModalMounted
+                                    ? 'opacity-100 transform scale-100'
+                                    : 'opacity-0 transform scale-95'
+                        }`}
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-800 flex items-center">
@@ -610,7 +634,6 @@ const MeetingItem = ({ item }) => {
                 </div>
             )}
         </div>
-    );
-};
+    );};
 
 export default MeetingItem;
