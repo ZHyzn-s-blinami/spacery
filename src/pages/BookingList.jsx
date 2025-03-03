@@ -24,7 +24,6 @@ const BookingList = () => {
     name: '',
     location: '',
     capacity: 0,
-    amenities: [],
   });
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -240,18 +239,6 @@ const BookingList = () => {
               <span className="text-sm text-gray-600 mr-2">
                 Вместимость: {place.capacity} человек
               </span>
-              {place.amenities && place.amenities.length > 0 && (
-                <div className="flex gap-1 flex-wrap">
-                  {place.amenities.map((amenity, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
-                    >
-                      {amenity}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>
