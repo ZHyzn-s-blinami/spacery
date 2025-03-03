@@ -85,50 +85,15 @@ export const bookingService = {
             throw error;
         }
     },
-    // updateMeeting: async ({uuid, startAt, endAt}) => {
-    //     if (!uuid) {
-    //         console.error("Ошибка: ID встречи отсутствует!");
-    //         throw new Error("ID встречи не может быть пустым");
-    //     }
-    
-    //     const token = localStorage.getItem('userToken');
-    //     if (!token) {
-    //         console.error("Ошибка: Токен отсутствует!");
-    //         throw new Error("Необходимо войти в систему.");
-    //     }
-    
-    //     try {
-    //         const formattedStartAt = new Date(startAt).toISOString();
-    //         const formattedEndAt = new Date(endAt).toISOString();
-    
-    //         const response = await apiClient.post(
-    //             `/api/booking/${uuid}/update`,
-    //             { startAt: formattedStartAt, endAt: formattedEndAt },
-    //             {
-    //                 headers: {
-    //                     'Authorization': `Bearer ${token}`,
-    //                     'Accept': 'application/json',
-    //                 }
-    //             }
-    //         );
-    
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("Ошибка при обновлении встречи:", error.response?.data || error.message);
-    //         throw error;
-    //     }
-    // }
-    updateMeeting: async ({uuid, startAt, endAt}) => {
+    updateMeeting: async ({ uuid, startAt, endAt }) => {
         try {
             const token = localStorage.getItem('userToken');
-    
+
             const payload = {
                 startAt,
                 endAt,
             };
-    
-            console.log("Отправляемые данные:", payload);
-    
+
             const response = await apiClient.post(
                 `/api/booking/${uuid}/update`,
                 payload,
@@ -144,13 +109,29 @@ export const bookingService = {
                     },
                 }
             );
-    
+
             return response.data;
-    
+
         } catch (error) {
             console.error("Ошибка при обновлении встречи:", error);
             throw error;
         }
+    },
+    getQrCode: async (uuid) => {
+        try {
+            const token = localStorage.getItem('userToken');
+            const response = await apiClient.get(`/api/booking/${uuid}/qr`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
-    
+
 }
