@@ -12,10 +12,26 @@ const CheckQr = () => {
     const checkQrCode = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`/api/booking/${jwt}/qr/check`);
+        const userToken = localStorage.getItem('userToken');
+        const response = await axios.post(`https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/booking/qr/check`,
+            { qrCode: jwt },
+            {
+              headers: {
+                'Authorization': `Bearer ${userToken}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+              }
+        });
+
         setBookingData(response.data);
       } catch (err) {
-        setError(err.response?.data?.message || 'Ошибка при проверке QR-кода');
+        // Specific handling for 400 status code (invalid token)
+        if (err.response && err.response.status === 400) {
+          setError('Токен недействителен. QR-код не распознан или срок его действия истек.');
+        } else {
+          setError(err.response?.data?.message || 'Ошибка при проверке QR-кода');
+        }
       } finally {
         setLoading(false);
       }

@@ -69,6 +69,7 @@ function App() {
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
+          <Route path="/checkQr/:jwt" element={<CheckQr />} />
         <Route
           path="/admin"
           element={
@@ -81,7 +82,6 @@ function App() {
           <Route path="/admin/booking/:name/place" element={<BookingList />} />
           <Route path="/admin/userControl" element={<UserControl />} />
           <Route path="/admin/ticket/:name/place" element={<TicketList />} />
-          <Route path="/admin/checkQr/:jwt" element={<CheckQr />} />
         </Route>
       </Routes>
     </>
