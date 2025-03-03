@@ -91,7 +91,7 @@
 ├── src
 │   ├── main
 │   │   ├── java
-│   │   │   └── com.example.coworkingbooking
+│   │   │   └── prod.last.mainbackend
 │   │   │       ├── controller        // REST-контроллеры
 │   │   │       ├── service           // Бизнес-логика
 │   │   │       ├── repository        // Репозитории (DAO)
@@ -102,7 +102,7 @@
 │   │       
 │   └── test
 │       └── java
-│           └── com.example.coworkingbooking
+│           └── prod.last.mainbackend
 │               └── ...              // Тестовые классы
 ├── build.gradle
 └── README.md
@@ -117,7 +117,7 @@
 
 
 ### Структура базы данных
-В проекте используется PostgreSQL. Ниже примерное описание сущностей
+В проекте используется PostgreSQL. Ниже представлено описание сущностей и их взаимосвязей:
 
 
 ![exported_from_idea.drawio(1).png](exported_from_idea.drawio%281%29.png)
