@@ -27,9 +27,6 @@ export const ticketService = {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
           'Access-Control-Allow-Origin': '*',
-        },
-        params: {
-          name
         }
       })
       console.log(response);
@@ -46,10 +43,6 @@ export const ticketService = {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json',
         'Access-Control-Allow-Origin': '*',
-      },
-      params: {
-        ticketId,
-        status
       }
     })
 
