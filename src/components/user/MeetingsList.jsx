@@ -14,7 +14,7 @@ import React, { useEffect, useState, useRef } from "react";
                     // State for controlled loading with minimum time
                     const [showLoading, setShowLoading] = useState(false);
                     const loadingTimerRef = useRef(null);
-                    const MIN_LOADING_TIME = 800; // 800ms minimum loading animation time
+                    const MIN_LOADING_TIME = 250; // 300ms minimum loading animation time
 
                     // Manage loading state with minimum display time
                     useEffect(() => {
