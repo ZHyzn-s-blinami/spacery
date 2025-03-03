@@ -48,9 +48,6 @@ export const placeService = {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
           'Access-Control-Allow-Origin': '*',
-        },
-        params: {
-          name
         }
       })
       console.log(response.data);
