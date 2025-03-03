@@ -49,7 +49,8 @@ public class UserService {
 
     public List<UserModel> getAllUsers() {
         log.info("Getting all users");
-        return userRepository.findAll();
+        return userRepository.findAll(org.springframework.data.domain.Sort.by(
+                org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
     }
 
     public void sendVerificationEmail(UUID id) {

@@ -99,7 +99,7 @@ public class TicketsController {
     @GetMapping("/all")
     public ResponseEntity<?> findAll() {
         try {
-            return ResponseEntity.ok(ticketsService.findAllOrderByCreatedAtDesc());
+            return ResponseEntity.ok(ticketsService.findAllOderByUpdatedAtDesc());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -171,7 +171,7 @@ public class TicketsController {
     @GetMapping("/getByPlace/{name}")
     public ResponseEntity<?> findByPlaceId(@Valid @PathVariable String name) {
         try {
-            return ResponseEntity.ok(ticketsService.findByPlaceId(name));
+            return ResponseEntity.ok(ticketsService.findAllByPlaceIdOrderByCreatedAtDesc(name));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

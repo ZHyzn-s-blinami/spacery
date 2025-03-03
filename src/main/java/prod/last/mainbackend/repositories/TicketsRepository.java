@@ -17,5 +17,9 @@ public interface TicketsRepository extends JpaRepository<TicketsModel, UUID> {
 
     List<TicketsModel> findAllByPlaceIdOrderByCreatedAtDesc(UUID id);
 
+    List<TicketsModel> findAllByPlaceIdOrderByUpdatedAtDesc(UUID placeId);
+
+    List<TicketsModel> findAllByOrderByUpdatedAtDesc();
+
     List<TicketsModel> findAllByOrderByCreatedAtDesc();
 }
