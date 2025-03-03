@@ -137,74 +137,74 @@ const MeetingItem = ({ item }) => {
 
     useEffect(() => {
         const getQrCode = async () => {
-          try {
-            const response = await dispatch(fetchQrCode(item.bookingId))
-            // console.log("Ответ QR-кода:", response.payload.qrCode);
-            setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
-          } catch (error) {
-            console.error("Ошибка при получении QR-кода:", error);
-            setQrCode("");
-          }
+            try {
+                const response = await dispatch(fetchQrCode(item.bookingId))
+                // console.log("Ответ QR-кода:", response.payload.qrCode);
+                setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
+            } catch (error) {
+                console.error("Ошибка при получении QR-кода:", error);
+                setQrCode("");
+            }
         };
-      
+
         if (item.bookingId) {
-          getQrCode();
+            getQrCode();
         }
-      }, [dispatch, item.bookingId]);
-      
-  
+    }, [dispatch, item.bookingId]);
+
+
     useEffect(() => {
-      const getQrCode = async () => {
-        try {
-          const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
-          console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa',response)
-          setQrCode(typeof response === "string" ? response : response.qrCode || "");
-        } catch (error) {
-          console.error("Ошибка при получении QR-кода:", error);
-          setQrCode("");
+        const getQrCode = async () => {
+            try {
+                const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
+                console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa', response)
+                setQrCode(typeof response === "string" ? response : response.qrCode || "");
+            } catch (error) {
+                console.error("Ошибка при получении QR-кода:", error);
+                setQrCode("");
+            }
+        };
+
+        if (item.uuid) {
+            getQrCode();
         }
-      };
-  
-      if (item.uuid) {
-        getQrCode();
-      }
     }, [dispatch, item.uuid]);
 
 
 
     useEffect(() => {
         const getQrCode = async () => {
-          try {
-            const response = await dispatch(fetchQrCode(item.bookingId))
-            // console.log("Ответ QR-кода:", response.payload.qrCode);
-            setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
-          } catch (error) {
-            console.error("Ошибка при получении QR-кода:", error);
-            setQrCode("");
-          }
+            try {
+                const response = await dispatch(fetchQrCode(item.bookingId))
+                // console.log("Ответ QR-кода:", response.payload.qrCode);
+                setQrCode(typeof response === "string" ? response : response.payload.qrCode || "");
+            } catch (error) {
+                console.error("Ошибка при получении QR-кода:", error);
+                setQrCode("");
+            }
         };
-      
+
         if (item.bookingId) {
-          getQrCode();
+            getQrCode();
         }
-      }, [dispatch, item.bookingId]);
-      
-  
+    }, [dispatch, item.bookingId]);
+
+
     useEffect(() => {
-      const getQrCode = async () => {
-        try {
-          const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
-          console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa',response)
-          setQrCode(typeof response === "string" ? response : response.qrCode || "");
-        } catch (error) {
-          console.error("Ошибка при получении QR-кода:", error);
-          setQrCode("");
+        const getQrCode = async () => {
+            try {
+                const response = await dispatch(fetchQrCode(item.bookingId)).unwrap();
+                console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaa', response)
+                setQrCode(typeof response === "string" ? response : response.qrCode || "");
+            } catch (error) {
+                console.error("Ошибка при получении QR-кода:", error);
+                setQrCode("");
+            }
+        };
+
+        if (item.uuid) {
+            getQrCode();
         }
-      };
-  
-      if (item.uuid) {
-        getQrCode();
-      }
     }, [dispatch, item.uuid]);
 
     const formatTime = (date) => {
@@ -370,6 +370,8 @@ const MeetingItem = ({ item }) => {
         });
     };
 
+    console.log(item.place.description, item.place.name)
+
     return (
         <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="p-4">
@@ -382,9 +384,14 @@ const MeetingItem = ({ item }) => {
                         </div>
                         {getStatusBadge()}
                     </div>
+                    <div>
+                        <div className="text-gray-500 mb-1">{`Место: ${item.place.description} - ${item.place.name}`}</div>
+                        <div className="font-medium">{item.address}</div>
+                    </div>
                     <div className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full">
                         {getTimeUntilMeeting()}
                     </div>
+                    {/*!!!!!!*/}
                 </div>
 
                 <button
@@ -392,12 +399,12 @@ const MeetingItem = ({ item }) => {
                     className="w-full flex items-center justify-center text-blue-600 hover:text-blue-800 text-sm py-2 mt-2 border-t border-gray-100 transition-all duration-200 hover:bg-blue-50"
                 >
                     <div className="flex items-center transition-transform duration-300 ease-in-out transform"
-                         style={{ transform: showDetails ? 'translateY(0)' : 'translateY(0)' }}
+                        style={{ transform: showDetails ? 'translateY(0)' : 'translateY(0)' }}
                     >
                         {showDetails ? (
                             <>
                                 <ChevronUpIcon size={16} className="mr-1 transition-transform duration-300 transform" />
-                                <span className="transition-all duration-200">Скрыть детали</span>
+                                <span className="transition-all duration-200">Показать QR-код</span>
                             </>
                         ) : (
                             <>
@@ -410,63 +417,20 @@ const MeetingItem = ({ item }) => {
             </div>
 
             <div
-                className={`bg-gray-50 border-t border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${
-                    showDetails ? 'max-h-[2000px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
-                }`}
+                className={`bg-gray-50 border-t border-gray-100 transition-all duration-300 ease-in-out overflow-hidden ${showDetails ? 'max-h-[2000px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0'
+                    }`}
             >
-                <div className={`bg-white p-4 rounded-lg shadow-sm mb-4 transition-all duration-300 ease-in-out 
-                ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                     style={{
-                         transitionDelay: showDetails ? '0.05s' : '0s'
-                     }}
-                >
-                    <h5 className="font-medium text-gray-800 mb-3 flex items-center">
-                        <CalendarIcon size={16} className="mr-2 text-blue-600" />
-                        Информация о бронировании
-                    </h5>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                        <div>
-                            <div className="text-gray-500 mb-1">Дата:</div>
-                            <div className="font-medium">
-                                {startTime.toLocaleDateString('ru-RU', {
-                                    weekday: 'long',
-                                    day: 'numeric',
-                                    month: 'long'
-                                })}
-                            </div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 mb-1">Время:</div>
-                            <div className="font-medium">{formatTime(startTime)} - {formatTime(endTime)}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 mb-1">Место:</div>
-                            <div className="font-medium">{item.address}</div>
-                        </div>
-                        <div>
-                            <div className="text-gray-500 mb-1">Статус:</div>
-                            <div>{getStatusBadge()}</div>
-                        </div>
-                        {item.notes && (
-                            <div className="col-span-2">
-                                <div className="text-gray-500 mb-1">Заметки:</div>
-                                <div className="font-medium bg-gray-50 p-2 rounded">{item.notes}</div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
                 <div className={`bg-white p-4 rounded-lg shadow-sm mb-4 flex justify-center transition-all duration-300 ease-in-out 
                 ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                     style={{
-                         transitionDelay: showDetails ? '0.1s' : '0s'
-                     }}
+                    style={{
+                        transitionDelay: showDetails ? '0.1s' : '0s'
+                    }}
                 >
                     <div className="text-center">
                         <div className="mb-3">
-                        <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
-                            QR-код для входа
-                        </span>
+                            <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
+                                QR-код для входа
+                            </span>
                         </div>
                         <div className="bg-white inline-block p-3 rounded-md border-2 border-dotted border-gray-200">
                             <QRCode value={qrCode} size={120} />
@@ -479,9 +443,9 @@ const MeetingItem = ({ item }) => {
 
                 <div className={`flex flex-col sm:flex-row gap-2 transition-all duration-300 ease-in-out
                 ${showDetails ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95'}`}
-                     style={{
-                         transitionDelay: showDetails ? '0.15s' : '0s'
-                     }}
+                    style={{
+                        transitionDelay: showDetails ? '0.15s' : '0s'
+                    }}
                 >
                     <button
                         onClick={handleReschedule}
@@ -511,13 +475,12 @@ const MeetingItem = ({ item }) => {
                         onClick={closeRescheduleModal}
                     ></div>
                     <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${
-                            isRescheduleModalClosing
-                                ? 'opacity-0 transform scale-95'
-                                : rescheduleModalMounted
-                                    ? 'opacity-100 transform scale-100'
-                                    : 'opacity-0 transform scale-95'
-                        }`}
+                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${isRescheduleModalClosing
+                            ? 'opacity-0 transform scale-95'
+                            : rescheduleModalMounted
+                                ? 'opacity-100 transform scale-100'
+                                : 'opacity-0 transform scale-95'
+                            }`}
                     >
                         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
                             <h3 className="text-lg font-medium">Изменить время брони</h3>
@@ -600,18 +563,17 @@ const MeetingItem = ({ item }) => {
                                 <button
                                     onClick={confirmReschedule}
                                     disabled={reschedulingLoading}
-                                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${
-                                        rescheduleStatus === 'success'
-                                            ? 'bg-green-600 hover:bg-green-700'
-                                            : rescheduleStatus === 'error'
-                                                ? 'bg-red-600 hover:bg-red-700'
-                                                : 'bg-blue-600 hover:bg-blue-700'
-                                    } text-white`}
+                                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${rescheduleStatus === 'success'
+                                        ? 'bg-green-600 hover:bg-green-700'
+                                        : rescheduleStatus === 'error'
+                                            ? 'bg-red-600 hover:bg-red-700'
+                                            : 'bg-blue-600 hover:bg-blue-700'
+                                        } text-white`}
                                 >
                                     <div className="relative flex items-center justify-center">
-        <span className={`transition-all duration-300 ${reschedulingLoading || rescheduleStatus ? 'opacity-0' : 'opacity-100'}`}>
-            Подтвердить
-        </span>
+                                        <span className={`transition-all duration-300 ${reschedulingLoading || rescheduleStatus ? 'opacity-0' : 'opacity-100'}`}>
+                                            Подтвердить
+                                        </span>
 
                                         <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${reschedulingLoading ? 'opacity-100' : 'opacity-0'}`}>
                                             <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -653,13 +615,12 @@ const MeetingItem = ({ item }) => {
                         onClick={closeCancelModal}
                     ></div>
                     <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${
-                            isCancelModalClosing
-                                ? 'opacity-0 transform scale-95'
-                                : cancelModalMounted
-                                    ? 'opacity-100 transform scale-100'
-                                    : 'opacity-0 transform scale-95'
-                        }`}
+                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${isCancelModalClosing
+                            ? 'opacity-0 transform scale-95'
+                            : cancelModalMounted
+                                ? 'opacity-100 transform scale-100'
+                                : 'opacity-0 transform scale-95'
+                            }`}
                     >
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-lg font-medium text-gray-800 flex items-center">
@@ -681,7 +642,7 @@ const MeetingItem = ({ item }) => {
                             <div className="text-sm text-gray-600 space-y-2">
                                 <div className="flex">
                                     <MapPinIcon size={16} className="mr-2 flex-shrink-0 text-gray-500" />
-                                    <span>{item.address}</span>
+                                    <span>{`${item.place.description} - ${item.place.name}`}</span> {/*!!!!*/}
                                 </div>
                                 <div className="flex">
                                     <CalendarIcon size={16} className="mr-2 flex-shrink-0 text-gray-500" />
@@ -712,6 +673,7 @@ const MeetingItem = ({ item }) => {
                 </div>
             )}
         </div>
-    );};
+    );
+};
 
 export default MeetingItem;
