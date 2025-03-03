@@ -22,7 +22,7 @@ export const placeService = {
     try {
       const token = localStorage.getItem('userToken');
     
-      const response = await apiClient.get(`/api/place/free${start && end ? `?start=${start}&end=${end}` : ''}`, {
+      const response = await apiClient.get(`/api/place/free`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
