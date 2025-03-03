@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -19,6 +20,8 @@ public class TicketsModel {
 
     @NotNull
     private UUID placeId;
+
+    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     private TicketType ticketType;
@@ -36,5 +39,6 @@ public class TicketsModel {
         this.placeId = placeId;
         this.ticketType = ticketType;
         this.description = description;
+        this.createdAt = LocalDateTime.now();
     }
 }
