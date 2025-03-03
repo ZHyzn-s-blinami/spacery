@@ -202,9 +202,7 @@ public class UserController {
     public ResponseEntity<?> confirmUser(@RequestParam String token) {
         try {
             userService.confirmUser(token);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .header(HttpHeaders.LOCATION, "https://prod-team-5-qnkvbg7c.final.prodcontest.ru/profile")
-                    .build();
+            return ResponseEntity.status(HttpStatus.FOUND).body("{\"message\": \"User confirmed\"}");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }

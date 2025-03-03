@@ -63,7 +63,7 @@ public class UserService {
         String token = Base64.getEncoder().encodeToString((user.getId().toString() + ":" + tokenUUID.toString()).getBytes());
         userRepository.save(user);
 
-        String verificationLink = "http://" + domain + "/api/user/confirm?token=" + token;
+        String verificationLink = "https://" + domain + "/userConfirm/" + token;
         emailService.sendSimpleMessage(user.getEmail(), "Email Verification", "Please verify your email by clicking the link: " + verificationLink);
     }
 
