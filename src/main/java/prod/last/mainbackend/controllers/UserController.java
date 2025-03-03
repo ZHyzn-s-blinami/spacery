@@ -226,7 +226,6 @@ public class UserController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
     )
     @PutMapping("/edit/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> editUser(@PathVariable UUID id, @RequestBody EditUser editUser) {
         try {
             userService.editUser(id, editUser.getName(), editUser.getDescription(), editUser.getEmail(), editUser.getPassword());
