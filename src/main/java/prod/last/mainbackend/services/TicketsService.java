@@ -39,7 +39,8 @@ public class TicketsService {
     }
 
     public List<TicketsModel> findAll() {
-        return ticketsRepository.findAll();
+        return ticketsRepository.findAll(org.springframework.data.domain.Sort.by(
+                org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
     }
 
     public List<TicketsModel> findAllByStatus(TicketStatus status) {
@@ -63,5 +64,15 @@ public class TicketsService {
 
     public List<TicketsModel> findAllOrderByCreatedAtDesc() {
         return ticketsRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public List<TicketsModel> findAllOderByUpdatedAtDesc() {
+        return ticketsRepository.findAllByOrderByUpdatedAtDesc();
+    }
+
+    public List<TicketsModel> findAllByPlaceIdOrderByCreatedAtDesc(String name) {
+        PlaceModel place = placeRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("Place with name " + name + " not found"));
+        return ticketsRepository.findAllByPlaceIdOrderByUpdatedAtDesc(place.getId());
     }
 }

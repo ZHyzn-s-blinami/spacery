@@ -27,6 +27,8 @@ public class TicketsModel {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
     @Enumerated(EnumType.STRING)
     private TicketType ticketType;
 
@@ -46,5 +48,10 @@ public class TicketsModel {
         this.createdAt = LocalDateTime.now();
         this.zone = zone;
         this.placeName = placeName;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
