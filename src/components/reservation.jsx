@@ -5,7 +5,7 @@ import CoworkingMap from './CoworkingMap.jsx';
 import SeatPopover from './SeatPopover.jsx';
 import TimeRangeSlider from './TimeRangeSlider.jsx';
 import { useDebounce } from '../hooks/useDebounce.js';
-import { showLimitedToast } from '../hooks/showLimitedToast.js';
+import { toastManager } from '../common/toastManager.js';
 
 const CoworkingBooking = ({ isAdmin }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -89,11 +89,11 @@ const CoworkingBooking = ({ isAdmin }) => {
 
       const result = await placeService.post(placeData);
       await fetchFreePlaces();
-      showLimitedToast('Успешно забронировано', 'success');
+      toastManager.showSuccessToast('Успешно забронировано');
       return result;
     } catch (error) {
       console.error('Ошибка при создании бронирования: ', error);
-      showLimitedToast('Ошибка при бронировании', 'error');
+      toastManager.showErrorToast('Ошибка при бронировании');
       throw error;
     }
   };
@@ -475,6 +475,7 @@ const CoworkingBooking = ({ isAdmin }) => {
 
         <div ref={mapContainerRef} className="mb-6 coworking-map-container relative">
           <CoworkingMap
+
             selectedSeat={selectedSeat}
             onSeatSelect={handleSeatSelect}
             freePlaces={freePlaces}

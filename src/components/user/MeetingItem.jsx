@@ -628,10 +628,9 @@ const MeetingItem = ({item}) => {
                                     className="inline-block p-3 rounded-md border-2 border-dotted border-gray-200 relative">
                                     {/* Blurred placeholder QR code */}
                                     <div className="filter blur-md opacity-50">
-                                        <QRCode value="placeholder-qr-value" size={120}/>
+                                        <QRCode value="placeholder-qr-value" size={120} />
                                     </div>
 
-                                    {/* Overlay with message */}
                                     <div
                                         className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 bg-opacity-70 rounded-md">
                                         {item.status === "PENDING" && (
@@ -706,7 +705,6 @@ const MeetingItem = ({item}) => {
                 </div>
             </div>
 
-            {/* QR Code Full Screen Modal */}
             {showQrModal && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">

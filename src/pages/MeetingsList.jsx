@@ -11,7 +11,6 @@ const MeetingsPage = () => {
     const [activeTab, setActiveTab] = useState('PENDING');
     const [showLoading, setShowLoading] = useState(false);
 
-    // Define meeting status tabs configuration
     const tabs = [
         {id: 'PENDING', label: 'Предстоящие', icon: CalendarIcon},
         {id: 'ACCEPTED', label: 'Подтвержденные', icon: CheckCircleIcon},
@@ -50,7 +49,7 @@ const MeetingsPage = () => {
                             <Link to="/profile" className="mr-3 p-2 hover:bg-blue-100 rounded-full transition-colors">
                                 <ArrowLeftIcon size={20} className="text-gray-700"/>
                             </Link>
-                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Мои встречи</h1>
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Мои брони</h1>
                         </div>
                     </div>
 
@@ -80,10 +79,9 @@ const MeetingsPage = () => {
                         </div>
 
                         <div className="p-6">
-                            {/* Pass status filter to MeetingList */}
                             <MeetingList
                                 statusFilter={activeTab}
-                                key={activeTab} // Force re-render when tab changes
+                                key={activeTab}
                             />
                         </div>
                     </div>
