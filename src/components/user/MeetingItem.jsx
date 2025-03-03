@@ -489,7 +489,7 @@ const MeetingItem = ({item}) => {
                     "Неприятный запах"
                 ]);
                 break;
-            case "EQUIPMENT":
+            case "TECHNICAL_PROBLEM":
                 setPredefinedDescriptions([
                     "Не работает проектор",
                     "Проблемы с микрофоном",
@@ -943,7 +943,7 @@ const MeetingItem = ({item}) => {
                                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="CLEANING">Уборка</option>
-                                <option value="EQUIPMENT">Оборудование</option>
+                                <option value="TECHNICAL_PROBLEM">Оборудование</option>
                                 <option value="PLACE_TAKEN">Место занято</option>
                                 <option value="FOOD">Еда</option>
                                 <option value="OTHER">Другое</option>
