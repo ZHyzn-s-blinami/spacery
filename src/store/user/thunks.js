@@ -10,6 +10,7 @@ export const registerUser = createAsyncThunk(
       const response = await authService.register(userData);
 
       dispatch(addUser(userData));
+      debugger;
       localStorage.setItem('userToken', response.token);
       return response.user;
     } catch (error) {
@@ -22,14 +23,14 @@ export const loginUser = createAsyncThunk(
   'users/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await authService.login(credentials);
-      localStorage.setItem('userToken', response.token);
-      return response.user;
+      await authService.login(credentials);
+      return await authService.getUser();
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: error.message });
     }
   }
 )
+
 
 export const logoutUser = createAsyncThunk(
   'users/logout',
@@ -84,10 +85,10 @@ export const cancelUserMeeting = createAsyncThunk(
 
 export const fetchQrCode = createAsyncThunk(
   'users/fetchQrCode',
-  async (uuid, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await bookingService.getQrCode(uuid);
-      // console.log("fetchQrCode: raw response", response);
+      const response = await bookingService.getQrCode();
+      console.log(response);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
