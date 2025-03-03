@@ -14,7 +14,7 @@ import {
     AlertCircleIcon,
     XIcon,
     RefreshCwIcon,
-    CalendarDaysIcon
+    CalendarDaysIcon, CheckCircleIcon
 } from "lucide-react";
 import TimeRangeSlider from "../../components/TimeRangeSlider";
 
@@ -60,7 +60,7 @@ const MeetingItem = ({ item }) => {
       const now = new Date();
       const diffMs = startTime - now;
       const diffMinutes = diffMs / (1000 * 60);
-      return diffMinutes <= 5; // Show QR if less than 5 minutes until start
+      return diffMinutes <= 5 && item.status === "PENDING"; // Show QR if less than 5 minutes until start
     };
 
     // Add after other modal control functions
@@ -95,8 +95,9 @@ const MeetingItem = ({ item }) => {
     useEffect(() => {
       const getQrCode = async () => {
         // Only fetch QR code if we should show it
-        if (shouldShowQr() && item.bookingId) {
+        if (shouldShowQr() && item.bookingId && item.status == "PENDING") {
           try {
+              console.log("bookingid", item.bookingId);
               console.log("bookingid", item.bookingId);
             const response = await dispatch(fetchQrCode(item.bookingId));
             console.log("payload", response)
@@ -115,7 +116,7 @@ const MeetingItem = ({ item }) => {
         if (shouldShowQr() && !qrCode && item.bookingId) {
           getQrCode();
         }
-      }, 10000); // Check every 10 seconds
+      }, 1000000); // Check every 10 seconds
 
       // Initial check
       getQrCode();
@@ -465,10 +466,41 @@ const MeetingItem = ({ item }) => {
                                     </div>
 
                                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 bg-opacity-70 rounded-md">
-                                        <ClockIcon size={30} className="text-gray-500 mb-2" />
-                                        <p className="text-xs font-medium text-gray-600 px-2 text-center">
-                                            QR-код будет доступен за 5 минут до начала
-                                        </p>
+                                        {item.status === "PENDING" && (
+                                            <>
+                                                <ClockIcon size={30} className="text-gray-500 mb-2" />
+                                                <p className="text-xs font-medium text-gray-600 px-2 text-center">
+                                                    QR-код будет доступен за 5 минут до начала
+                                                </p>
+                                            </>
+                                        )}
+
+                                        {item.status === "ACCEPTED" && (
+                                            <>
+                                                <CheckCircleIcon size={30} className="text-green-500 mb-2" />
+                                                <p className="text-xs font-medium text-green-600 px-2 text-center">
+                                                    Бронирование подтверждено
+                                                </p>
+                                            </>
+                                        )}
+
+                                        {item.status === "REJECTED" && (
+                                            <>
+                                                <XIcon size={30} className="text-red-500 mb-2" />
+                                                <p className="text-xs font-medium text-red-600 px-2 text-center">
+                                                    Бронирование отменено
+                                                </p>
+                                            </>
+                                        )}
+
+                                        {item.status === "OVERDUE" && (
+                                            <>
+                                                <AlertCircleIcon size={30} className="text-gray-500 mb-2" />
+                                                <p className="text-xs font-medium text-gray-600 px-2 text-center">
+                                                    Время бронирования истекло
+                                                </p>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             )}

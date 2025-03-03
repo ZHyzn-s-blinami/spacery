@@ -11,8 +11,8 @@ import ProtectedUserRoute from './components/ProtectedUserRoute';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import UserControl from './pages/UserControl';
 import TicketList from './pages/TicketList';
-import CheckQr from "./pages/CheckQr.jsx";
-import MeetingsPage from "./pages/MeetingsList.jsx";
+import CheckQr from './pages/CheckQr.jsx';
+import MeetingsPage from './pages/MeetingsList.jsx';
 
 function App() {
   return (
@@ -22,7 +22,7 @@ function App() {
         reverseOrder={false}
         gutter={8}
         toastOptions={{
-          duration: 4000,
+          duration: 3000,
           style: {
             borderRadius: '10px',
             padding: '16px',
@@ -31,7 +31,7 @@ function App() {
           },
 
           success: {
-            duration: 3000,
+            duration: 2000,
             style: {
               background: '#edf7ed',
               color: '#1e4620',
@@ -44,7 +44,7 @@ function App() {
           },
 
           error: {
-            duration: 5000,
+            duration: 4000,
             style: {
               background: '#fdeded',
               color: '#5f2120',
@@ -71,7 +71,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/meetings" element={<MeetingsPage />} />
         </Route>
-          <Route path="/checkQr/:jwt" element={<CheckQr />} />
+        <Route path="/checkQr/:jwt" element={<CheckQr />} />
         <Route
           path="/admin"
           element={
