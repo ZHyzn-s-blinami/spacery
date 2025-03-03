@@ -57,6 +57,6 @@ public class TicketsService {
     public List<TicketsModel> findByPlaceId(String name) {
         PlaceModel place = placeRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("Place with name " + name + " not found"));
-        return ticketsRepository.findAllByPlaceId(place.getId());
+        return ticketsRepository.findAllByPlaceIdOrderByCreatedAtDesc(place.getId());
     }
 }
