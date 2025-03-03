@@ -120,10 +120,10 @@ import React, { useEffect, useState, useRef } from "react";
                                 </h3>
                                 {statusFilter === "PENDING" && (
                                     <>
-                                        <p className="text-gray-500 mb-6">Забронируйте место для вашей с��едующей встречи</p>
+                                        <p className="text-gray-500 mb-6">Забронируйте место для вашей следующей встречи</p>
                                         <button onClick={handleRedirect}
                                                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
-                                            Забронироват�� место
+                                            Забронировать место
                                         </button>
                                     </>
                                 )}
