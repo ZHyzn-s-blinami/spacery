@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.BookingStatus;
 import prod.last.mainbackend.models.PlaceModel;
@@ -53,6 +55,7 @@ public class BookingService {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingModel create(UUID userId, String name, LocalDateTime start, LocalDateTime end) {
         log.info("Creating booking for user {} and place {}", userId, name);
 
@@ -275,6 +278,7 @@ public class BookingService {
         }
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public BookingModel updateBookingTime(UUID bookingId, LocalDateTime start, LocalDateTime end) {
         log.info("Updating booking time for booking {}", bookingId);
         BookingModel booking = bookingRepository.findById(bookingId)

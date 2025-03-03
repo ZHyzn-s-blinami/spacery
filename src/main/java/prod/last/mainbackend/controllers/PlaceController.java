@@ -64,7 +64,7 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "Создание нового места",
+            summary = "Создание нового места доступно только для администраторов",
             description = "Создаёт новое место. Доступно только для администраторов",
             security = @SecurityRequirement(name = "bearerAuth")
     )
@@ -126,7 +126,7 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "Создание новых мест",
+            summary = "Создание сразу много новых мест доступно только для администраторов",
             description = "Создаёт новые места. Доступно только для администраторов",
             security = @SecurityRequirement(name = "bearerAuth")
     )
