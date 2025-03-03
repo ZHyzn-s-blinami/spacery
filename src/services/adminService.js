@@ -28,7 +28,6 @@ export const adminService = {
           'Access-Control-Allow-Origin': '*'
         }
       });
-      console.log(response.data);
       return response;
     } catch (error) {
       throw error;

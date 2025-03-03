@@ -50,10 +50,8 @@ export const placeService = {
           'Access-Control-Allow-Origin': '*',
         }
       })
-      console.log(response.data);
       return response.data;
     } catch (error) {
-      console.log(error);
     }
   },
   post: async (placeData) => {

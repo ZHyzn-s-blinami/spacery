@@ -135,6 +135,23 @@ const TimeRangeSlider = ({
         };
     };
 
+    const formatDuration = (start, end) => {
+        const startMinutes = start.hour * 60 + start.minute;
+        const endMinutes = end.hour * 60 + end.minute;
+        const diffMinutes = endMinutes - startMinutes;
+
+        const hours = Math.floor(diffMinutes / 60);
+        const minutes = diffMinutes % 60;
+
+        if (hours > 0 && minutes > 0) {
+            return `${hours} ч ${minutes.toString().padStart(2, '0')} м`;
+        } else if (hours > 0) {
+            return `${hours} ч 00 м`;
+        } else {
+            return `0 ч ${minutes.toString().padStart(2, '0')} м`;
+        }
+    }
+
     const isTimeAvailable = (time) => {
         if (!isToday) return true;
 
@@ -536,15 +553,22 @@ const TimeRangeSlider = ({
                     </div>
 
                     <div className="absolute top-20 md:top-20 left-0 right-0 text-center">
-                        <div className="inline-block bg-blue-100 px-4 py-2 rounded-full text-sm font-medium text-blue-800 shadow-sm">
-                            <span className="mr-2 font-bold">С:</span> {formatTime(startTime)}
-                            <span className="mx-2 font-bold">До:</span> {formatTime(endTime)}
-                            <span className="text-blue-600 ml-2 font-bold">
-                        ({Math.round(
-                                endTime.hour * 60 + endTime.minute - (startTime.hour * 60 + startTime.minute),
-                            )}{' '}
-                                мин)
-                    </span>
+                        <div className="inline-block bg-blue-100 px-4 py-2 rounded-full text-sm font-medium text-blue-800 shadow-sm min-w-[240px]">
+                            <div className="flex items-center justify-center space-x-1">
+                                <div className="flex items-center">
+                                    <span className="font-bold">С:</span>
+                                    <span className="ml-1 w-12 text-center">{`${startTime.hour}:${startTime.minute.toString().padStart(2, '0')}`}</span>
+                                </div>
+
+                                <div className="flex items-center">
+                                    <span className="font-bold">До:</span>
+                                    <span className="ml-1 w-12 text-center">{`${endTime.hour}:${endTime.minute.toString().padStart(2, '0')}`}</span>
+                                </div>
+
+                                <div className="flex items-center">
+                                    <span className="text-blue-600 font-bold w-[75px] text-center">({formatDuration(startTime, endTime)})</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

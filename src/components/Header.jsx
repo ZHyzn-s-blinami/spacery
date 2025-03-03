@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {Map, User, Menu, X, Calendar, BookKey} from 'lucide-react';
 
@@ -6,11 +6,15 @@ const Header = () => {
     const location = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
 
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location.pathname]);
+
     const isActive = (path) => location.pathname === path;
 
     return (
         <header
-            className="px-5 py-4 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-md mx-auto flex flex-col sm:flex-row items-center justify-between border border-gray-200 rounded-[25px] mb-6">
+            className="px-5 py-4 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-md mx-auto flex flex-col sm:flex-row items-center justify-between border border-gray-200 rounded-b-[25px] mb-6">
             <div className="flex items-center w-full sm:w-auto justify-between">
                 <div className="flex items-center">
                     <Calendar className="text-indigo-600 mr-2" size={28}/>

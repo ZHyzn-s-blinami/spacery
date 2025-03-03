@@ -14,15 +14,15 @@ import {
     AlertCircleIcon,
     XIcon,
     RefreshCwIcon,
-    CalendarDaysIcon, CheckCircleIcon
+    CalendarDaysIcon,
+    CheckCircleIcon
 } from "lucide-react";
 import TimeRangeSlider from "../../components/TimeRangeSlider";
 import axios from "axios";
 
 
 const MeetingItem = ({item}) => {
-    console.log("meeting item", item);
-    console.log(item.bookingId)
+
     if (!item || !item.startAt || !item.endAt) {
         return (
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 text-center">
@@ -51,20 +51,17 @@ const MeetingItem = ({item}) => {
     const startTime = new Date(item.startAt);
     const endTime = new Date(item.endAt);
 
-    // Add after other useState declarations
     const [showQrModal, setShowQrModal] = useState(false);
     const [isQrModalClosing, setIsQrModalClosing] = useState(false);
     const [qrModalMounted, setQrModalMounted] = useState(false);
 
-    // Add after time formatting and before other functions
     const shouldShowQr = () => {
         const now = new Date();
         const diffMs = startTime - now;
         const diffMinutes = diffMs / (1000 * 60);
-        return diffMinutes <= 5 && item.status === "PENDING"; // Show QR if less than 5 minutes until start
+        return diffMinutes <= 5 && item.status === "PENDING";
     };
 
-    // Add after other modal control functions
     const openQrModal = () => {
         if (shouldShowQr() && qrCode) {
             setShowQrModal(true);
@@ -80,7 +77,6 @@ const MeetingItem = ({item}) => {
         }, 300);
     };
 
-    // Add with other useEffect hooks
     useEffect(() => {
         if (showQrModal && !isQrModalClosing) {
             const timer = setTimeout(() => {
@@ -95,13 +91,9 @@ const MeetingItem = ({item}) => {
 
     useEffect(() => {
         const getQrCode = async () => {
-            // Only fetch QR code if we should show it
             if (shouldShowQr() && item.bookingId && item.status == "PENDING") {
                 try {
-                    console.log("bookingid", item.bookingId);
-                    console.log("bookingid", item.bookingId);
                     const response = await dispatch(fetchQrCode(item.bookingId));
-                    console.log("payload", response)
                     setQrCode(typeof response === "string" ? response :
                         "https://prod-team-5-qnkvbg7c.final.prodcontest.ru/checkQr/" + response.payload.qrCode
                         || "");
@@ -112,14 +104,12 @@ const MeetingItem = ({item}) => {
             }
         };
 
-        // Set an interval to check if we should show QR code
         const interval = setInterval(() => {
             if (shouldShowQr() && !qrCode && item.bookingId) {
                 getQrCode();
             }
-        }, 1000000); // Check every 10 seconds
+        }, 1000000);
 
-        // Initial check
         getQrCode();
 
         return () => clearInterval(interval);
@@ -290,7 +280,6 @@ const MeetingItem = ({item}) => {
         setReschedulingLoading(true);
         setRescheduleStatus(null);
 
-        // Сюда ваши запросики кароч
         try {
             const formattedStartAt = selectedTimeRange.start.toISOString().split('.')[0];
             const formattedEndAt = selectedTimeRange.end.toISOString().split('.')[0];
@@ -302,7 +291,6 @@ const MeetingItem = ({item}) => {
             })).unwrap();
 
             const meetingsResponse = await dispatch(fetchUserMeetings()).unwrap();
-            console.log("Обновленные брони:", meetingsResponse);
 
             setRescheduleStatus("success");
 
@@ -315,7 +303,6 @@ const MeetingItem = ({item}) => {
             console.error("Ошибка при переносе брони:", error);
             setRescheduleStatus("error");
 
-            // сообщение об ошибке
             setTimeout(() => {
 
                 setRescheduleStatus(null);
@@ -331,7 +318,6 @@ const MeetingItem = ({item}) => {
 
     const [predefinedDescriptions, setPredefinedDescriptions] = useState([]);
 
-    // Add these state variables alongside your other state declarations
     const [showTicketModal, setShowTicketModal] = useState(false);
     const [isTicketModalClosing, setIsTicketModalClosing] = useState(false);
     const [ticketModalMounted, setTicketModalMounted] = useState(false);
@@ -343,7 +329,6 @@ const MeetingItem = ({item}) => {
     const [ticketStatus, setTicketStatus] = useState(null);
     const [ticketSubmitting, setTicketSubmitting] = useState(false);
 
-// Add this function to handle opening/closing the ticket modal
     const openTicketModal = () => {
         setShowTicketModal(true);
         setIsTicketModalClosing(false);
@@ -357,7 +342,6 @@ const MeetingItem = ({item}) => {
         }, 300);
     };
 
-// Add this function to handle form submission
     const submitTicket = async () => {
         setTicketSubmitting(true);
         setTicketStatus(null);
@@ -385,7 +369,6 @@ const MeetingItem = ({item}) => {
                 }
             );
 
-            // Axios success - no need to check response.ok
             setTicketStatus('success');
             setTimeout(() => {
                 closeTicketModal();
@@ -400,7 +383,6 @@ const MeetingItem = ({item}) => {
         }
     };
 
-// Add this useEffect to handle modal animation
     useEffect(() => {
         if (showTicketModal && !isTicketModalClosing) {
             const timer = setTimeout(() => {
@@ -475,10 +457,8 @@ const MeetingItem = ({item}) => {
         });
     };
 
-    // Add these state variables alongside your other ticket-related states
     const [selectedIssue, setSelectedIssue] = useState(null);
 
-// Modify the useEffect for ticket type changes to reset selection
     useEffect(() => {
         switch (ticketData.ticketType) {
             case "CLEANING":
@@ -514,12 +494,10 @@ const MeetingItem = ({item}) => {
             default:
                 setPredefinedDescriptions([]);
         }
-        // Reset selected issue when changing type
         setSelectedIssue(null);
     }, [ticketData.ticketType]);
 
 
-// Add this to handle scroll locking
     useEffect(() => {
         if (showTicketModal) {
             document.body.style.overflow = 'hidden';
@@ -532,38 +510,51 @@ const MeetingItem = ({item}) => {
         };
     }, [showTicketModal]);
 
-    // Add this useEffect to clear description when changing from OTHER to another type
     useEffect(() => {
         if (ticketData.ticketType !== "OTHER") {
             setTicketData(prev => ({...prev, description: ''}));
         }
     }, [ticketData.ticketType]);
 
-    console.log(item.place.description, item.place.name)
+    const formatDateMobile = (date) => {
+        return date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'short'
+        });
+    };
 
     return (
         <div
             className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="p-4">
                 <div className="flex justify-between items-start mb-3">
-                    <div>
-                        <h4 className="font-medium text-gray-900 mb-1 text-lg">{item.address}</h4>
-                        <div className="flex items-center text-gray-600 mb-2">
-                            <ClockIcon size={16} className="mr-2 text-gray-400"/>
-                            <span>{formatTime(startTime)} - {formatTime(endTime)}</span>
+                    <div className="flex items-center mt-0.5 text-gray-600">
+                        <ClockIcon size={16} className="mr-2 text-gray-400 flex-shrink-0"/>
+                        <div className="flex flex-wrap items-center">
+                            <span className="mr-1">{formatTime(startTime)} - {formatTime(endTime)}</span>
+                            <span className="text-xs text-gray-500">({formatDateMobile(startTime)})</span>
                         </div>
-                        {getStatusBadge()}
                     </div>
                     <div>
-                        <div className="text-gray-500 mb-1">{`Место: ${item.place.name}`}</div>
-                        <div className="font-medium">{item.address}</div>
+                        <h4 className="font-medium text-gray-900 text-lg">{item.address}</h4>
+                        <div className="ml-2">{getStatusBadge()}</div>
                     </div>
-                    <div className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full">
-                        {getTimeUntilMeeting()}
-                    </div>
-                    {/*!!!!!!*/}
                 </div>
 
+                <div className="flex flex-col space-y-2 mb-3">
+
+                    <div className="flex items-center text-gray-600">
+                        <MapPinIcon size={16} className="mr-2 text-gray-400 flex-shrink-0"/>
+                        <span className="truncate">{`${item.place.name}`}</span>
+                    </div>
+
+                    <div className="flex items-center">
+                        <CalendarIcon size={16} className="mr-2 text-blue-500 flex-shrink-0"/>
+                        <span className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                            {getTimeUntilMeeting()}
+                        </span>
+                    </div>
+                </div>
 
                 {item.status === "PENDING" || (new Date(item.startAt) <= new Date() && new Date() <= new Date(item.endAt)) ? (
                     <div className="flex">
@@ -610,9 +601,9 @@ const MeetingItem = ({item}) => {
                 >
                     <div className="text-center">
                         <div className="mb-3">
-    <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
-      QR-код для входа
-    </span>
+                            <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
+                              QR-код для входа
+                            </span>
                         </div>
                         <div className="relative">
                             {shouldShowQr() ? (
@@ -626,7 +617,6 @@ const MeetingItem = ({item}) => {
                             ) : (
                                 <div
                                     className="inline-block p-3 rounded-md border-2 border-dotted border-gray-200 relative">
-                                    {/* Blurred placeholder QR code */}
                                     <div className="filter blur-md opacity-50">
                                         <QRCode value="placeholder-qr-value" size={120}/>
                                     </div>
@@ -692,14 +682,14 @@ const MeetingItem = ({item}) => {
                         onClick={handleReschedule}
                         className="flex-1 bg-white border border-blue-600 text-blue-600 hover:bg-blue-50 py-3 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow"
                     >
-                        <RefreshCwIcon size={16} className="mr-2 transition-transform duration-300 hover:rotate-180"/>
+                        <RefreshCwIcon size={16} className="mr-2"/>
                         Перенести
                     </button>
                     <button
                         onClick={handleRemove}
                         className="flex-1 bg-white border border-red-600 text-red-600 hover:bg-red-50 py-3 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow"
                     >
-                        <XIcon size={16} className="mr-2 transition-transform duration-300 hover:rotate-90"/>
+                        <XIcon size={16} className="mr-2"/>
                         Отменить
                     </button>
                 </div>
@@ -707,7 +697,7 @@ const MeetingItem = ({item}) => {
 
             {showQrModal && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-in-out">
                     <div
                         className="absolute inset-0 bg-black transition-all duration-300 ease-in-out"
                         style={{
@@ -901,7 +891,6 @@ const MeetingItem = ({item}) => {
                 </div>
             )}
 
-            {/* Ticket Modal */}
             {showTicketModal && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
@@ -954,7 +943,7 @@ const MeetingItem = ({item}) => {
                             <div className="mb-4">
                                 <label className="block text-sm font-medium text-gray-700 mb-3">Выберите
                                     проблему</label>
-                                <div className="space-y-2">
+                                <div className="space-y-2 max-h-60 overflow-y-auto">
                                     {predefinedDescriptions.map((desc, index) => (
                                         <div
                                             key={index}

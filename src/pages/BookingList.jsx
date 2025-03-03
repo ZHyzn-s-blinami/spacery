@@ -70,7 +70,6 @@ const BookingList = () => {
 
         const bookingsData = await bookingService.getBooks(name);
         setBookings(bookingsData);
-        console.log(place);
 
         setLoading(false);
       } catch (err) {
@@ -97,10 +96,8 @@ const BookingList = () => {
 
   const cancelUserMeeting = async (id) => {
     try {
-      console.log(id);
       const response = await bookingService.cancelUserMeeting(id);
 
-      console.log(response.data);
 
       setBookings(
         bookings.map((booking) =>
