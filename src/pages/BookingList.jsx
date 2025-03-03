@@ -15,7 +15,7 @@ import {
 import { useParams } from 'react-router-dom';
 import { bookingService } from '../services/bookingService';
 import { pingService } from '../services/pingService';
-import { showLimitedToast } from '../hooks/showLimitedToast';
+import { toastManager } from '../common/toastManager';
 
 const BookingList = () => {
   const { name } = useParams();
@@ -109,10 +109,10 @@ const BookingList = () => {
             : booking,
         ),
       );
-      showLimitedToast('Бронь отменена', 'success');
+      toastManager.showSuccessToast('Бронь отменена');
       return response.data;
     } catch (error) {
-      showLimitedToast('Ошибка при отмене брони', 'error');
+      toastManager.showErrorToast('Ошибка при отмене брони');
       console.error('Ошибка при отмене брони:', error);
       throw error;
     }

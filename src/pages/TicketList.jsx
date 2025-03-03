@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import { adminService } from '../services/adminService';
 import {
   Ticket,
@@ -20,7 +19,7 @@ import {
   ServerCrash,
 } from 'lucide-react';
 import { ticketService } from '../services/ticketService';
-import { showLimitedToast } from '../hooks/showLimitedToast';
+import { toastManager } from '../common/toastManager';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -81,9 +80,9 @@ function TicketList() {
     setRefreshing(true);
     try {
       await fetchData();
-      showLimitedToast('Данные обновлены', 'success');
+      toastManager.showSuccessToast('Данные обновлены');
     } catch (err) {
-      showLimitedToast('Не удалось обновить данные', 'error');
+      toastManager.showErrorToast('Не удалось обновить данные');
     } finally {
       setRefreshing(false);
     }
@@ -129,10 +128,10 @@ function TicketList() {
             : ticket,
         ),
       );
-      showLimitedToast(`Статус тикета изменен на "${getStatusText(newStatus)}"`, 'success');
+      toastManager.showSuccessToast(`Статус тикета изменен на "${getStatusText(newStatus)}"`);
       return response.data;
     } catch (error) {
-      showLimitedToast('Ошибка при обновлении статуса тикета', 'error');
+      toastManager.showErrorToast('Ошибка при обновлении статуса тикета');
       console.error('Ошибка при обновлении статуса тикета:', error);
       throw error;
     }

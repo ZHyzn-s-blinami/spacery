@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { showLimitedToast } from '../hooks/showLimitedToast';
+import { toastManager } from '../common/toastManager';
 
 const UserControl = () => {
   // State for storing user data, loading state, and errors
@@ -330,11 +330,11 @@ const UserControl = () => {
           },
         },
       );
-      showLimitedToast('Пользователь заблокирован', 'success');
+      toastManager.showSuccessToast('Пользователь заблокирован');
       fetchUsers(); // Refresh user list
     } catch (err) {
       console.error('Error blocking user:', err);
-      showLimitedToast('Не удалось заблокировать пользователя', 'error');
+      toastManager.showErrorToast('Не удалось заблокировать пользователя');
     }
   };
 
@@ -351,11 +351,11 @@ const UserControl = () => {
           },
         },
       );
-      showLimitedToast('Пользователь разблокирован', 'success');
+      toastManager.showSuccessToast('Пользователь разблокирован');
       fetchUsers(); // Refresh user list
     } catch (err) {
       console.error('Error unblocking user:', err);
-      showLimitedToast('Не удалось разблокировать пользователя', 'error');
+      toastManager.showErrorToast('Не удалось разблокировать пользователя');
     }
   };
 
