@@ -1216,7 +1216,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
               <g
                 key={seat.id}
                 onClick={() =>
-                  !isAdmin ? !seat.isOccupied && onSeatSelect(seat) : handleSeatClick()
+                  !isAdmin ? !seat.isOccupied && onSeatSelect(seat) : navigate(`/admin/ticket/${seat.name}/place`)
                 }
                 style={{
                   cursor: isAdmin ? 'pointer' : !seat.isOccupied ? 'pointer' : 'not-allowed',
