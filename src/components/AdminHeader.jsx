@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Map, User, Menu, X, Calendar } from 'lucide-react';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
+import {Map, User, Menu, X, Calendar, LogOutIcon} from 'lucide-react';
 
 const Header = () => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    navigate('/auth');6
+  };
 
   return (
     <header className="px-5 py-4 bg-gradient-to-r from-blue-50 to-indigo-100 shadow-md mx-auto flex flex-col sm:flex-row items-center justify-between border border-gray-200 rounded-[25px] mb-6">
@@ -59,6 +65,13 @@ const Header = () => {
               <span className="font-medium">Пользователи</span>
             </div>
           </Link>
+          <button
+              onClick={handleLogout}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center transition-all cursor-pointer"
+          >
+            <LogOutIcon size={18} className="mr-2" />
+            <span>Выйти</span>
+          </button>
         </div>
       </nav>
     </header>

@@ -82,14 +82,14 @@ const Profile = () => {
               <div className="flex space-x-3">
                 <button
                   onClick={handleVerification}
-                  className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg flex items-center transition-all"
+                  className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg flex items-center transition-all cursor-pointer"
                 >
                   <ShieldCheckIcon size={18} className="mr-2" />
                   <span>Верификация</span>
                 </button>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center transition-all"
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center transition-all cursor-pointer"
                 >
                   <LogOutIcon size={18} className="mr-2" />
                   <span>Выйти</span>
