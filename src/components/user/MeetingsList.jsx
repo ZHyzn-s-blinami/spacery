@@ -45,6 +45,10 @@ const MeetingList = () => {
         }
     }, [meetings]);
 
+    const handleRedirect = () => {
+        location.href ='/'
+    }
+
     const refreshMeetings = () => {
         dispatch(fetchUserMeetings());
     };
@@ -78,7 +82,7 @@ const MeetingList = () => {
                 <CalendarIcon size={48} className="mx-auto mb-4 text-gray-300" />
                 <h3 className="text-xl font-medium text-gray-700 mb-2">У вас нет предстоящих броней</h3>
                 <p className="text-gray-500 mb-6">Забронируйте место для вашей следующей встречи</p>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
+                <button onClick={handleRedirect} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors shadow-sm">
                     Забронировать место
                 </button>
             </div>
