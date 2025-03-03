@@ -21,6 +21,10 @@ public class TicketsModel {
     @NotNull
     private UUID placeId;
 
+    private Character zone;
+
+    private String placeName;
+
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
@@ -34,11 +38,13 @@ public class TicketsModel {
     public TicketsModel() {
     }
 
-    public TicketsModel(UUID userId, UUID placeId, TicketType ticketType, String description) {
+    public TicketsModel(UUID userId, UUID placeId, TicketType ticketType, String description, Character zone, String placeName) {
         this.userId = userId;
         this.placeId = placeId;
         this.ticketType = ticketType;
         this.description = description;
         this.createdAt = LocalDateTime.now();
+        this.zone = zone;
+        this.placeName = placeName;
     }
 }

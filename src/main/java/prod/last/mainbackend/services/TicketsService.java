@@ -21,13 +21,16 @@ public class TicketsService {
     private final PlaceRepository placeRepository;
 
     public TicketsModel createTicket(TicketCreate create, UUID userId) {
+        PlaceModel place = placeRepository.findByName(create.getPlaceName())
+                .orElseThrow(() -> new IllegalArgumentException("Place with name " + create.getPlaceName() + " not found"));
+
         return ticketsRepository.save(new TicketsModel(
                 userId,
-                placeRepository.findByName(create.getPlaceName())
-                        .orElseThrow(() -> new IllegalArgumentException("Place with name " + create.getPlaceName() + " not found"))
-                        .getId(),
+                place.getId(),
                 create.getTicketType(),
-                create.getDescription()
+                create.getDescription(),
+                create.getPlaceName().charAt(0),
+                create.getPlaceName()
         ));
     }
 
