@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Component
 public class JwtUtils {
-    private final int jwtExpirationMs = 86400000;
+    private final int jwtExpirationMs = 259200000;
 
     @Value("${security.random-secret}")
     private String jwtSecret;
