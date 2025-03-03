@@ -136,7 +136,7 @@ public class BookingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "Error message"))
     )
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/booking/qr/check")
+    @PostMapping("/booking/qr/check")
     public ResponseEntity<?> qrCheck(@Valid @RequestBody CheckQrRequest checkQrRequest) {
         try {
             return ResponseEntity.ok(bookingService.validateBookingCode(checkQrRequest.getQrCode()));
