@@ -25,7 +25,15 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.mnode.ical4j:ical4j:3.2.5'
+    testImplementation 'com.h2database:h2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.rest-assured:rest-assured:5.5.1'
+    testImplementation 'org.testcontainers:postgresql:1.20.5'
+    testImplementation 'org.testcontainers:junit-jupiter:1.20.5'
+    implementation('org.mnode.ical4j:ical4j:3.2.5') {
+        exclude group: 'org.codehaus.groovy', module: 'groovy'
+        exclude group: 'org.codehaus.groovy', module: 'groovy-dateutil'
+    }
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.4.3'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
@@ -48,7 +56,9 @@ tasks.named('test') {
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags 'e2e', 'local'
+    }
     finalizedBy jacocoTestReport
 }
 
@@ -60,3 +70,18 @@ jacocoTestReport {
         html.outputLocation = layout.buildDirectory.dir('reports/jacoco')
     }
 }
+
+task e2eTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'e2e'
+    }
+    systemProperty 'spring.profiles.active', 'test'
+}
+
+task localTest(type: Test) {
+    useJUnitPlatform {
+        includeTags 'local'
+    }
+    systemProperty 'spring.profiles.active', 'test'
+}
+
