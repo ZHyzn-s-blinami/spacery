@@ -11,7 +11,7 @@ import ProtectedUserRoute from './components/ProtectedUserRoute';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import UserControl from './pages/UserControl';
 import TicketList from './pages/TicketList';
-import CheckQr from "./pages/CheckQr.jsx";8
+import CheckQr from "./pages/CheckQr.jsx";
 import MeetingsPage from "./pages/MeetingsList.jsx";
 
 function App() {

@@ -19,30 +19,23 @@ import {
   RefreshCw,
   ServerCrash,
 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
 import { ticketService } from '../services/ticketService';
-import { placeService } from '../services/placeService';
 
 function TicketList() {
-  const { name } = useParams();
-  const [place, setPlace] = useState({
-    id: '',
-    name: '',
-    location: '',
-    capacity: 0,
-  });
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filterOptions, setFilterOptions] = useState({
     status: 'ALL',
     ticketType: 'ALL',
+    zone: 'ALL', // Added zone filter
     dateFrom: '',
     dateTo: '',
     searchQuery: '',
   });
   const [showFilters, setShowFilters] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [zones, setZones] = useState([]); // Store unique zones
 
   const navigate = useNavigate();
 
@@ -63,15 +56,12 @@ function TicketList() {
     try {
       setLoading(true);
 
-      // Получаем информацию о месте
-      if (name) {
-        const placeData = await placeService.getByName(name);
-        setPlace(placeData);
-      }
-
-      // Получаем список тикетов
-      const ticketsData = await ticketService.getByPlace(name);
+      const ticketsData = await ticketService.getAll();
       setTickets(ticketsData);
+
+      // Extract unique zones from tickets
+      const uniqueZones = [...new Set(ticketsData.map((ticket) => ticket.zone).filter(Boolean))];
+      setZones(uniqueZones);
 
       setLoading(false);
     } catch (err) {
@@ -84,7 +74,7 @@ function TicketList() {
   useEffect(() => {
     checkAdminAccess();
     fetchData();
-  }, [name]);
+  }, []);
 
   const refreshData = async () => {
     setRefreshing(true);
@@ -153,6 +143,11 @@ function TicketList() {
     }
 
     if (filterOptions.ticketType !== 'ALL' && ticket.ticketType !== filterOptions.ticketType) {
+      return false;
+    }
+
+    // Added filter by zone
+    if (filterOptions.zone !== 'ALL' && ticket.zone !== filterOptions.zone) {
       return false;
     }
 
@@ -284,6 +279,7 @@ function TicketList() {
     setFilterOptions({
       status: 'ALL',
       ticketType: 'ALL',
+      zone: 'ALL', // Reset zone filter
       dateFrom: '',
       dateTo: '',
       searchQuery: '',
@@ -331,23 +327,13 @@ function TicketList() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                  Список тикетов{place.name ? `: ${place.name}` : ''}
+                  Список тикетов
                 </h1>
                 <p className="mt-1 text-sm text-gray-500">
-                  {place.description || 'Управление заявками на обслуживание помещений'}
+                  Управление заявками на обслуживание помещений
                 </p>
               </div>
             </div>
-            {place.id && (
-              <div className="mt-4 md:mt-0 flex items-center">
-                <div className="flex items-center px-3 py-1 bg-gray-100 rounded-lg">
-                  <MapPin className="h-4 w-4 text-gray-500 mr-1" />
-                  <span className="text-sm text-gray-600">
-                    Вместимость: <span className="font-medium">{place.capacity}</span> человек
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -404,7 +390,7 @@ function TicketList() {
 
             {showFilters && (
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Статус</label>
                     <select
@@ -435,6 +421,23 @@ function TicketList() {
                       <option value="FOOD">Еда</option>
                       <option value="PLACE_TAKEN">Место занято</option>
                       <option value="OTHER">Другое</option>
+                    </select>
+                  </div>
+                  {/* Added Zone filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Зона</label>
+                    <select
+                      name="zone"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                      value={filterOptions.zone}
+                      onChange={handleFilterChange}
+                    >
+                      <option value="ALL">Все зоны</option>
+                      {zones.map((zone) => (
+                        <option key={zone} value={zone}>
+                          {zone}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -511,6 +514,13 @@ function TicketList() {
                       </div>
                     </div>
                     <p className="text-sm text-gray-800 mb-3">{ticket.description}</p>
+                    {/* Added Zone display */}
+                    {ticket.zone && (
+                      <div className="mb-3 text-xs text-gray-600 flex items-center">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        Зона: {ticket.zone}
+                      </div>
+                    )}
                     <div className="flex justify-between items-center">
                       <div className="text-xs text-gray-500">
                         ID: {ticket.id.substring(0, 8)}...
@@ -547,6 +557,7 @@ function TicketList() {
                   {filterOptions.searchQuery ||
                   filterOptions.status !== 'ALL' ||
                   filterOptions.ticketType !== 'ALL' ||
+                  filterOptions.zone !== 'ALL' || // Added zone check
                   filterOptions.dateFrom ||
                   filterOptions.dateTo
                     ? 'Попробуйте изменить параметры фильтрации'
@@ -580,6 +591,13 @@ function TicketList() {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
                         Описание
+                      </th>
+                      {/* Added Zone column */}
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Зона
                       </th>
                       <th
                         scope="col"
@@ -625,6 +643,10 @@ function TicketList() {
                               ? ticket.description.substring(0, 50) + '...'
                               : ticket.description}
                           </div>
+                        </td>
+                        {/* Added Zone cell */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{ticket.zone || '—'}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div
@@ -681,6 +703,7 @@ function TicketList() {
                   {filterOptions.searchQuery ||
                   filterOptions.status !== 'ALL' ||
                   filterOptions.ticketType !== 'ALL' ||
+                  filterOptions.zone !== 'ALL' || // Added zone check
                   filterOptions.dateFrom ||
                   filterOptions.dateTo
                     ? 'Попробуйте изменить параметры фильтрации'
