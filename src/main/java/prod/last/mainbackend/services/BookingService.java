@@ -302,7 +302,7 @@ public class BookingService {
 
     public List<BookingCreateResponse>  findAllUserBookingsByStatus(UUID userId, BookingStatus status) {
         log.info("Getting bookings by userId: {} and status: {}", userId, status);
-        List<BookingModel> bookings = bookingRepository.findAllByUserIdAndStatus(userId, status);
+        List<BookingModel> bookings = bookingRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, status);
         return bookings.stream().map(booking -> {
             PlaceModel placeModel = placeRepository.findById(booking.getPlaceId()).orElse(null);
             BookingCreateResponse response = new BookingCreateResponse();
