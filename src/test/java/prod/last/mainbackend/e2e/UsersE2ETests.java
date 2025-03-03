@@ -12,6 +12,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 @Tag("e2e")
+@Tag("local")
 public class UsersE2ETests extends LocalTestBase {
 
     @Test
