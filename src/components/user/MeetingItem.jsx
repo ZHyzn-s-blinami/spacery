@@ -50,6 +50,77 @@ const MeetingItem = ({ item }) => {
     const startTime = new Date(item.startAt);
     const endTime = new Date(item.endAt);
 
+    // Add after other useState declarations
+    const [showQrModal, setShowQrModal] = useState(false);
+    const [isQrModalClosing, setIsQrModalClosing] = useState(false);
+    const [qrModalMounted, setQrModalMounted] = useState(false);
+
+    // Add after time formatting and before other functions
+    const shouldShowQr = () => {
+      const now = new Date();
+      const diffMs = startTime - now;
+      const diffMinutes = diffMs / (1000 * 60);
+      return diffMinutes <= 5; // Show QR if less than 5 minutes until start
+    };
+
+    // Add after other modal control functions
+    const openQrModal = () => {
+      if (shouldShowQr() && qrCode) {
+        setShowQrModal(true);
+        setIsQrModalClosing(false);
+      }
+    };
+
+    const closeQrModal = () => {
+      setIsQrModalClosing(true);
+      setTimeout(() => {
+        setShowQrModal(false);
+        setIsQrModalClosing(false);
+      }, 300);
+    };
+
+    // Add with other useEffect hooks
+    useEffect(() => {
+      if (showQrModal && !isQrModalClosing) {
+        const timer = setTimeout(() => {
+          setQrModalMounted(true);
+        }, 10);
+        return () => clearTimeout(timer);
+      }
+      if (!showQrModal) {
+        setQrModalMounted(false);
+      }
+    }, [showQrModal, isQrModalClosing]);
+
+    useEffect(() => {
+      const getQrCode = async () => {
+        // Only fetch QR code if we should show it
+        if (shouldShowQr() && item.bookingId) {
+          try {
+            const response = await dispatch(fetchQrCode(item.bookingId));
+            setQrCode(typeof response === "string" ? response :
+                "https://prod-team-5-qnkvbg7c.final.prodcontest.ru/checkQr/" + response.payload.qrCode
+                || "");
+          } catch (error) {
+            console.error("Ошибка при получении QR-кода:", error);
+            setQrCode("");
+          }
+        }
+      };
+
+      // Set an interval to check if we should show QR code
+      const interval = setInterval(() => {
+        if (shouldShowQr() && !qrCode && item.bookingId) {
+          getQrCode();
+        }
+      }, 10000); // Check every 10 seconds
+
+      // Initial check
+      getQrCode();
+
+      return () => clearInterval(interval);
+    }, [dispatch, item.bookingId]);
+
     useEffect(() => {
         if (showRescheduleModal && !isRescheduleModalClosing) {
             const timer = setTimeout(() => {
@@ -430,15 +501,42 @@ const MeetingItem = ({ item }) => {
                 >
                     <div className="text-center">
                         <div className="mb-3">
-                        <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
-                            QR-код для входа
-                        </span>
+    <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full">
+      QR-код для входа
+    </span>
                         </div>
-                        <div className="bg-white inline-block p-3 rounded-md border-2 border-dotted border-gray-200">
-                            <QRCode value={qrCode} size={120} />
-                        </div>
-                        <div className="mt-2 text-xs text-gray-500">
-                            Покажите этот код при входе
+                        <div className="relative">
+                            {shouldShowQr() ? (
+                                <div
+                                    className="bg-white inline-block p-3 rounded-md border-2 border-dotted border-gray-200 cursor-pointer hover:shadow-md transition-all"
+                                    onClick={openQrModal}
+                                    title="Нажмите, чтобы увеличить QR-код"
+                                >
+                                    <QRCode value={qrCode} size={120} />
+                                </div>
+                            ) : (
+                                <div className="inline-block p-3 rounded-md border-2 border-dotted border-gray-200 relative">
+                                    {/* Blurred placeholder QR code */}
+                                    <div className="filter blur-md opacity-50">
+                                        <QRCode value="placeholder-qr-value" size={120} />
+                                    </div>
+
+                                    {/* Overlay with message */}
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 bg-opacity-70 rounded-md">
+                                        <ClockIcon size={30} className="text-gray-500 mb-2" />
+                                        <p className="text-xs font-medium text-gray-600 px-2 text-center">
+                                            QR-код будет доступен за 5 минут до начала
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="mt-2 text-xs text-gray-500">
+                                {shouldShowQr()
+                                    ? "Покажите этот код при входе (нажмите для увеличения)"
+                                    : `Доступно ${getTimeUntilMeeting()}`
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -465,6 +563,47 @@ const MeetingItem = ({ item }) => {
                     </button>
                 </div>
             </div>
+
+            {/* QR Code Full Screen Modal */}
+            {showQrModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
+                <div
+                  className="absolute inset-0 bg-black transition-all duration-300 ease-in-out"
+                  style={{
+                    opacity: qrModalMounted && !isQrModalClosing ? 0.8 : 0,
+                  }}
+                  onClick={closeQrModal}
+                ></div>
+                <div
+                  className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-8 z-50 transition-all duration-300 text-center ${
+                    isQrModalClosing
+                      ? 'opacity-0 transform scale-95'
+                      : qrModalMounted
+                        ? 'opacity-100 transform scale-100'
+                        : 'opacity-0 transform scale-95'
+                  }`}
+                >
+                  <button
+                    onClick={closeQrModal}
+                    className="absolute top-4 right-4 rounded-full p-2 hover:bg-gray-100 text-gray-500 transition-colors"
+                  >
+                    <XIcon size={24} />
+                  </button>
+
+                  <h3 className="text-xl font-medium text-gray-800 mb-6">QR-код для входа</h3>
+
+                  <div className="flex justify-center mb-6">
+                    <div className="bg-white p-4 rounded-md border-2 border-gray-200">
+                      <QRCode value={qrCode} size={250} />
+                    </div>
+                  </div>
+
+                  <p className="text-gray-600">
+                    Предъявите этот QR-код при входе
+                  </p>
+                </div>
+              </div>
+            )}
 
             {showRescheduleModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
