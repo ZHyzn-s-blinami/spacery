@@ -15,6 +15,7 @@ import prod.last.mainbackend.models.BookingModel;
 import prod.last.mainbackend.models.BookingStatus;
 import prod.last.mainbackend.models.UserModel;
 import prod.last.mainbackend.models.request.BookingRequest;
+import prod.last.mainbackend.models.request.CheckQrRequest;
 import prod.last.mainbackend.models.response.BookingCreateResponse;
 import prod.last.mainbackend.models.response.BookingWithUserAndPlaceResponse;
 import prod.last.mainbackend.models.response.BookingWithUserResponse;
@@ -135,10 +136,10 @@ public class BookingController {
             content = @Content(mediaType = "application/json", schema = @Schema(example = "Error message"))
     )
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/booking/{token}/qr/check")
-    public ResponseEntity<?> qrCheck(@PathVariable String token) {
+    @GetMapping("/booking/qr/check")
+    public ResponseEntity<?> qrCheck(@Valid @RequestBody CheckQrRequest checkQrRequest) {
         try {
-            return ResponseEntity.ok(bookingService.validateBookingCode(token));
+            return ResponseEntity.ok(bookingService.validateBookingCode(checkQrRequest.getQrCode()));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
