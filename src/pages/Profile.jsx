@@ -312,7 +312,7 @@ const Profile = () => {
                   ) : (
                     <>
                       <ShieldCheckIcon size={18} className="mr-2" />
-                      <span>Верификация</span>
+                      <span>Верифицировать</span>
                     </>
                   )}
                 </button>
