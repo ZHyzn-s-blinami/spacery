@@ -93,10 +93,7 @@ const CoworkingBooking = ({ isAdmin }) => {
       toastManager.showSuccessToast('Успешно забронировано');
       return result;
     } catch (error) {
-      console.error('Ошибка при создании бронирования: ', error);
-      toastManager.showErrorToast(
-        'Пользователь уже забронировал место в этот временной промежуток',
-      );
+      toastManager.showErrorToast(error.response.data);
       throw error;
     }
   };

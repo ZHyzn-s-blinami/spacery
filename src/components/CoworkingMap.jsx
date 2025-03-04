@@ -32,10 +32,9 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
   const constrainPosition = (pos) => {
     return {
       x: Math.min(MAX_X, Math.max(MIN_X, pos.x)),
-      y: Math.min(MAX_Y, Math.max(MIN_Y, pos.y))
+      y: Math.min(MAX_Y, Math.max(MIN_Y, pos.y)),
     };
   };
-
 
   const closePopup = () => {
     setShowPopup(false);
@@ -139,7 +138,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
     if (tapTimeDiff < 300 && e.touches.length === 1) {
       if (scale >= 1.8) {
         setScale(1);
-        setPosition(constrainPosition({x: 0, y: 0}));
+        setPosition(constrainPosition({ x: 0, y: 0 }));
       } else {
         const touchX = e.touches[0].clientX;
         const touchY = e.touches[0].clientY;
@@ -148,10 +147,12 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
         const targetY = (touchY - rect.top - position.y) / scale;
 
         setScale(2);
-        setPosition(constrainPosition({
-          x: touchX - targetX * 2,
-          y: touchY - targetY * 2,
-        }));
+        setPosition(
+          constrainPosition({
+            x: touchX - targetX * 2,
+            y: touchY - targetY * 2,
+          }),
+        );
       }
 
       e.preventDefault();
@@ -355,7 +356,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
             onClick={() => {
               setScale(1);
-              setPosition(constrainPosition({x: 0, y: 0}));
+              setPosition(constrainPosition({ x: 0, y: 0 }));
             }}
           >
             <RotateCcw size={14} />
@@ -1189,39 +1190,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
           {showPopup && <SeatPopup seat={selectedSeat} onClose={closePopup} />}
 
           <rect x="20" y="385" width="560" height="1" stroke="#94a3b8" strokeWidth="1" />
-
-          <circle cx="30" cy="400" r="5" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1"/>
-          <text x="40" y="403" fill="#64748b" fontSize="8">
-            Рабочее место
-          </text>
-          <circle cx="110" cy="400" r="5" fill="#ccfbf1" stroke="#2dd4bf" strokeWidth="1"/>
-          <text x="120" y="403" fill="#64748b" fontSize="8">
-            Кабинет
-          </text>
-          <circle cx="170" cy="400" r="5" fill="#fef9c3" stroke="#facc15" strokeWidth="1"/>
-          <text x="180" y="403" fill="#64748b" fontSize="8">
-            Переговорная
-          </text>
-          <circle cx="250" cy="400" r="5" fill="#fae8ff" stroke="#d946ef" strokeWidth="1"/>
-          <text x="260" y="403" fill="#64748b" fontSize="8">
-            Тихая зона
-          </text>
-          <circle cx="320" cy="400" r="5" fill="#dcfce7" stroke="#4ade80" strokeWidth="1"/>
-          <text x="330" y="403" fill="#64748b" fontSize="8">
-            Зона отдыха
-          </text>
-          <circle cx="400" cy="400" r="5" fill="#ffedd5" stroke="#ab4b0e" strokeWidth="1"/>
-          <text x="410" y="403" fill="#64748b" fontSize="8">
-            Кофе-зона
-          </text>
-          <circle cx="470" cy="400" r="5" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1"/>
-          <text x="480" y="403" fill="#64748b" fontSize="8">
-            Занято
-          </text>
-          <circle cx="530" cy="400" r="5" fill="#bfdbfe" stroke="#3b82f6" strokeWidth="1.5"/>
-          <text x="540" y="403" fill="#64748b" fontSize="8">
-            Выбрано
-          </text>
         </svg>
       </div>
     </div>
