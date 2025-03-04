@@ -880,37 +880,37 @@ const UserControl = () => {
                       </div>
                     </div>
 
-                    <div className="flex justify-end gap-2">
+                    <div className="flex flex-wrap justify-center gap-2">
                       <button
-                        onClick={() => handleEditClick(user)}
-                        className="text-xs bg-blue-50 text-blue-700 py-1.5 px-3 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors flex items-center"
+                          onClick={() => handleEditClick(user)}
+                          className="text-xs bg-blue-50 text-blue-700 py-1.5 px-3 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors flex items-center"
                       >
                         <PenLine className="h-3 w-3 mr-1" />
                         Изменить
                       </button>
                       <button
-                        onClick={() => handleDeleteClick(user)}
-                        className="text-xs bg-red-50 text-red-700 py-1.5 px-3 rounded-lg border border-red-200 hover:bg-red-100 transition-colors flex items-center"
+                          onClick={() => handleDeleteClick(user)}
+                          className="text-xs bg-red-50 text-red-700 py-1.5 px-3 rounded-lg border border-red-200 hover:bg-red-100 transition-colors flex items-center"
                       >
                         <Trash2 className="h-3 w-3 mr-1" />
                         Удалить
                       </button>
                       {user.active ? (
-                        <button
-                          onClick={() => handleBlockUser(user.id)}
-                          className="text-xs bg-yellow-50 text-yellow-700 py-1.5 px-3 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition-colors flex items-center"
-                        >
-                          <Lock className="h-3 w-3 mr-1" />
-                          Блок
-                        </button>
+                          <button
+                              onClick={() => handleBlockUser(user.id)}
+                              className="text-xs bg-yellow-50 text-yellow-700 py-1.5 px-3 rounded-lg border border-yellow-200 hover:bg-yellow-100 transition-colors flex items-center"
+                          >
+                            <Lock className="h-3 w-3 mr-1" />
+                            Блок
+                          </button>
                       ) : (
-                        <button
-                          onClick={() => handleUnblockUser(user.id)}
-                          className="text-xs bg-green-50 text-green-700 py-1.5 px-3 rounded-lg border border-green-200 hover:bg-green-100 transition-colors flex items-center"
-                        >
-                          <Unlock className="h-3 w-3 mr-1" />
-                          Разблок
-                        </button>
+                          <button
+                              onClick={() => handleUnblockUser(user.id)}
+                              className="text-xs bg-green-50 text-green-700 py-1.5 px-3 rounded-lg border border-green-200 hover:bg-green-100 transition-colors flex items-center"
+                          >
+                            <Unlock className="h-3 w-3 mr-1" />
+                            Разблок
+                          </button>
                       )}
                       {!user.verified && (
                           <button
