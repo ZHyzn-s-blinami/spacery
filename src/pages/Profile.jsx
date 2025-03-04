@@ -5,7 +5,7 @@ import { addUser } from '../store/user/slice';
 import {
     UserIcon, ShieldCheckIcon, LogOutIcon, CalendarIcon,
     Mail, Edit3, Check, X, AlertCircle, Eye, EyeOff,
-    Phone, User, Save, Activity, Briefcase
+    Phone, User, Save, Activity, Briefcase, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -15,7 +15,6 @@ const Profile = () => {
     const userToken = localStorage.getItem('userToken');
     const { user, loading, error } = useSelector((state) => state.user);
 
-    // Edit mode state
     const [isEditMode, setIsEditMode] = useState(false);
     const [editFormData, setEditFormData] = useState({
         name: '',
@@ -30,12 +29,13 @@ const Profile = () => {
         error: null
     });
 
-    // Verification email state
     const [verificationStatus, setVerificationStatus] = useState({
         loading: false,
         success: false,
         error: null
     });
+
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
     useEffect(() => {
         if (userToken && !user) {
@@ -48,7 +48,6 @@ const Profile = () => {
                 });
         }
 
-        // Initialize form data when user is loaded
         if (user) {
             setEditFormData({
                 name: user.name || '',
@@ -69,7 +68,6 @@ const Profile = () => {
 
             setVerificationStatus({ loading: false, success: true, error: null });
 
-            // Reset success message after 3 seconds
             setTimeout(() => {
                 setVerificationStatus(prev => ({ ...prev, success: false }));
             }, 3000);
@@ -97,7 +95,6 @@ const Profile = () => {
 
     const toggleEditMode = () => {
         if (isEditMode) {
-            // Reset form data when canceling edit
             setEditFormData({
                 name: user.name || '',
                 description: user.description || '',
@@ -108,15 +105,21 @@ const Profile = () => {
         setIsEditMode(!isEditMode);
     };
 
+    const toggleDescriptionExpand = () => {
+        setIsDescriptionExpanded(!isDescriptionExpanded);
+    };
+
     const handleSubmitEdit = async (e) => {
         e.preventDefault();
         setSubmitStatus({ loading: true, success: false, error: null });
 
         try {
-            // Only send non-empty fields
             const payload = {};
             Object.entries(editFormData).forEach(([key, value]) => {
-                if (value.trim() !== '') {
+                if (key === 'description') {
+                    payload[key] = value;
+                }
+                else if (value.trim() !== '') {
                     payload[key] = value;
                 }
             });
@@ -129,7 +132,6 @@ const Profile = () => {
 
             setSubmitStatus({ loading: false, success: true, error: null });
 
-            // Refresh user data and exit edit mode
             dispatch(fetchUserData());
 
             setTimeout(() => {
@@ -175,6 +177,9 @@ const Profile = () => {
     }
 
     if (!user) return null;
+
+    // Определяем, нужно ли показывать кнопку "Показать больше"
+    const needsExpansion = user.description && user.description.length > 100;
 
     return (
         <div className="bg-gray-50 min-h-screen py-8">
@@ -381,7 +386,34 @@ const Profile = () => {
                                         Личная информация
                                     </h3>
                                     <p className="text-gray-600 mb-2">Имя: {user.name || "Не указано"}</p>
-                                    <p className="text-gray-600">О себе: {user.description || "Не указано"}</p>
+
+                                    <div className="text-gray-600">
+                                        <span>О себе: </span>
+                                        <div
+                                            className={`overflow-hidden transition-all duration-300 ease-in-out`}
+                                            style={{
+                                                maxHeight: isDescriptionExpanded ? '1000px' : '60px'
+                                            }}
+                                        >
+                                            {user.description || "Не указано"}
+                                        </div>
+
+                                        {needsExpansion && (
+                                            <button
+                                                onClick={toggleDescriptionExpand}
+                                                className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"
+                                            >
+                                                {isDescriptionExpanded ? 'Свернуть' : 'Подробнее'}
+                                                <div className="relative w-4 h-4 ml-0.5 flex items-center justify-center">
+                                                    <ChevronDown
+                                                        className={`absolute transition-transform duration-300 ease-in-out h-3 w-3 ${
+                                                            isDescriptionExpanded ? 'transform rotate-180' : ''
+                                                        }`}
+                                                    />
+                                                </div>
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="border rounded-lg p-4">
@@ -408,7 +440,7 @@ const Profile = () => {
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center justify-center transition-all w-full"
                                 >
                                     <CalendarIcon size={18} className="mr-2" />
-                                    Просмотреть мои встречи
+                                    Просмотреть мои бронирования
                                 </Link>
                             </div>
                         </div>

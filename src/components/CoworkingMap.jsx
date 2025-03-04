@@ -1221,103 +1221,97 @@ const CoworkingMap = ({selectedSeat, onSeatSelect, freePlaces, isAdmin}) => {
                     </text>
 
 
-                    {seats.map((seat) => (
-                        <>
-                            <g
-
-                                key={seat.id}
-                                onClick={() =>
-                                    !isAdmin ? !seat.isOccupied && onSeatSelect(seat) : navigate(`/admin/booking/${seat.name}/place`)
+                    {seats.map((seat, index) => (
+                        <g
+                            key={`seat-${seat.id}-${index}`}
+                            onClick={() => !isAdmin ? !seat.isOccupied && onSeatSelect(seat) : navigate(`/admin/booking/${seat.name}/place`)}
+                            style={{
+                                cursor: isAdmin ? 'pointer' : !seat.isOccupied ? 'pointer' : 'not-allowed',
+                                pointerEvents: 'auto',
+                            }}
+                            data-seat="true"
+                            data-seat-id={seat.id}
+                        >
+                            <rect
+                                x={seat.x - 9}
+                                y={seat.y - 9}
+                                width="18"
+                                height="18"
+                                rx="2"
+                                fill={
+                                    selectedSeat?.id === seat.id
+                                        ? '#bfdbfe'
+                                        : seat.isOccupied
+                                            ? '#f3f4f6'
+                                            : seat.type === 'desk'
+                                                ? '#dbeafe'
+                                                : seat.type === 'office'
+                                                    ? '#ccfbf1'
+                                                    : seat.type === 'meeting'
+                                                        ? '#fef9c3'
+                                                        : seat.type === 'focus'
+                                                            ? '#fae8ff'
+                                                            : '#dcfce7'
                                 }
-                                style={{
-                                    cursor: isAdmin ? 'pointer' : !seat.isOccupied ? 'pointer' : 'not-allowed',
-                                    pointerEvents: 'auto',
-                                }}
-                                data-seat="true"
-                                data-seat-id={seat.id}
-                            >
-
-                                <rect
-                                    x={seat.x - 9}
-                                    y={seat.y - 9}
-                                    width="18"
-                                    height="18"
-                                    rx="2"
-                                    fill={
-                                        selectedSeat?.id === seat.id
-                                            ? '#bfdbfe'
-                                            : seat.isOccupied
-                                                ? '#f3f4f6'
-                                                : seat.type === 'desk'
-                                                    ? '#dbeafe'
-                                                    : seat.type === 'office'
-                                                        ? '#ccfbf1'
-                                                        : seat.type === 'meeting'
-                                                            ? '#fef9c3'
-                                                            : seat.type === 'focus'
-                                                                ? '#fae8ff'
-                                                                : '#dcfce7'
-                                    }
-                                    stroke={
-                                        selectedSeat?.id === seat.id
-                                            ? '#3b82f6'
-                                            : seat.isOccupied
-                                                ? '#d1d5db'
-                                                : seat.type === 'desk'
-                                                    ? '#60a5fa'
-                                                    : seat.type === 'office'
-                                                        ? '#2dd4bf'
-                                                        : seat.type === 'meeting'
-                                                            ? '#facc15'
+                                stroke={
+                                    selectedSeat?.id === seat.id
+                                        ? '#3b82f6'
+                                        : seat.isOccupied
+                                            ? '#d1d5db'
+                                            : seat.type === 'desk'
+                                                ? '#60a5fa'
+                                                : seat.type === 'office'
+                                                    ? '#2dd4bf'
+                                                    : seat.type === 'meeting'
+                                                        ? '#facc15'
+                                                        : seat.type === 'focus'
+                                                            ? '#d946ef'
                                                             : seat.type === 'focus'
                                                                 ? '#d946ef'
-                                                                : seat.type === 'focus'
-                                                                    ? '#d946ef'
-                                                                    : '#4ade80'
-                                    }
-                                    strokeWidth="1"
+                                                                : '#4ade80'
+                                }                                strokeWidth="1"
+                                data-seat="true"
+                            />
+                            <text
+                                x={seat.x}
+                                y={seat.y + 3}
+                                textAnchor="middle"
+                                fontSize="7"
+                                fontWeight="500"
+                                fill={
+                                    seat.isOccupied
+                                        ? '#9ca3af'
+                                        : seat.type === 'desk'
+                                            ? '#1e40af'
+                                            : seat.type === 'office'
+                                                ? '#0f766e'
+                                                : seat.type === 'meeting'
+                                                    ? '#854d0e'
+                                                    : seat.type === 'focus'
+                                                        ? '#7e22ce'
+                                                        : '#15803d'
+                                }
+                                data-seat="true"
+                            >
+                                {seat.name}
+                            </text>
+                            {seat.isOccupied && (
+                                <Lock
+                                    className="text-gray-400"
+                                    size={10}
                                     data-seat="true"
+                                    style={{
+                                        position: 'absolute',
+                                        transform: 'translate(-50%, -50%)',
+                                        left: `${seat.x}px`,
+                                        top: `${seat.y + 5}px`
+                                    }}
                                 />
-                                <text
-                                    x={seat.x}
-                                    y={seat.y + 3}
-                                    textAnchor="middle"
-                                    fontSize="7"
-                                    fontWeight="500"
-                                    fill={
-                                        seat.isOccupied
-                                            ? '#9ca3af'
-                                            : seat.type === 'desk'
-                                                ? '#1e40af'
-                                                : seat.type === 'office'
-                                                    ? '#0f766e'
-                                                    : seat.type === 'meeting'
-                                                        ? '#854d0e'
-                                                        : seat.type === 'focus'
-                                                            ? '#7e22ce'
-                                                            : '#15803d'
-                                    }
-                                    data-seat="true"
-                                >
-                                    {seat.name}
-                                </text>
-                                {seat.isOccupied && (
-                                    <Lock
-                                        className="text-gray-400"
-                                        size={10}
-                                        data-seat="true"
-                                        style={{
-                                            position: 'absolute',
-                                            transform: 'translate(-50%, -50%)',
-                                            left: `${seat.x}px`,
-                                            top: `${seat.y + 5}px`
-                                        }}
-                                    />
-                                )}
-                            </g>
-                            {showPopup && <SeatPopup seat={seat} onClose={closePopup}/>}
-                        </>
+                            )}
+                        </g>
                     ))}
+                    {showPopup && <SeatPopup seat={selectedSeat} onClose={closePopup}/>}
+
 
                     <rect x="20" y="385" width="560" height="1" stroke="#94a3b8" strokeWidth="1"/>
                     <circle cx="30" cy="395" r="5" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1"/>

@@ -8,7 +8,6 @@ const UserConfirm = () => {
     const navigate = useNavigate();
     const [status, setStatus] = useState({loading: true, error: null, success: false});
 
-    // Create API client
     const apiClient = axios.create({
         baseURL: 'https://prod-team-5-qnkvbg7c.final.prodcontest.ru',
         headers: {
@@ -29,14 +28,12 @@ const UserConfirm = () => {
                         'Access-Control-Allow-Origin': '*'
                     },
                     validateStatus: function (status) {
-                        // Accept all status codes to handle them manually
                         return true;
                     }
                 });
 
                 console.log(response.data);
 
-                // Check for 302/304 status codes for successful confirmation
                 if (response.status === 302 || response.status === 304) {
                     setStatus({loading: false, error: null, success: true});
                     toast.success('Аккаунт успешно подтвержден!');
@@ -66,11 +63,8 @@ const UserConfirm = () => {
         confirmUser();
     }, [jwt, navigate]);
 
-    // Rest of the component remains unchanged
     return (
-        // Your existing JSX code here
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            {/* Existing UI code */}
             <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
                 <h2 className="text-2xl font-semibold text-center mb-6">Подтверждение аккаунта</h2>
 

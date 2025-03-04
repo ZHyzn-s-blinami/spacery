@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import TimeRangeSlider from "../../components/TimeRangeSlider";
 import axios from "axios";
+import ModalPortal from "../../components/ModalPortal";
 
 
 const MeetingItem = ({item}) => {
@@ -716,433 +717,448 @@ const MeetingItem = ({item}) => {
             </div>
 
             {showQrModal && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-in-out">
+                <ModalPortal>
                     <div
-                        className="absolute inset-0 bg-black transition-all duration-300 ease-in-out"
-                        style={{
-                            opacity: qrModalMounted && !isQrModalClosing ? 0.8 : 0,
-                        }}
-                        onClick={closeQrModal}
-                    ></div>
-                    <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-8 z-50 transition-all duration-300 text-center ${
-                            isQrModalClosing
-                                ? 'opacity-0 transform scale-95'
-                                : qrModalMounted
-                                    ? 'opacity-100 transform scale-100'
-                                    : 'opacity-0 transform scale-95'
-                        }`}
-                    >
-                        <button
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-in-out">
+                        <div
+                            className="absolute inset-0 bg-black transition-all duration-300 ease-in-out"
+                            style={{
+                                opacity: qrModalMounted && !isQrModalClosing ? 0.8 : 0,
+                            }}
                             onClick={closeQrModal}
-                            className="absolute top-4 right-4 rounded-full p-2 hover:bg-gray-100 text-gray-500 transition-colors"
+                        ></div>
+                        <div
+                            className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-8 z-50 transition-all duration-300 text-center ${
+                                isQrModalClosing
+                                    ? 'opacity-0 transform scale-95'
+                                    : qrModalMounted
+                                        ? 'opacity-100 transform scale-100'
+                                        : 'opacity-0 transform scale-95'
+                            }`}
                         >
-                            <XIcon size={24}/>
-                        </button>
+                            <button
+                                onClick={closeQrModal}
+                                className="absolute top-4 right-4 rounded-full p-2 hover:bg-gray-100 text-gray-500 transition-colors"
+                            >
+                                <XIcon size={24}/>
+                            </button>
 
-                        <h3 className="text-xl font-medium text-gray-800 mb-6">QR-код для входа</h3>
+                            <h3 className="text-xl font-medium text-gray-800 mb-6">QR-код для входа</h3>
 
-                        <div className="flex justify-center mb-6">
-                            <div className="bg-white p-4 rounded-md border-2 border-gray-200">
-                                <QRCode value={qrCode} size={250}/>
+                            <div className="flex justify-center mb-6">
+                                <div className="bg-white p-4 rounded-md border-2 border-gray-200">
+                                    <QRCode value={qrCode} size={250}/>
+                                </div>
                             </div>
-                        </div>
 
-                        <p className="text-gray-600">
-                            Предъявите этот QR-код при входе
-                        </p>
+                            <p className="text-gray-600">
+                                Предъявите этот QR-код при входе
+                            </p>
+                        </div>
                     </div>
-                </div>
+                </ModalPortal>
+
             )}
 
             {showRescheduleModal && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
+                <ModalPortal>
                     <div
-                        className="absolute inset-0 transition-all duration-300 ease-in-out"
-                        style={{
-                            backdropFilter: rescheduleModalMounted && !isRescheduleModalClosing ? 'blur(5px)' : 'blur(0px)',
-                            backgroundColor: rescheduleModalMounted && !isRescheduleModalClosing ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0)',
-                        }}
-                        onClick={closeRescheduleModal}
-                    ></div>
-                    <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${isRescheduleModalClosing
-                            ? 'opacity-0 transform scale-95'
-                            : rescheduleModalMounted
-                                ? 'opacity-100 transform scale-100'
-                                : 'opacity-0 transform scale-95'
-                        }`}
-                    >
+                        className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
                         <div
-                            className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-                            <h3 className="text-lg font-medium">Изменить время брони</h3>
-                            <button
-                                onClick={closeRescheduleModal}
-                                className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
-                            >
-                                <XIcon size={20}/>
-                            </button>
-                        </div>
+                            className="absolute inset-0 transition-all duration-300 ease-in-out"
+                            style={{
+                                backdropFilter: rescheduleModalMounted && !isRescheduleModalClosing ? 'blur(5px)' : 'blur(0px)',
+                                backgroundColor: rescheduleModalMounted && !isRescheduleModalClosing ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0)',
+                            }}
+                            onClick={closeRescheduleModal}
+                        ></div>
+                        <div
+                            className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${isRescheduleModalClosing
+                                ? 'opacity-0 transform scale-95'
+                                : rescheduleModalMounted
+                                    ? 'opacity-100 transform scale-100'
+                                    : 'opacity-0 transform scale-95'
+                            }`}
+                        >
+                            <div
+                                className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                                <h3 className="text-lg font-medium">Изменить время брони</h3>
+                                <button
+                                    onClick={closeRescheduleModal}
+                                    className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
+                                >
+                                    <XIcon size={20}/>
+                                </button>
+                            </div>
 
-                        <div className="p-6">
-                            <div className="mb-6">
-                                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                                    <div className="flex">
-                                        <AlertCircleIcon size={20} className="text-blue-500 mr-2 flex-shrink-0"/>
-                                        <div>
-                                            <p className="text-sm text-blue-700">
-                                                Выберите новую дату и время для вашей брони
+                            <div className="p-6">
+                                <div className="mb-6">
+                                    <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                                        <div className="flex">
+                                            <AlertCircleIcon size={20} className="text-blue-500 mr-2 flex-shrink-0"/>
+                                            <div>
+                                                <p className="text-sm text-blue-700">
+                                                    Выберите новую дату и время для вашей брони
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                            <div className="flex items-center text-gray-700 font-medium mb-4">
+                                                <CalendarDaysIcon size={18} className="mr-2 text-blue-600"/>
+                                                <h4>Выберите дату</h4>
+                                            </div>
+                                            <input
+                                                type="date"
+                                                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                value={selectedDate}
+                                                onChange={handleDateChange}
+                                                min={new Date().toISOString().split('T')[0]}
+                                            />
+                                            <p className="mt-2 text-sm text-gray-500">
+                                                Выбрано: <span
+                                                className="font-medium">{formatDateForDisplay(selectedDate)}</span>
+                                            </p>
+                                        </div>
+
+                                        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                            <div className="flex items-center text-gray-700 font-medium mb-4">
+                                                <ClockIcon size={18} className="mr-2 text-blue-600"/>
+                                                <h4>Выберите время брони</h4>
+                                            </div>
+
+                                            <TimeRangeSlider
+                                                startTime={timeSliderState.startTime}
+                                                endTime={timeSliderState.endTime}
+                                                onStartTimeChange={handleStartTimeChange}
+                                                onEndTimeChange={handleEndTimeChange}
+                                                minTime={{hour: 8, minute: 0}}
+                                                maxTime={{hour: 22, minute: 0}}
+                                                currentTime={new Date()}
+                                                isToday={selectedDate === new Date().toISOString().split('T')[0]}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-6 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                                        <div className="flex items-start">
+                                            <MapPinIcon size={18}
+                                                        className="text-yellow-500 mr-2 mt-0.5 flex-shrink-0"/>
+                                            <p className="text-sm text-yellow-700">
+                                                Место бронирования останется прежним: <span
+                                                className="font-medium">{item.address}</span>
                                             </p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                                        <div className="flex items-center text-gray-700 font-medium mb-4">
-                                            <CalendarDaysIcon size={18} className="mr-2 text-blue-600"/>
-                                            <h4>Выберите дату</h4>
-                                        </div>
-                                        <input
-                                            type="date"
-                                            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            value={selectedDate}
-                                            onChange={handleDateChange}
-                                            min={new Date().toISOString().split('T')[0]}
-                                        />
-                                        <p className="mt-2 text-sm text-gray-500">
-                                            Выбрано: <span
-                                            className="font-medium">{formatDateForDisplay(selectedDate)}</span>
-                                        </p>
-                                    </div>
-
-                                    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                                        <div className="flex items-center text-gray-700 font-medium mb-4">
-                                            <ClockIcon size={18} className="mr-2 text-blue-600"/>
-                                            <h4>Выберите время брони</h4>
-                                        </div>
-
-                                        <TimeRangeSlider
-                                            startTime={timeSliderState.startTime}
-                                            endTime={timeSliderState.endTime}
-                                            onStartTimeChange={handleStartTimeChange}
-                                            onEndTimeChange={handleEndTimeChange}
-                                            minTime={{hour: 8, minute: 0}}
-                                            maxTime={{hour: 22, minute: 0}}
-                                            currentTime={new Date()}
-                                            isToday={selectedDate === new Date().toISOString().split('T')[0]}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-                                    <div className="flex items-start">
-                                        <MapPinIcon size={18} className="text-yellow-500 mr-2 mt-0.5 flex-shrink-0"/>
-                                        <p className="text-sm text-yellow-700">
-                                            Место бронирования останется прежним: <span
-                                            className="font-medium">{item.address}</span>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end space-x-3 pt-4 border-t">
-                                <button
-                                    onClick={closeRescheduleModal}
-                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition-all duration-200 transform hover:scale-105 active:scale-95"
-                                    disabled={reschedulingLoading}
-                                >
-                                    Отмена
-                                </button>
-                                <button
-                                    onClick={confirmReschedule}
-                                    disabled={reschedulingLoading}
-                                    className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${rescheduleStatus === 'success'
-                                        ? 'bg-green-600 hover:bg-green-700'
-                                        : rescheduleStatus === 'error'
-                                            ? 'bg-red-600 hover:bg-red-700'
-                                            : 'bg-blue-600 hover:bg-blue-700'
-                                    } text-white`}
-                                >
-                                    <div className="relative flex items-center justify-center">
+                                <div className="flex justify-end space-x-3 pt-4 border-t">
+                                    <button
+                                        onClick={closeRescheduleModal}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition-all duration-200 transform hover:scale-105 active:scale-95"
+                                        disabled={reschedulingLoading}
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        onClick={confirmReschedule}
+                                        disabled={reschedulingLoading}
+                                        className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${rescheduleStatus === 'success'
+                                            ? 'bg-green-600 hover:bg-green-700'
+                                            : rescheduleStatus === 'error'
+                                                ? 'bg-red-600 hover:bg-red-700'
+                                                : 'bg-blue-600 hover:bg-blue-700'
+                                        } text-white`}
+                                    >
+                                        <div className="relative flex items-center justify-center">
                                         <span
                                             className={`transition-all duration-300 ${reschedulingLoading || rescheduleStatus ? 'opacity-0' : 'opacity-100'}`}>
                                             Подтвердить
                                         </span>
 
-                                        <div
-                                            className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${reschedulingLoading ? 'opacity-100' : 'opacity-0'}`}>
-                                            <svg className="animate-spin h-5 w-5 mr-2"
-                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10"
-                                                        stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor"
-                                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            <span>Обработка...</span>
-                                        </div>
+                                            <div
+                                                className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${reschedulingLoading ? 'opacity-100' : 'opacity-0'}`}>
+                                                <svg className="animate-spin h-5 w-5 mr-2"
+                                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10"
+                                                            stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor"
+                                                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                <span>Обработка...</span>
+                                            </div>
 
-                                        <div
-                                            className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'success' ? 'opacity-100' : 'opacity-0'}`}>
-                                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                      d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            <span>Успешно</span>
-                                        </div>
+                                            <div
+                                                className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'success' ? 'opacity-100' : 'opacity-0'}`}>
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                                          d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                <span>Успешно</span>
+                                            </div>
 
-                                        <div
-                                            className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'error' ? 'opacity-100' : 'opacity-0'}`}>
-                                            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                                 viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                      d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                            <span>Ошибка</span>
+                                            <div
+                                                className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!reschedulingLoading && rescheduleStatus === 'error' ? 'opacity-100' : 'opacity-0'}`}>
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                                          d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                                <span>Ошибка</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                </button>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </ModalPortal>
+
             )}
 
             {showTicketModal && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
+                <ModalPortal>
                     <div
-                        className="absolute inset-0 transition-all duration-300 ease-in-out"
-                        style={{
-                            backdropFilter: ticketModalMounted && !isTicketModalClosing ? 'blur(5px)' : 'blur(0px)',
-                            backgroundColor: ticketModalMounted && !isTicketModalClosing ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
-                        }}
-                        onClick={closeTicketModal}
-                    ></div>
-                    <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${
-                            isTicketModalClosing
+                        className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
+                        <div
+                            className="absolute inset-0 transition-all duration-300 ease-in-out"
+                            style={{
+                                backdropFilter: ticketModalMounted && !isTicketModalClosing ? 'blur(5px)' : 'blur(0px)',
+                                backgroundColor: ticketModalMounted && !isTicketModalClosing ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0)',
+                            }}
+                            onClick={closeTicketModal}
+                        ></div>
+                        <div
+                            className={`relative bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-auto z-50 transition-all duration-300 ${isTicketModalClosing
                                 ? 'opacity-0 transform scale-95'
                                 : ticketModalMounted
                                     ? 'opacity-100 transform scale-100'
                                     : 'opacity-0 transform scale-95'
-                        }`}
-                    >
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-800 flex items-center">
-                                <AlertCircleIcon size={20} className="mr-2 text-gray-700"/>
-                                Сообщить о проблеме
-                            </h3>
-                            <button
-                                onClick={closeTicketModal}
-                                className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
-                            >
-                                <XIcon size={20}/>
-                            </button>
-                        </div>
+                            }`}
+                        >
+                            <div
+                                className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                                <h3 className="text-lg font-medium flex items-center">
+                                    <AlertCircleIcon size={20} className="mr-2 text-gray-700"/>
+                                    Сообщить о проблеме
+                                </h3>
+                                <button
+                                    onClick={closeTicketModal}
+                                    className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
+                                >
+                                    <XIcon size={20}/>
+                                </button>
+                            </div>
 
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Тип проблемы</label>
-                            <select
-                                value={ticketData.ticketType}
-                                onChange={(e) => setTicketData({...ticketData, ticketType: e.target.value})}
-                                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option value="CLEANING">Уборка</option>
-                                <option value="TECHNICAL_PROBLEM">Оборудование</option>
-                                <option value="PLACE_TAKEN">Место занято</option>
-                                <option value="FOOD">Еда</option>
-                                <option value="OTHER">Другое</option>
-                            </select>
-                        </div>
+                            <div className="p-6">
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Тип проблемы</label>
+                                    <select
+                                        value={ticketData.ticketType}
+                                        onChange={(e) => setTicketData({...ticketData, ticketType: e.target.value})}
+                                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    >
+                                        <option value="CLEANING">Уборка</option>
+                                        <option value="TECHNICAL_PROBLEM">Оборудование</option>
+                                        <option value="PLACE_TAKEN">Место занято</option>
+                                        <option value="FOOD">Еда</option>
+                                        <option value="OTHER">Другое</option>
+                                    </select>
+                                </div>
 
-                        {ticketData.ticketType !== "OTHER" ? (
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-3">Выберите
-                                    проблему</label>
-                                <div className="space-y-2 max-h-60 overflow-y-auto">
-                                    {predefinedDescriptions.map((desc, index) => (
-                                        <div
-                                            key={index}
-                                            onClick={() => setSelectedIssue(desc)}
-                                            className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
-                                                selectedIssue === desc
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
-                                            }`}
-                                        >
-                                            <div
-                                                className={`w-4 h-4 rounded-full border mr-3 flex items-center justify-center ${
-                                                    selectedIssue === desc
-                                                        ? 'border-blue-500 bg-white'
-                                                        : 'border-gray-400'
-                                                }`}>
-                                                {selectedIssue === desc && (
-                                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                )}
-                                            </div>
-                                            <span
-                                                className={`text-sm ${selectedIssue === desc ? 'text-blue-700 font-medium' : 'text-gray-700'}`}>
-            {desc}
-          </span>
+                                {ticketData.ticketType !== "OTHER" ? (
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-3">Выберите
+                                            проблему</label>
+                                        <div className="space-y-2 max-h-60 overflow-y-auto">
+                                            {predefinedDescriptions.map((desc, index) => (
+                                                <div
+                                                    key={index}
+                                                    onClick={() => setSelectedIssue(desc)}
+                                                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-all ${
+                                                        selectedIssue === desc
+                                                            ? 'border-blue-500 bg-blue-50'
+                                                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
+                                                    }`}
+                                                >
+                                                    <div
+                                                        className={`w-4 h-4 rounded-full border mr-3 flex items-center justify-center ${
+                                                            selectedIssue === desc
+                                                                ? 'border-blue-500 bg-white'
+                                                                : 'border-gray-400'
+                                                        }`}>
+                                                        {selectedIssue === desc && (
+                                                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                                        )}
+                                                    </div>
+                                                    <span
+                                                        className={`text-sm ${selectedIssue === desc ? 'text-blue-700 font-medium' : 'text-gray-700'}`}>
+                                          {desc}
+                                        </span>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))}
+                                    </div>
+                                ) : (
+                                    <div className="mb-4">
+                                        <label className="block text-sm font-medium text-gray-700 mt-4 mb-1">Описание
+                                            проблемы</label>
+                                        <textarea
+                                            value={ticketData.description}
+                                            onChange={(e) => setTicketData({...ticketData, description: e.target.value})}
+                                            rows="4"
+                                            className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            placeholder="Опишите проблему подробнее..."
+                                        ></textarea>
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end space-x-3 pt-4 border-t">
+                                    <button
+                                        onClick={closeTicketModal}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition-all duration-200 transform hover:scale-105 active:scale-95"
+                                        disabled={ticketSubmitting}
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        onClick={submitTicket}
+                                        disabled={
+                                            ticketSubmitting ||
+                                            (ticketData.ticketType === "OTHER" ? !ticketData.description.trim() : !selectedIssue)
+                                        }
+                                        className={`px-6 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 active:scale-95 relative ${
+                                            ticketStatus === 'success'
+                                                ? 'bg-green-600 hover:bg-green-700'
+                                                : ticketStatus === 'error'
+                                                    ? 'bg-red-600 hover:bg-red-700'
+                                                    : 'bg-blue-600 hover:bg-blue-700'
+                                        } text-white`}
+                                    >
+                                        <div className="relative flex items-center justify-center">
+                                            <span
+                                                className={`transition-all duration-300 ${ticketSubmitting || ticketStatus ? 'opacity-0' : 'opacity-100'}`}>
+                                              Отправить
+                                            </span>
+
+                                            <div
+                                                className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${ticketSubmitting ? 'opacity-100' : 'opacity-0'}`}>
+                                                <svg className="animate-spin h-5 w-5 mr-2"
+                                                     xmlns="http://www.w3.org/2000/svg"
+                                                     fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10"
+                                                            stroke="currentColor"
+                                                            strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor"
+                                                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                                <span>Отправка...</span>
+                                            </div>
+
+                                            <div
+                                                className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!ticketSubmitting && ticketStatus === 'success' ? 'opacity-100' : 'opacity-0'}`}>
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                                          d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                                <span>Отправлено</span>
+                                            </div>
+
+                                            <div
+                                                className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!ticketSubmitting && ticketStatus === 'error' ? 'opacity-100' : 'opacity-0'}`}>
+                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                                          d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                                <span>Ошибка</span>
+                                            </div>
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
-                        ) : (
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mt-4 mb-1">Описание
-                                    проблемы</label>
-                                <textarea
-                                    value={ticketData.description}
-                                    onChange={(e) => setTicketData({...ticketData, description: e.target.value})}
-                                    rows="4"
-                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Опишите проблему подробнее..."
-                                ></textarea>
-                            </div>
-                        )}
-
-                        <div className="mt-6 flex justify-end space-x-3">
-                            <button
-                                onClick={closeTicketModal}
-                                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
-                                disabled={ticketSubmitting}
-                            >
-                                Отмена
-                            </button>
-                            <button
-                                onClick={submitTicket}
-                                disabled={
-                                    ticketSubmitting ||
-                                    (ticketData.ticketType === "OTHER" ? !ticketData.description.trim() : !selectedIssue)
-                                }
-                                className={`px-6 py-2 rounded-lg transition-all duration-300 relative ${
-                                    ticketStatus === 'success'
-                                        ? 'bg-green-600 hover:bg-green-700'
-                                        : ticketStatus === 'error'
-                                            ? 'bg-red-600 hover:bg-red-700'
-                                            : 'bg-blue-600 hover:bg-blue-700'
-                                } text-white`}
-                            >
-                                <div className="relative flex items-center justify-center">
-                                    <span
-                                        className={`transition-all duration-300 ${ticketSubmitting || ticketStatus ? 'opacity-0' : 'opacity-100'}`}>
-                                      Отправить
-                                    </span>
-
-                                    <div
-                                        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${ticketSubmitting ? 'opacity-100' : 'opacity-0'}`}>
-                                        <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg"
-                                             fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                    strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor"
-                                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        <span>Отправка...</span>
-                                    </div>
-
-                                    <div
-                                        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!ticketSubmitting && ticketStatus === 'success' ? 'opacity-100' : 'opacity-0'}`}>
-                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                  d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        <span>Отправлено</span>
-                                    </div>
-
-                                    <div
-                                        className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${!ticketSubmitting && ticketStatus === 'error' ? 'opacity-100' : 'opacity-0'}`}>
-                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor"
-                                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                  d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                        <span>Ошибка</span>
-                                    </div>
-                                </div>
-                            </button>
                         </div>
                     </div>
-                </div>
+                </ModalPortal>
             )}
 
             {showCancelModal && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
+                <ModalPortal>
                     <div
-                        className="absolute inset-0 transition-all duration-300 ease-in-out"
-                        style={{
-                            backdropFilter: cancelModalMounted && !isCancelModalClosing ? 'blur(5px)' : 'blur(0px)',
-                            backgroundColor: cancelModalMounted && !isCancelModalClosing ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0)',
-                        }}
-                        onClick={closeCancelModal}
-                    ></div>
-                    <div
-                        className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${isCancelModalClosing
-                            ? 'opacity-0 transform scale-95'
-                            : cancelModalMounted
-                                ? 'opacity-100 transform scale-100'
-                                : 'opacity-0 transform scale-95'
-                        }`}
-                    >
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-medium text-gray-800 flex items-center">
-                                <AlertCircleIcon size={20} className="mr-2 text-gray-700"/>
-                                Подтверждение отмены
-                            </h3>
-                            <button
-                                onClick={closeCancelModal}
-                                className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
-                            >
-                                <XIcon size={20}/>
-                            </button>
-                        </div>
+                        className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ease-in-out">
+                        <div
+                            className="absolute inset-0 transition-all duration-300 ease-in-out"
+                            style={{
+                                backdropFilter: cancelModalMounted && !isCancelModalClosing ? 'blur(5px)' : 'blur(0px)',
+                                backgroundColor: cancelModalMounted && !isCancelModalClosing ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0)',
+                            }}
+                            onClick={closeCancelModal}
+                        ></div>
+                        <div
+                            className={`relative bg-white rounded-xl shadow-xl max-w-md w-full p-6 z-50 transition-all duration-300 ${isCancelModalClosing
+                                ? 'opacity-0 transform scale-95'
+                                : cancelModalMounted
+                                    ? 'opacity-100 transform scale-100'
+                                    : 'opacity-0 transform scale-95'
+                            }`}
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-medium text-gray-800 flex items-center">
+                                    <AlertCircleIcon size={20} className="mr-2 text-gray-700"/>
+                                    Подтверждение отмены
+                                </h3>
+                                <button
+                                    onClick={closeCancelModal}
+                                    className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
+                                >
+                                    <XIcon size={20}/>
+                                </button>
+                            </div>
 
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-                            <p className="text-lg mb-2 text-center font-medium text-gray-700">
-                                Вы уверены, что хотите отменить бронь?
-                            </p>
-                            <div className="text-sm text-gray-600 space-y-2">
-                                <div className="flex">
-                                    <MapPinIcon size={16} className="mr-2 flex-shrink-0 text-gray-500"/>
-                                    <span>{`${item.place.description} - ${item.place.name}`}</span> {/*!!!!*/}
-                                </div>
-                                <div className="flex">
-                                    <CalendarIcon size={16} className="mr-2 flex-shrink-0 text-gray-500"/>
-                                    <span>{startTime.toLocaleDateString('ru-RU', {
-                                        day: 'numeric',
-                                        month: 'long'
-                                    })}</span>
-                                </div>
-                                <div className="flex">
-                                    <ClockIcon size={16} className="mr-2 flex-shrink-0 text-gray-500"/>
-                                    <span>{formatTime(startTime)} - {formatTime(endTime)}</span>
+                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                                <p className="text-lg mb-2 text-center font-medium text-gray-700">
+                                    Вы уверены, что хотите отменить бронь?
+                                </p>
+                                <div className="text-sm text-gray-600 space-y-2">
+                                    <div className="flex">
+                                        <MapPinIcon size={16} className="mr-2 flex-shrink-0 text-gray-500"/>
+                                        <span>{`${item.place.description} - ${item.place.name}`}</span> {/*!!!!*/}
+                                    </div>
+                                    <div className="flex">
+                                        <CalendarIcon size={16} className="mr-2 flex-shrink-0 text-gray-500"/>
+                                        <span>{startTime.toLocaleDateString('ru-RU', {
+                                            day: 'numeric',
+                                            month: 'long'
+                                        })}</span>
+                                    </div>
+                                    <div className="flex">
+                                        <ClockIcon size={16} className="mr-2 flex-shrink-0 text-gray-500"/>
+                                        <span>{formatTime(startTime)} - {formatTime(endTime)}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex justify-between space-x-4">
-                            <button
-                                onClick={closeCancelModal}
-                                className="flex-1 px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
-                            >
-                                Нет, оставить
-                            </button>
-                            <button
-                                onClick={confirmCancellation}
-                                className="flex-1 px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                            >
-                                Да, отменить
-                            </button>
+                            <div className="flex justify-between space-x-4">
+                                <button
+                                    onClick={closeCancelModal}
+                                    className="flex-1 px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+                                >
+                                    Нет, оставить
+                                </button>
+                                <button
+                                    onClick={confirmCancellation}
+                                    className="flex-1 px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                >
+                                    Да, отменить
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </ModalPortal>
             )}
         </div>
     );

@@ -51,6 +51,8 @@ function TicketList() {
 
   const navigate = useNavigate();
   const [expandedTickets, setExpandedTickets] = useState({});
+  const [expandedDescriptions, setExpandedDescriptions] = useState({});
+
 
   const checkAdminAccess = async () => {
     try {
@@ -97,6 +99,13 @@ function TicketList() {
     } finally {
       setRefreshing(false);
     }
+  };
+
+  const toggleDescriptionExpand = (ticketId) => {
+    setExpandedDescriptions(prev => ({
+      ...prev,
+      [ticketId]: !prev[ticketId]
+    }));
   };
 
   const setZoneText = (zone) => {
@@ -615,15 +624,30 @@ function TicketList() {
                     </div>
 
                     <div className="mb-2">
-                      <p
-                        className={`text-sm text-gray-800 ${
-                          !expandedTickets[ticket.id] && ticket.description.length > 50
-                            ? 'line-clamp-2'
-                            : ''
-                        }`}
+                      <div
+                          className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-800`}
+                          style={{
+                            maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
+                          }}
                       >
                         {ticket.description}
-                      </p>
+                      </div>
+
+                      {ticket.description.length > 50 && (
+                          <button
+                              onClick={() => toggleDescriptionExpand(ticket.id)}
+                              className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"
+                          >
+                            {expandedDescriptions[ticket.id] ? 'Свернуть' : 'Подробнее'}
+                            <div className="relative w-4 h-4 ml-0.5 flex items-center justify-center">
+                              <ChevronDown
+                                  className={`absolute transition-transform duration-300 ease-in-out h-3 w-3 ${
+                                      expandedDescriptions[ticket.id] ? 'transform rotate-180' : ''
+                                  }`}
+                              />
+                            </div>
+                          </button>
+                      )}
                     </div>
 
                     <button
@@ -819,10 +843,31 @@ function TicketList() {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">
-                            {ticket.description.length > 50
-                              ? ticket.description.substring(0, 50) + '...'
-                              : ticket.description}
+                          <div>
+                            <div
+                                className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-900`}
+                                style={{
+                                  maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
+                                }}
+                            >
+                              {ticket.description}
+                            </div>
+
+                            {ticket.description.length > 50 && (
+                                <button
+                                    onClick={() => toggleDescriptionExpand(ticket.id)}
+                                    className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"
+                                >
+                                  {expandedDescriptions[ticket.id] ? 'Свернуть' : 'Подробнее'}
+                                  <div className="relative w-4 h-4 ml-0.5 flex items-center justify-center">
+                                    <ChevronDown
+                                        className={`absolute transition-transform duration-300 ease-in-out h-3 w-3 ${
+                                            expandedDescriptions[ticket.id] ? 'transform rotate-180' : ''
+                                        }`}
+                                    />
+                                  </div>
+                                </button>
+                            )}
                           </div>
                         </td>
                         {/* Added Zone cell */}
@@ -884,7 +929,7 @@ function TicketList() {
                   {filterOptions.searchQuery ||
                   filterOptions.status !== 'ALL' ||
                   filterOptions.ticketType !== 'ALL' ||
-                  filterOptions.zone !== 'ALL' || // Added zone check
+                  filterOptions.zone !== 'ALL' ||
                   filterOptions.dateFrom ||
                   filterOptions.dateTo
                     ? 'Попробуйте изменить параметры фильтрации'

@@ -103,7 +103,7 @@ const MeetingsPage = () => {
                                     const Icon = tab.icon;
                                     const isActive = activeTab === tab.id;
 
-                                    if (isActive) return null; // Skip active tab
+                                    if (isActive) return null;
 
                                     return (
                                         <button
