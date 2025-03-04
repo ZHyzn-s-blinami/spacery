@@ -311,5 +311,31 @@ public class UserController {
         }
     }
 
+    @Operation(
+        summary = "Подтверждение пользователя доступно только для администраторов",
+        description = "Подтверждает пользователя по его ID. Доступно только для администраторов",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Пользователь успешно подтверждён",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"message\": \"User verified\"}"))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Ошибка при подтверждении пользователя",
+        content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"error\": \"Error message\"}"))
+    )
+    @PostMapping("/verify/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> verifyUser(@PathVariable UUID id) {
+        try {
+            userService.verifyUser(id);
+            return ResponseEntity.ok("User verified");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
 
 }
