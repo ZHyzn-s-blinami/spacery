@@ -458,14 +458,14 @@ function TicketList() {
             <div className="flex gap-2">
               <button
                 onClick={openStatsModal}
-                className="inline-flex items-center px-3 py-2 bg-indigo-50 border border-indigo-300 rounded-lg text-sm text-indigo-700 hover:bg-indigo-100 transition-colors"
+                className="inline-flex cursor-pointer items-center px-3 py-2 bg-indigo-50 border border-indigo-300 rounded-lg text-sm text-indigo-700 hover:bg-indigo-100 transition-colors"
               >
                 <BarChart2 className="h-4 w-4 mr-2" />
                 Статистика
               </button>
               <button
                 onClick={refreshData}
-                className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="inline-flex items-center px-3 py-2 bg-white border cursor-pointer border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 Обновить
