@@ -136,4 +136,14 @@ public class UserService {
 
         userRepository.delete(user);
     }
+
+    public void verifyUser(UUID id) {
+        UserModel user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        user.setVerified(true);
+        userRepository.save(user);
+    }
 }
