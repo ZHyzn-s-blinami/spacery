@@ -111,7 +111,9 @@ const CoworkingBooking = ({ isAdmin }) => {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
+    today.getDate(),
+  ).padStart(2, '0')}`;
   const handleStartTimeChange = (newStartTime) => {
     setTimeRange((prev) => ({ ...prev, start: newStartTime }));
   };
@@ -180,9 +182,9 @@ const CoworkingBooking = ({ isAdmin }) => {
       if (startMinutes < currentMinutes || timeRange.start.hour === 0) {
         const endMinutes = currentMinutes + 60;
         const endTime =
-            endMinutes > maxTime.hour * 60 + maxTime.minute
-                ? maxTime
-                : { hour: Math.floor(endMinutes / 60), minute: endMinutes % 60 };
+          endMinutes > maxTime.hour * 60 + maxTime.minute
+            ? maxTime
+            : { hour: Math.floor(endMinutes / 60), minute: endMinutes % 60 };
 
         setTimeRange({
           start: current,
@@ -255,33 +257,6 @@ const CoworkingBooking = ({ isAdmin }) => {
       },
     },
     {
-      label: 'Вечер',
-      getRange: () => {
-        if (!isToday) {
-          return {
-            start: { hour: 17, minute: 0 },
-            end: { hour: 22, minute: 0 },
-          };
-        }
-        const current = getRoundedCurrentTime();
-        const start = Math.max(current.hour * 60 + current.minute, 17 * 60);
-        return {
-          start: { hour: Math.floor(start / 60), minute: start % 60 },
-          end: { hour: 22, minute: 0 },
-        };
-      },
-      isAvailable: () => {
-        if (isOutsideWorkingHours) return false;
-        if (!isToday) return true;
-
-        const current = new Date();
-        const currentTotalMinutes = current.getHours() * 60 + current.getMinutes();
-        const maxTotalMinutes = maxTime.hour * 60 + maxTime.minute;
-
-        return currentTotalMinutes < maxTotalMinutes - 15;
-      },
-    },
-    {
       label: 'На целый день',
       getRange: () => {
         if (!isToday) {
@@ -308,16 +283,16 @@ const CoworkingBooking = ({ isAdmin }) => {
       },
     },
     {
-      label: 'На весь вечер',
+      label: 'Вечер',
       getRange: () => {
         if (!isToday) {
           return {
-            start: { hour: 18, minute: 0 },
+            start: { hour: 17, minute: 0 },
             end: { hour: 22, minute: 0 },
           };
         }
         const current = getRoundedCurrentTime();
-        const start = Math.max(current.hour * 60 + current.minute, 18 * 60);
+        const start = Math.max(current.hour * 60 + current.minute, 17 * 60);
         return {
           start: { hour: Math.floor(start / 60), minute: start % 60 },
           end: { hour: 22, minute: 0 },
@@ -378,7 +353,7 @@ const CoworkingBooking = ({ isAdmin }) => {
 
   return (
     <div className="max-w-5xl mx-auto p-4 lg:p-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Бронирование коворкинга</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Карта коворкинга</h1>
 
       <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
         <div className="flex items-center mb-6">
@@ -414,12 +389,14 @@ const CoworkingBooking = ({ isAdmin }) => {
 
             <div className="relative">
               <input
-                  type="date"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={`${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`}
-                  onChange={handleDateChange}
-                  min={minDate}
-                  onKeyDown={(e) => e.preventDefault()}
+                type="date"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={`${selectedDate.getFullYear()}-${String(
+                  selectedDate.getMonth() + 1,
+                ).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`}
+                onChange={handleDateChange}
+                min={minDate}
+                onKeyDown={(e) => e.preventDefault()}
               />
               <span className="absolute top-3 right-4 text-gray-400"></span>
             </div>
@@ -444,7 +421,7 @@ const CoworkingBooking = ({ isAdmin }) => {
               onOutsideHoursChange={setIsOutsideWorkingHours}
             />
 
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-4">
               {timePresets.map((preset, i) => {
                 const isAvailable = preset.isAvailable();
                 const range = preset.getRange();

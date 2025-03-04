@@ -24,10 +24,22 @@ import {
 import { ticketService } from '../services/ticketService';
 import { toastManager } from '../common/toastManager';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
 } from 'recharts';
 import { ChevronRight, BarChart2 } from 'lucide-react';
+import PageTitle from './PageTitle';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -45,14 +57,13 @@ function TicketList() {
   const [refreshing, setRefreshing] = useState(false);
   const [zones, setZones] = useState([]);
 
-    const [showStatsModal, setShowStatsModal] = useState(false);
-    const [statsModalMounted, setStatsModalMounted] = useState(false);
-    const [isStatsModalClosing, setIsStatsModalClosing] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [statsModalMounted, setStatsModalMounted] = useState(false);
+  const [isStatsModalClosing, setIsStatsModalClosing] = useState(false);
 
   const navigate = useNavigate();
   const [expandedTickets, setExpandedTickets] = useState({});
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
-
 
   const checkAdminAccess = async () => {
     try {
@@ -72,7 +83,6 @@ function TicketList() {
       const ticketsData = await ticketService.getAll();
       setTickets(ticketsData);
 
-      // Extract unique zones from tickets
       const uniqueZones = [...new Set(ticketsData.map((ticket) => ticket.zone).filter(Boolean))];
       setZones(uniqueZones);
 
@@ -102,9 +112,9 @@ function TicketList() {
   };
 
   const toggleDescriptionExpand = (ticketId) => {
-    setExpandedDescriptions(prev => ({
+    setExpandedDescriptions((prev) => ({
       ...prev,
-      [ticketId]: !prev[ticketId]
+      [ticketId]: !prev[ticketId],
     }));
   };
 
@@ -183,7 +193,6 @@ function TicketList() {
       return false;
     }
 
-    // Added filter by zone
     if (filterOptions.zone !== 'ALL' && ticket.zone !== filterOptions.zone) {
       return false;
     }
@@ -316,7 +325,7 @@ function TicketList() {
     setFilterOptions({
       status: 'ALL',
       ticketType: 'ALL',
-      zone: 'ALL', // Reset zone filter
+      zone: 'ALL',
       dateFrom: '',
       dateTo: '',
       searchQuery: '',
@@ -373,40 +382,39 @@ function TicketList() {
   };
 
   const prepareChartData = () => {
-    // Status chart data
     const statusData = [
-      { name: 'Открыт', value: tickets.filter(t => t.status === 'OPEN').length },
-      { name: 'В работе', value: tickets.filter(t => t.status === 'IN_PROGRESS').length },
-      { name: 'Закрыт', value: tickets.filter(t => t.status === 'CLOSED').length }
+      { name: 'Открыт', value: tickets.filter((t) => t.status === 'OPEN').length },
+      { name: 'В работе', value: tickets.filter((t) => t.status === 'IN_PROGRESS').length },
+      { name: 'Закрыт', value: tickets.filter((t) => t.status === 'CLOSED').length },
     ];
 
-    // Type chart data
     const typeData = [
-      { name: 'Уборка', value: tickets.filter(t => t.ticketType === 'CLEANING').length },
-      { name: 'Тех. проблемы', value: tickets.filter(t => t.ticketType === 'TECHNICAL_PROBLEM').length },
-      { name: 'Еда', value: tickets.filter(t => t.ticketType === 'FOOD').length },
-      { name: 'Место занято', value: tickets.filter(t => t.ticketType === 'PLACE_TAKEN').length },
-      { name: 'Другое', value: tickets.filter(t => t.ticketType === 'OTHER').length }
+      { name: 'Уборка', value: tickets.filter((t) => t.ticketType === 'CLEANING').length },
+      {
+        name: 'Тех. проблемы',
+        value: tickets.filter((t) => t.ticketType === 'TECHNICAL_PROBLEM').length,
+      },
+      { name: 'Еда', value: tickets.filter((t) => t.ticketType === 'FOOD').length },
+      { name: 'Место занято', value: tickets.filter((t) => t.ticketType === 'PLACE_TAKEN').length },
+      { name: 'Другое', value: tickets.filter((t) => t.ticketType === 'OTHER').length },
     ];
 
-    // Zone chart data
-    const zonesData = zones.map(zone => ({
+    const zonesData = zones.map((zone) => ({
       name: zone || 'Не указано',
-      value: tickets.filter(t => t.zone === zone).length
+      value: tickets.filter((t) => t.zone === zone).length,
     }));
 
-    // Time chart data
     const last7Days = Array.from({ length: 7 }, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (6 - i));
       return date;
     });
 
-    const timeData = last7Days.map(date => {
+    const timeData = last7Days.map((date) => {
       const dateString = date.toISOString().split('T')[0];
       return {
         name: formatDate(date),
-        value: tickets.filter(t => t.createdAt.startsWith(dateString)).length
+        value: tickets.filter((t) => t.createdAt.startsWith(dateString)).length,
       };
     });
 
@@ -415,6 +423,7 @@ function TicketList() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageTitle title="Список тикетов" />
       <header className="bg-white pb-4 shadow-sm shadow-b-2 top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -441,30 +450,28 @@ function TicketList() {
             <h2 className="text-xl font-semibold text-gray-900">
               Заявки
               {filteredTickets.length > 0 && (
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-        ({filteredTickets.length})
-      </span>
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  ({filteredTickets.length})
+                </span>
               )}
             </h2>
             <div className="flex gap-2">
               <button
-                  onClick={openStatsModal}
-                  className="inline-flex items-center px-3 py-2 bg-indigo-50 border border-indigo-300 rounded-lg text-sm text-indigo-700 hover:bg-indigo-100 transition-colors"
+                onClick={openStatsModal}
+                className="inline-flex items-center px-3 py-2 bg-indigo-50 border border-indigo-300 rounded-lg text-sm text-indigo-700 hover:bg-indigo-100 transition-colors"
               >
                 <BarChart2 className="h-4 w-4 mr-2" />
                 Статистика
               </button>
               <button
-                  onClick={refreshData}
-                  className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={refreshData}
+                className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 Обновить
               </button>
             </div>
           </div>
-
-
 
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -624,30 +631,30 @@ function TicketList() {
 
                     <div className="mb-2">
                       <div
-                          className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-800 break-words break-all w-full`}
-                          style={{
-                            maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
-                            wordBreak: 'break-word',
-                            overflowWrap: 'break-word'
-                          }}
+                        className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-800 break-words break-all w-full`}
+                        style={{
+                          maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                        }}
                       >
                         {ticket.description}
                       </div>
 
                       {ticket.description.length > 50 && (
-                          <button
-                              onClick={() => toggleDescriptionExpand(ticket.id)}
-                              className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"
-                          >
-                            {expandedDescriptions[ticket.id] ? 'Свернуть' : 'Подробнее'}
-                            <div className="relative w-4 h-4 ml-0.5 flex items-center justify-center">
-                              <ChevronDown
-                                  className={`absolute transition-transform duration-300 ease-in-out h-3 w-3 ${
-                                      expandedDescriptions[ticket.id] ? 'transform rotate-180' : ''
-                                  }`}
-                              />
-                            </div>
-                          </button>
+                        <button
+                          onClick={() => toggleDescriptionExpand(ticket.id)}
+                          className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"
+                        >
+                          {expandedDescriptions[ticket.id] ? 'Свернуть' : 'Подробнее'}
+                          <div className="relative w-4 h-4 ml-0.5 flex items-center justify-center">
+                            <ChevronDown
+                              className={`absolute transition-transform duration-300 ease-in-out h-3 w-3 ${
+                                expandedDescriptions[ticket.id] ? 'transform rotate-180' : ''
+                              }`}
+                            />
+                          </div>
+                        </button>
                       )}
                     </div>
 
@@ -845,34 +852,33 @@ function TicketList() {
                         <td className="px-6 py-4">
                           <div>
                             <div
-                                className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-900 break-words break-all w-full`}
-                                style={{
-                                  maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
-                                  wordBreak: 'break-word',
-                                  overflowWrap: 'break-word'
-                                }}
+                              className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-900 break-words break-all w-full`}
+                              style={{
+                                maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
+                                wordBreak: 'break-word',
+                                overflowWrap: 'break-word',
+                              }}
                             >
                               {ticket.description}
                             </div>
 
                             {ticket.description.length > 50 && (
-                                <button
-                                    onClick={() => toggleDescriptionExpand(ticket.id)}
-                                    className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"
-                                >
-                                  {expandedDescriptions[ticket.id] ? 'Свернуть' : 'Подробнее'}
-                                  <div className="relative w-4 h-4 ml-0.5 flex items-center justify-center">
-                                    <ChevronDown
-                                        className={`absolute transition-transform duration-300 ease-in-out h-3 w-3 ${
-                                            expandedDescriptions[ticket.id] ? 'transform rotate-180' : ''
-                                        }`}
-                                    />
-                                  </div>
-                                </button>
+                              <button
+                                onClick={() => toggleDescriptionExpand(ticket.id)}
+                                className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"
+                              >
+                                {expandedDescriptions[ticket.id] ? 'Свернуть' : 'Подробнее'}
+                                <div className="relative w-4 h-4 ml-0.5 flex items-center justify-center">
+                                  <ChevronDown
+                                    className={`absolute transition-transform duration-300 ease-in-out h-3 w-3 ${
+                                      expandedDescriptions[ticket.id] ? 'transform rotate-180' : ''
+                                    }`}
+                                  />
+                                </div>
+                              </button>
                             )}
                           </div>
                         </td>
-                        {/* Added Zone cell */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-900">{ticket.zone || '—'}</div>
                         </td>
@@ -942,175 +948,187 @@ function TicketList() {
           </div>
         </div>
         {showStatsModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center">
-              {/* Backdrop */}
-              <div
-                  className="absolute inset-0 transition-all duration-300 ease-in-out"
-                  style={{
-                    backdropFilter: statsModalMounted && !isStatsModalClosing ? 'blur(5px)' : 'blur(0px)',
-                    backgroundColor: statsModalMounted && !isStatsModalClosing ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0)',
-                  }}
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+              className="absolute inset-0 transition-all duration-300 ease-in-out"
+              style={{
+                backdropFilter:
+                  statsModalMounted && !isStatsModalClosing ? 'blur(5px)' : 'blur(0px)',
+                backgroundColor:
+                  statsModalMounted && !isStatsModalClosing
+                    ? 'rgba(0, 0, 0, 0.2)'
+                    : 'rgba(0, 0, 0, 0)',
+              }}
+              onClick={closeStatsModal}
+            ></div>
+
+            <div
+              className={`relative bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden z-50 transition-all duration-300 ${
+                isStatsModalClosing
+                  ? 'opacity-0 transform scale-95'
+                  : statsModalMounted
+                  ? 'opacity-100 transform scale-100'
+                  : 'opacity-0 transform scale-95'
+              }`}
+            >
+              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                <h3 className="text-xl font-medium text-gray-800 flex items-center">
+                  <BarChart2 className="h-6 w-6 mr-3 text-blue-600" />
+                  Статистика по тикетам
+                </h3>
+                <button
                   onClick={closeStatsModal}
-              ></div>
+                  className="rounded-full p-1.5 hover:bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
+                >
+                  <XCircle className="h-6 w-6 text-gray-500" />
+                </button>
+              </div>
 
-              {/* Modal container */}
-              <div
-                  className={`relative bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden z-50 transition-all duration-300 ${
-                      isStatsModalClosing
-                          ? 'opacity-0 transform scale-95'
-                          : statsModalMounted
-                              ? 'opacity-100 transform scale-100'
-                              : 'opacity-0 transform scale-95'
-                  }`}
-              >
-                {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                  <h3 className="text-xl font-medium text-gray-800 flex items-center">
-                    <BarChart2 className="h-6 w-6 mr-3 text-blue-600" />
-                    Статистика по тикетам
-                  </h3>
-                  <button
-                      onClick={closeStatsModal}
-                      className="rounded-full p-1.5 hover:bg-gray-100 focus:bg-gray-200 focus:outline-none transition-colors"
-                  >
-                    <XCircle className="h-6 w-6 text-gray-500" />
-                  </button>
-                </div>
+              <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+                {(() => {
+                  const { statusData, typeData, zonesData, timeData } = prepareChartData();
 
-                {/* Content */}
-                <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
-                  {(() => {
-                    const { statusData, typeData, zonesData, timeData } = prepareChartData();
-
-                    return (
-                        <>
-                          <div className="mb-6 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                            <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
-                              <span className="w-2 h-6 bg-gray-600 rounded-sm mr-3"></span>
-                              Общая сводка
-                            </h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                              <div className="bg-blue-50 p-5 rounded-lg border border-blue-100 flex flex-col">
-                                <span className="text-xs text-blue-700 uppercase font-semibold tracking-wider mb-2">Всего тикетов</span>
-                                <span className="text-3xl font-bold text-blue-800">{tickets.length}</span>
-                              </div>
-
-                              <div className="bg-red-50 p-5 rounded-lg border border-red-100 flex flex-col">
-                                <span className="text-xs text-red-700 uppercase font-semibold tracking-wider mb-2">Открытых</span>
-                                <span className="text-3xl font-bold text-red-800">
-                                  {tickets.filter(t => t.status === 'OPEN').length}
-                                </span>
-                              </div>
-
-                              <div className="bg-yellow-50 p-5 rounded-lg border border-yellow-100 flex flex-col">
-                                <span className="text-xs text-yellow-700 uppercase font-semibold tracking-wider mb-2">В работе</span>
-                                <span className="text-3xl font-bold text-yellow-800">
-                                  {tickets.filter(t => t.status === 'IN_PROGRESS').length}
-                                </span>
-                              </div>
-
-                              <div className="bg-green-50 p-5 rounded-lg border border-green-100 flex flex-col">
-                                <span className="text-xs text-green-700 uppercase font-semibold tracking-wider mb-2">Закрытых</span>
-                                <span className="text-3xl font-bold text-green-800">
-                                  {tickets.filter(t => t.status === 'CLOSED').length}
-                                </span>
-                              </div>
-                            </div>
+                  return (
+                    <>
+                      <div className="mb-6 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                        <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
+                          <span className="w-2 h-6 bg-gray-600 rounded-sm mr-3"></span>
+                          Общая сводка
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="bg-blue-50 p-5 rounded-lg border border-blue-100 flex flex-col">
+                            <span className="text-xs text-blue-700 uppercase font-semibold tracking-wider mb-2">
+                              Всего тикетов
+                            </span>
+                            <span className="text-3xl font-bold text-blue-800">
+                              {tickets.length}
+                            </span>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                              <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
-                                <span className="w-2 h-6 bg-blue-600 rounded-sm mr-3"></span>
-                                Тикеты по статусам
-                              </h4>
-                              <ResponsiveContainer width="100%" height={300}>
-                                <PieChart>
-                                  <Pie
-                                      data={statusData}
-                                      cx="50%"
-                                      cy="50%"
-                                      labelLine={false}
-                                      outerRadius={100}
-                                      fill="#8884d8"
-                                      dataKey="value"
-                                      nameKey="name"
-                                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                  >
-                                    <Cell fill="#ef4444" />
-                                    <Cell fill="#f59e0b" />
-                                    <Cell fill="#10b981" />
-                                  </Pie>
-                                  <Tooltip />
-                                  <Legend />
-                                </PieChart>
-                              </ResponsiveContainer>
-                            </div>
 
-                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                              <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
-                                <span className="w-2 h-6 bg-indigo-600 rounded-sm mr-3"></span>
-                                Тикеты по типам
-                              </h4>
-                              <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={typeData}>
-                                  <CartesianGrid strokeDasharray="3 3" />
-                                  <XAxis dataKey="name" />
-                                  <YAxis />
-                                  <Tooltip />
-                                  <Legend />
-                                  <Bar dataKey="value" name="Количество" fill="#6366f1" />
-                                </BarChart>
-                              </ResponsiveContainer>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                              <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
-                                <span className="w-2 h-6 bg-cyan-600 rounded-sm mr-3"></span>
-                                Распределение по зонам
-                              </h4>
-                              <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={zonesData} layout="vertical">
-                                  <CartesianGrid strokeDasharray="3 3" />
-                                  <XAxis type="number" />
-                                  <YAxis type="category" dataKey="name" />
-                                  <Tooltip />
-                                  <Legend />
-                                  <Bar dataKey="value" name="Количество" fill="#0ea5e9" />
-                                </BarChart>
-                              </ResponsiveContainer>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                              <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
-                                <span className="w-2 h-6 bg-purple-600 rounded-sm mr-3"></span>
-                                Динамика создания тикетов
-                              </h4>
-                              <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={timeData}>
-                                  <CartesianGrid strokeDasharray="3 3" />
-                                  <XAxis dataKey="name" />
-                                  <YAxis />
-                                  <Tooltip />
-                                  <Legend />
-                                  <Line
-                                      type="monotone"
-                                      dataKey="value"
-                                      name="Количество"
-                                      stroke="#8b5cf6"
-                                      strokeWidth={2}
-                                      dot={{ r: 4 }}
-                                      activeDot={{ r: 6 }}
-                                  />
-                                </LineChart>
-                              </ResponsiveContainer>
-                            </div>
+                          <div className="bg-red-50 p-5 rounded-lg border border-red-100 flex flex-col">
+                            <span className="text-xs text-red-700 uppercase font-semibold tracking-wider mb-2">
+                              Открытых
+                            </span>
+                            <span className="text-3xl font-bold text-red-800">
+                              {tickets.filter((t) => t.status === 'OPEN').length}
+                            </span>
                           </div>
-                        </>
-                    );
-                  })()}
-                </div>
+
+                          <div className="bg-yellow-50 p-5 rounded-lg border border-yellow-100 flex flex-col">
+                            <span className="text-xs text-yellow-700 uppercase font-semibold tracking-wider mb-2">
+                              В работе
+                            </span>
+                            <span className="text-3xl font-bold text-yellow-800">
+                              {tickets.filter((t) => t.status === 'IN_PROGRESS').length}
+                            </span>
+                          </div>
+
+                          <div className="bg-green-50 p-5 rounded-lg border border-green-100 flex flex-col">
+                            <span className="text-xs text-green-700 uppercase font-semibold tracking-wider mb-2">
+                              Закрытых
+                            </span>
+                            <span className="text-3xl font-bold text-green-800">
+                              {tickets.filter((t) => t.status === 'CLOSED').length}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                          <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
+                            <span className="w-2 h-6 bg-blue-600 rounded-sm mr-3"></span>
+                            Тикеты по статусам
+                          </h4>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                              <Pie
+                                data={statusData}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                outerRadius={100}
+                                fill="#8884d8"
+                                dataKey="value"
+                                nameKey="name"
+                                label={({ name, percent }) =>
+                                  `${name}: ${(percent * 100).toFixed(0)}%`
+                                }
+                              >
+                                <Cell fill="#ef4444" />
+                                <Cell fill="#f59e0b" />
+                                <Cell fill="#10b981" />
+                              </Pie>
+                              <Tooltip />
+                              <Legend />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                          <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
+                            <span className="w-2 h-6 bg-indigo-600 rounded-sm mr-3"></span>
+                            Тикеты по типам
+                          </h4>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={typeData}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="name" />
+                              <YAxis />
+                              <Tooltip />
+                              <Legend />
+                              <Bar dataKey="value" name="Количество" fill="#6366f1" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                          <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
+                            <span className="w-2 h-6 bg-cyan-600 rounded-sm mr-3"></span>
+                            Распределение по зонам
+                          </h4>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <BarChart data={zonesData} layout="vertical">
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis type="number" />
+                              <YAxis type="category" dataKey="name" />
+                              <Tooltip />
+                              <Legend />
+                              <Bar dataKey="value" name="Количество" fill="#0ea5e9" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                          <h4 className="text-lg font-medium mb-6 text-gray-800 flex items-center">
+                            <span className="w-2 h-6 bg-purple-600 rounded-sm mr-3"></span>
+                            Динамика создания тикетов
+                          </h4>
+                          <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={timeData}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="name" />
+                              <YAxis />
+                              <Tooltip />
+                              <Legend />
+                              <Line
+                                type="monotone"
+                                dataKey="value"
+                                name="Количество"
+                                stroke="#8b5cf6"
+                                strokeWidth={2}
+                                dot={{ r: 4 }}
+                                activeDot={{ r: 6 }}
+                              />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
+          </div>
         )}
       </main>
     </div>

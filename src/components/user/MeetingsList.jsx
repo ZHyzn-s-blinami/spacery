@@ -45,26 +45,19 @@ export const MeetingsList = ({ statusFilter = 'PENDING' }) => {
         (item) => item && item.status === statusFilter && item.startAt && item.endAt,
       );
 
-      // Сортируем встречи по близости к текущему времени
       const sortedMeetings = [...filteredMeetings].sort((a, b) => {
         const dateA = new Date(a.startAt);
         const dateB = new Date(b.startAt);
 
-        // Для просроченных встреч (встреч в прошлом) - сначала те, что ближе к настоящему времени
         if (dateA < now && dateB < now) {
-          return dateB - dateA; // Более свежие просроченные встречи выше
-        }
-        // Для предстоящих встреч - сначала те, что ближе к настоящему времени
-        else if (dateA >= now && dateB >= now) {
-          return dateA - dateB; // Ближайшие предстоящие встречи выше
-        }
-        // Если одна в прошлом, а другая в будущем
-        else {
-          return dateA < now ? 1 : -1; // Предстоящие встречи приоритетнее прошедших
+          return dateB - dateA;
+        } else if (dateA >= now && dateB >= now) {
+          return dateA - dateB;
+        } else {
+          return dateA < now ? 1 : -1;
         }
       });
 
-      // Группируем встречи по датам
       const grouped = sortedMeetings.reduce((acc, meeting) => {
         try {
           const date = new Date(meeting.startAt).toLocaleDateString();
@@ -78,25 +71,21 @@ export const MeetingsList = ({ statusFilter = 'PENDING' }) => {
         return acc;
       }, {});
 
-      // Сортируем даты относительно текущей даты (ближайшие даты сверху)
       const currentDate = new Date().setHours(0, 0, 0, 0);
       const sortedGrouped = Object.keys(grouped)
         .sort((a, b) => {
           const dateA = new Date(a).setHours(0, 0, 0, 0);
           const dateB = new Date(b).setHours(0, 0, 0, 0);
 
-          // Если обе даты в будущем или обе в прошлом
           if (
             (dateA >= currentDate && dateB >= currentDate) ||
             (dateA < currentDate && dateB < currentDate)
           ) {
             return Math.abs(dateA - currentDate) - Math.abs(dateB - currentDate);
           }
-          // Если одна в прошлом, а другая в будущем
-          return dateA >= currentDate ? -1 : 1; // Будущие даты приоритетнее
+          return dateA >= currentDate ? -1 : 1;
         })
         .reduce((acc, date) => {
-          // Для каждой даты сортируем встречи по времени
           const sortedByTime = grouped[date].sort((a, b) => {
             return new Date(a.startAt) - new Date(b.startAt);
           });

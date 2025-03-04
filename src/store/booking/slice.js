@@ -10,11 +10,6 @@ const initialState = {
 const bookingSlice = createSlice({
   name: "booking",
   initialState,
-  reducers: {
-    // cancelMeeting: (state, action) => {
-    //   state.meetings = state.meetings.filter(item => item.id !== action.payload);
-    // }
-  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUserMeetings.pending, (state) => {
@@ -44,5 +39,4 @@ const bookingSlice = createSlice({
   
 });
 
-//export const { cancelMeeting } = bookingSlice.actions;
 export default bookingSlice.reducer;

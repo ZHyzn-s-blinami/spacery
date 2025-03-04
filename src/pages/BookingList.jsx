@@ -16,6 +16,7 @@ import { useParams } from 'react-router-dom';
 import { bookingService } from '../services/bookingService';
 import { pingService } from '../services/pingService';
 import { toastManager } from '../common/toastManager';
+import PageTitle from './PageTitle';
 
 const BookingList = () => {
   const { name } = useParams();
@@ -98,7 +99,6 @@ const BookingList = () => {
     try {
       const response = await bookingService.cancelUserMeeting(id);
 
-
       setBookings(
         bookings.map((booking) =>
           booking.bookingId === id
@@ -114,6 +114,8 @@ const BookingList = () => {
       throw error;
     }
   };
+
+  console.log(bookings);
 
   const filteredBookings = bookings.filter((booking) => {
     if (filterOptions.status !== 'ALL' && booking.status !== filterOptions.status) {
@@ -224,7 +226,7 @@ const BookingList = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Шапка */}
+      <PageTitle title="Список бронирований" />
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center">
@@ -241,12 +243,10 @@ const BookingList = () => {
         </div>
       </header>
 
-      {/* Основное содержимое */}
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Бронирования</h2>
 
-          {/* Панель фильтров */}
           <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="relative w-full sm:w-64">
@@ -318,7 +318,6 @@ const BookingList = () => {
             )}
           </div>
 
-          {/* Таблица бронирований */}
           <div className="bg-white shadow-sm rounded-lg overflow-hidden">
             {filteredBookings.length > 0 ? (
               <div className="overflow-x-auto">
@@ -375,10 +374,11 @@ const BookingList = () => {
                                   {booking.name}
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  Email:{' '}
-                                  {booking.user.email
-                                    ? booking.user.email.substring(0, 8) + '...'
-                                    : 'N/A'}
+                                  {booking.user
+                                    ? booking.user.active === true
+                                      ? 'Email:' + booking.user.email.substring(0, 8) + '...'
+                                      : 'Пользователь заблокирован'
+                                    : 'Пользователь удалён'}
                                 </div>
                               </div>
                             </div>

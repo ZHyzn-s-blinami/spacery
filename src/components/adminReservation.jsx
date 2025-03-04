@@ -195,7 +195,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           zone: 'B',
           type: 'office',
         })),
-      // Аналогично для зон C, D, E…
       ...Array(8)
         .fill()
         .map((_, idx) => ({
@@ -327,7 +326,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
         className="absolute inset-0"
       >
         <svg width="600" height="400" viewBox="0 0 600 400" className="mx-auto">
-          {/* Фон */}
           <rect
             x="10"
             y="10"
@@ -339,10 +337,8 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             strokeWidth="2"
           />
 
-          {/* фон коридоров */}
           <rect x="20" y="20" width="580" height="380" rx="5" fill="#f8fafc" stroke="none" />
 
-          {/* Вертикальный коридор слева */}
           <rect
             x="215"
             y="20"
@@ -355,7 +351,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           <line x1="215" y1="20" x2="215" y2="380" stroke="#d1d5db" strokeWidth="1.5" />
           <line x1="225" y1="20" x2="225" y2="380" stroke="#d1d5db" strokeWidth="1.5" />
 
-          {/* Вертикальный коридор справа */}
           <rect
             x="435"
             y="20"
@@ -368,7 +363,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           <line x1="435" y1="20" x2="435" y2="380" stroke="#d1d5db" strokeWidth="1.5" />
           <line x1="445" y1="20" x2="445" y2="380" stroke="#d1d5db" strokeWidth="1.5" />
 
-          {/* Горизонтальный коридор */}
           <rect
             x="20"
             y="205"
@@ -419,7 +413,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             />
           ))}
 
-          {/* Зона A: Опен-спейс */}
           <rect
             x="20"
             y="20"
@@ -435,7 +428,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             Зона A: Опен-спейс
           </text>
 
-          {/* Зона B: Кабинеты */}
           <rect
             x="230"
             y="20"
@@ -450,7 +442,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             Зона B: Кабинеты
           </text>
 
-          {/* Столы в кабинетах */}
           <rect
             x="260"
             y="50"
@@ -542,7 +533,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             strokeWidth="1"
           />
 
-          {/* Зона C: Переговорные */}
           <rect
             x="20"
             y="220"
@@ -557,7 +547,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             Зона C: Переговорные
           </text>
 
-          {/* Столы в переговорных */}
           <rect
             x="53"
             y="265"
@@ -599,7 +588,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             strokeWidth="1"
           />
 
-          {/* Зона D: Тихая зона */}
           <rect
             x="240"
             y="220"
@@ -614,7 +602,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             Зона D: Тихая зона
           </text>
 
-          {/* Зона E: Зона отдыха */}
           <rect
             x="450"
             y="20"
@@ -629,7 +616,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             Зона E: Зона отдыха
           </text>
 
-          {/* Кофе-зона */}
           <rect
             x="450"
             y="220"
@@ -644,7 +630,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             Кофе-зона
           </text>
 
-          {/* Кофемашина */}
           <rect
             x="470"
             y="260"
@@ -659,7 +644,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             Кофе
           </text>
 
-          {/* Столики в зоне отдыха */}
           <circle cx="490" y="80" r="10" fill="none" stroke="#22c55e" strokeWidth="1" />
           <circle cx="490" y="120" r="10" fill="none" stroke="#22c55e" strokeWidth="1" />
           <circle cx="490" y="160" r="10" fill="none" stroke="#22c55e" strokeWidth="1" />
@@ -667,7 +651,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           <circle cx="540" y="120" r="10" fill="none" stroke="#22c55e" strokeWidth="1" />
           <circle cx="540" y="160" r="10" fill="none" stroke="#22c55e" strokeWidth="1" />
 
-          {/* Туалеты */}
           <rect
             x="490"
             y="300"
@@ -695,8 +678,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             WC
           </text>
 
-          {/* Направляющие указатели и маркеры в коридорах */}
-          {/* Маркеры в вертикальных коридорах */}
           <circle cx="220" cy="60" r="2.5" fill="#9ca3af" />
           <circle cx="220" cy="130" r="2.5" fill="#9ca3af" />
           <circle cx="220" cy="250" r="2.5" fill="#9ca3af" />
@@ -707,14 +688,12 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           <circle cx="440" cy="250" r="2.5" fill="#9ca3af" />
           <circle cx="440" cy="320" r="2.5" fill="#9ca3af" />
 
-          {/* Маркеры в горизонтальном коридоре */}
           <circle cx="100" cy="210" r="2.5" fill="#9ca3af" />
           <circle cx="170" cy="210" r="2.5" fill="#9ca3af" />
           <circle cx="300" cy="210" r="2.5" fill="#9ca3af" />
           <circle cx="370" cy="210" r="2.5" fill="#9ca3af" />
           <circle cx="500" cy="210" r="2.5" fill="#9ca3af" />
 
-          {/* Направляющие стрелки в коридорах */}
           <path d="M220,80 l-3,-6 l6,0 z" fill="#9ca3af" />
           <path d="M220,170 l-3,-6 l6,0 z" fill="#9ca3af" />
           <path d="M220,280 l-3,-6 l6,0 z" fill="#9ca3af" />
@@ -731,7 +710,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           <path d="M400,210 l6,-3 l0,6 z" fill="#9ca3af" />
           <path d="M520,210 l6,-3 l0,6 z" fill="#9ca3af" />
 
-          {/* Обозначения направлений в коридорах */}
           <text
             x="228"
             y="80"
@@ -814,11 +792,9 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
             → Кофе-зона
           </text>
 
-          {/* Перекрестки коридоров */}
           <circle cx="220" cy="210" r="5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="1" />
           <circle cx="440" cy="210" r="5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="1" />
 
-          {/* Дверь */}
           <rect x="215" y="380" width="10" height="5" fill="#475569" />
           <text x="220" y="375" fill="#475569" fontSize="8" textAnchor="middle">
             ВХОД
@@ -963,8 +939,6 @@ const CoworkingBookingAdmin = () => {
     const minutes = String(time.minute).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}:00`;
   };
-
-  // Функция для получения свободных мест (должна обращаться к вашему API)
 
   const handleSeatSelect = (seat) => {
     setSelectedSeat(seat);

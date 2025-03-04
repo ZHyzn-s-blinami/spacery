@@ -13,20 +13,21 @@ const CheckQr = () => {
       try {
         setLoading(true);
         const userToken = localStorage.getItem('userToken');
-        const response = await axios.post(`https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/booking/qr/check`,
-            { qrCode: jwt },
-            {
-              headers: {
-                'Authorization': `Bearer ${userToken}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-              }
-        });
+        const response = await axios.post(
+          `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/booking/qr/check`,
+          { qrCode: jwt },
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              'Access-Control-Allow-Origin': '*',
+            },
+          },
+        );
 
         setBookingData(response.data);
       } catch (err) {
-        // Specific handling for 400 status code (invalid token)
         if (err.response && err.response.status === 400) {
           setError('Токен недействителен. QR-код не распознан или срок его действия истек.');
         } else {
@@ -48,31 +49,31 @@ const CheckQr = () => {
         return {
           label: 'Ожидает подтверждения',
           color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-          icon: '⏳'
+          icon: '⏳',
         };
       case 'ACCEPTED':
         return {
           label: 'Подтверждено',
           color: 'bg-green-100 text-green-800 border-green-200',
-          icon: '✓'
+          icon: '✓',
         };
       case 'REJECTED':
         return {
           label: 'Отклонено',
           color: 'bg-red-100 text-red-800 border-red-200',
-          icon: '✗'
+          icon: '✗',
         };
       case 'OVERDUE':
         return {
           label: 'Просрочено',
           color: 'bg-gray-100 text-gray-800 border-gray-200',
-          icon: '⌛'
+          icon: '⌛',
         };
       default:
         return {
           label: 'Неизвестный статус',
           color: 'bg-gray-100 text-gray-800 border-gray-200',
-          icon: '?'
+          icon: '?',
         };
     }
   };
@@ -85,7 +86,7 @@ const CheckQr = () => {
       month: 'long',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -105,13 +106,25 @@ const CheckQr = () => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
           <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-            <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="h-8 w-8 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Ошибка проверки</h2>
           <p className="text-gray-600 mb-4">{error}</p>
-          <p className="text-sm text-gray-500">QR-код недействителен или срок его действия истек.</p>
+          <p className="text-sm text-gray-500">
+            QR-код недействителен или срок его действия истек.
+          </p>
         </div>
       </div>
     );

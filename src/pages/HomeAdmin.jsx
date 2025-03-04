@@ -2,6 +2,7 @@ import React from 'react';
 import CoworkingBooking from '../components/reservation';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../services/adminService';
+import PageTitle from './PageTitle';
 
 function HomeAdmin() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ function HomeAdmin() {
   };
   return (
     <>
+      <PageTitle title="Карта коворкинга" />
       <CoworkingBooking isAdmin={true} />
     </>
   );
