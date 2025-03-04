@@ -480,6 +480,41 @@ const CoworkingBooking = ({ isAdmin }) => {
             />
           )}
         </div>
+
+        <div className="flex flex-wrap justify-center gap-6 mt-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Рабочее место</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-teal-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Кабинет</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Переговорная</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Тихая зона</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Зона отдыха</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+            <span className="text-sm text-gray-600">Кофе-зона</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+            <span className="text-sm text-gray-600">Занято</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+            <span className="text-sm text-gray-600">Выбрано</span>
+          </div>
+        </div>
       </div>
     </div>
   );
