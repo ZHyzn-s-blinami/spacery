@@ -23,6 +23,11 @@ import {
 
 import { ticketService } from '../services/ticketService';
 import { toastManager } from '../common/toastManager';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  PieChart, Pie, Cell, LineChart, Line
+} from 'recharts';
+import { ChevronRight, BarChart2 } from 'lucide-react';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -39,6 +44,10 @@ function TicketList() {
   const [showFilters, setShowFilters] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [zones, setZones] = useState([]);
+
+    const [showStatsModal, setShowStatsModal] = useState(false);
+    const [statsModalMounted, setStatsModalMounted] = useState(false);
+    const [isStatsModalClosing, setIsStatsModalClosing] = useState(false);
 
   const navigate = useNavigate();
   const [expandedTickets, setExpandedTickets] = useState({});
@@ -340,6 +349,60 @@ function TicketList() {
       </div>
     );
   }
+  const openStatsModal = () => {
+    setShowStatsModal(true);
+    setTimeout(() => setStatsModalMounted(true), 50);
+  };
+
+  const closeStatsModal = () => {
+    setIsStatsModalClosing(true);
+    setTimeout(() => {
+      setShowStatsModal(false);
+      setIsStatsModalClosing(false);
+      setStatsModalMounted(false);
+    }, 300);
+  };
+
+  const prepareChartData = () => {
+    // Status chart data
+    const statusData = [
+      { name: 'Открыт', value: tickets.filter(t => t.status === 'OPEN').length },
+      { name: 'В работе', value: tickets.filter(t => t.status === 'IN_PROGRESS').length },
+      { name: 'Закрыт', value: tickets.filter(t => t.status === 'CLOSED').length }
+    ];
+
+    // Type chart data
+    const typeData = [
+      { name: 'Уборка', value: tickets.filter(t => t.ticketType === 'CLEANING').length },
+      { name: 'Тех. проблемы', value: tickets.filter(t => t.ticketType === 'TECHNICAL_PROBLEM').length },
+      { name: 'Еда', value: tickets.filter(t => t.ticketType === 'FOOD').length },
+      { name: 'Место занято', value: tickets.filter(t => t.ticketType === 'PLACE_TAKEN').length },
+      { name: 'Другое', value: tickets.filter(t => t.ticketType === 'OTHER').length }
+    ];
+
+    // Zone chart data
+    const zonesData = zones.map(zone => ({
+      name: zone || 'Не указано',
+      value: tickets.filter(t => t.zone === zone).length
+    }));
+
+    // Time chart data
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return date;
+    });
+
+    const timeData = last7Days.map(date => {
+      const dateString = date.toISOString().split('T')[0];
+      return {
+        name: formatDate(date),
+        value: tickets.filter(t => t.createdAt.startsWith(dateString)).length
+      };
+    });
+
+    return { statusData, typeData, zonesData, timeData };
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -369,19 +432,30 @@ function TicketList() {
             <h2 className="text-xl font-semibold text-gray-900">
               Заявки
               {filteredTickets.length > 0 && (
-                <span className="ml-2 text-sm font-normal text-gray-500">
-                  ({filteredTickets.length})
-                </span>
+                  <span className="ml-2 text-sm font-normal text-gray-500">
+        ({filteredTickets.length})
+      </span>
               )}
             </h2>
-            <button
-              onClick={refreshData}
-              className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Обновить
-            </button>
+            <div className="flex gap-2">
+              <button
+                  onClick={openStatsModal}
+                  className="inline-flex items-center px-3 py-2 bg-indigo-50 border border-indigo-300 rounded-lg text-sm text-indigo-700 hover:bg-indigo-100 transition-colors"
+              >
+                <BarChart2 className="h-4 w-4 mr-2" />
+                Статистика
+              </button>
+              <button
+                  onClick={refreshData}
+                  className="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                Обновить
+              </button>
+            </div>
           </div>
+
+
 
           <div className="bg-white rounded-lg shadow-md p-4 mb-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -820,6 +894,158 @@ function TicketList() {
             )}
           </div>
         </div>
+          {showStatsModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center">
+                  <div
+                      className="absolute inset-0 transition-all duration-300 ease-in-out"
+                      style={{
+                          backdropFilter: statsModalMounted && !isStatsModalClosing ? 'blur(5px)' : 'blur(0px)',
+                          backgroundColor: statsModalMounted && !isStatsModalClosing ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0)',
+                      }}
+                      onClick={closeStatsModal}
+                  ></div>
+                  <div
+                      className={`relative bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden z-50 transition-all duration-300 ${
+                          isStatsModalClosing
+                              ? 'opacity-0 transform scale-95'
+                              : statsModalMounted
+                                  ? 'opacity-100 transform scale-100'
+                                  : 'opacity-0 transform scale-95'
+                      }`}
+                  >
+                      <div className="flex justify-between items-center p-6 border-b">
+                          <h3 className="text-xl font-medium text-gray-800 flex items-center">
+                              <BarChart2 size={24} className="mr-2 text-indigo-600"/>
+                              Статистика по тикетам
+                          </h3>
+                          <button
+                              onClick={closeStatsModal}
+                              className="rounded-full p-1 hover:bg-gray-100 text-gray-500 transition-colors"
+                          >
+                              <XCircle size={24}/>
+                          </button>
+                      </div>
+
+                      <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+                          {(() => {
+                              const { statusData, typeData, zonesData, timeData } = prepareChartData();
+
+                              return (
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                      {/* Статистика по статусам */}
+                                      <div className="bg-white p-6 rounded-lg shadow-md">
+                                          <h4 className="text-lg font-medium mb-4 text-gray-800">Тикеты по статусам</h4>
+                                          <ResponsiveContainer width="100%" height={300}>
+                                              <PieChart>
+                                                  <Pie
+                                                      data={statusData}
+                                                      cx="50%"
+                                                      cy="50%"
+                                                      labelLine={false}
+                                                      outerRadius={100}
+                                                      fill="#8884d8"
+                                                      dataKey="value"
+                                                      nameKey="name"
+                                                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                                  >
+                                                      <Cell fill="#ef4444" />
+                                                      <Cell fill="#f59e0b" />
+                                                      <Cell fill="#10b981" />
+                                                  </Pie>
+                                                  <Tooltip />
+                                                  <Legend />
+                                              </PieChart>
+                                          </ResponsiveContainer>
+                                      </div>
+
+                                      {/* Статистика по типам */}
+                                      <div className="bg-white p-6 rounded-lg shadow-md">
+                                          <h4 className="text-lg font-medium mb-4 text-gray-800">Тикеты по типам</h4>
+                                          <ResponsiveContainer width="100%" height={300}>
+                                              <BarChart data={typeData}>
+                                                  <CartesianGrid strokeDasharray="3 3" />
+                                                  <XAxis dataKey="name" />
+                                                  <YAxis />
+                                                  <Tooltip />
+                                                  <Legend />
+                                                  <Bar dataKey="value" name="Количество" fill="#6366f1" />
+                                              </BarChart>
+                                          </ResponsiveContainer>
+                                      </div>
+
+                                      {/* Статистика по зонам */}
+                                      <div className="bg-white p-6 rounded-lg shadow-md">
+                                          <h4 className="text-lg font-medium mb-4 text-gray-800">Распределение по зонам</h4>
+                                          <ResponsiveContainer width="100%" height={300}>
+                                              <BarChart data={zonesData} layout="vertical">
+                                                  <CartesianGrid strokeDasharray="3 3" />
+                                                  <XAxis type="number" />
+                                                  <YAxis type="category" dataKey="name" />
+                                                  <Tooltip />
+                                                  <Legend />
+                                                  <Bar dataKey="value" name="Количество" fill="#0ea5e9" />
+                                              </BarChart>
+                                          </ResponsiveContainer>
+                                      </div>
+
+                                      {/* Статистика по времени */}
+                                      <div className="bg-white p-6 rounded-lg shadow-md">
+                                          <h4 className="text-lg font-medium mb-4 text-gray-800">Динамика создания тикетов</h4>
+                                          <ResponsiveContainer width="100%" height={300}>
+                                              <LineChart data={timeData}>
+                                                  <CartesianGrid strokeDasharray="3 3" />
+                                                  <XAxis dataKey="name" />
+                                                  <YAxis />
+                                                  <Tooltip />
+                                                  <Legend />
+                                                  <Line
+                                                      type="monotone"
+                                                      dataKey="value"
+                                                      name="Количество"
+                                                      stroke="#8b5cf6"
+                                                      strokeWidth={2}
+                                                      dot={{ r: 4 }}
+                                                      activeDot={{ r: 6 }}
+                                                  />
+                                              </LineChart>
+                                          </ResponsiveContainer>
+                                      </div>
+
+                                      {/* Сводка */}
+                                      <div className="md:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                                          <h4 className="text-lg font-medium mb-4 text-gray-800">Общая сводка</h4>
+                                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                                  <div className="text-xs text-blue-500 font-medium mb-1">Всего тикетов</div>
+                                                  <div className="text-2xl font-bold text-blue-700">{tickets.length}</div>
+                                              </div>
+                                              <div className="bg-red-50 p-4 rounded-lg border border-red-100">
+                                                  <div className="text-xs text-red-500 font-medium mb-1">Открытых</div>
+                                                  <div className="text-2xl font-bold text-red-700">
+                                                      {tickets.filter(t => t.status === 'OPEN').length}
+                                                  </div>
+                                              </div>
+                                              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                                                  <div className="text-xs text-yellow-500 font-medium mb-1">В работе</div>
+                                                  <div className="text-2xl font-bold text-yellow-700">
+                                                      {tickets.filter(t => t.status === 'IN_PROGRESS').length}
+                                                  </div>
+                                              </div>
+                                              <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                                                  <div className="text-xs text-green-500 font-medium mb-1">Закрытых</div>
+                                                  <div className="text-2xl font-bold text-green-700">
+                                                      {tickets.filter(t => t.status === 'CLOSED').length}
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              );
+                          })()}
+                      </div>
+                  </div>
+              </div>
+          )}
       </main>
     </div>
   );
