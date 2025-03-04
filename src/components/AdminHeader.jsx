@@ -25,7 +25,7 @@ const Header = () => {
           <Calendar className="text-indigo-600 mr-2" size={28} />
           <span className="text-gray-800 text-[30px] sm:text-[36px] md:text-[42px] font-bold tracking-tight">
             <Link to="/admin">
-              Space<span className="text-indigo-600">Spacery</span>
+              <span className="text-indigo-600">Spacery</span>
             </Link>
           </span>
         </div>
