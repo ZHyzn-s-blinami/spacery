@@ -15,6 +15,7 @@ const Profile = () => {
     const userToken = localStorage.getItem('userToken');
     const { user, loading, error } = useSelector((state) => state.user);
 
+    // Edit mode state
     const [isEditMode, setIsEditMode] = useState(false);
     const [editFormData, setEditFormData] = useState({
         name: '',
@@ -22,6 +23,13 @@ const Profile = () => {
         email: '',
         password: ''
     });
+
+    // Validation state
+    const [validationErrors, setValidationErrors] = useState({
+        name: '',
+        email: ''
+    });
+
     const [showPassword, setShowPassword] = useState(false);
     const [submitStatus, setSubmitStatus] = useState({
         loading: false,
@@ -29,12 +37,14 @@ const Profile = () => {
         error: null
     });
 
+    // Verification email state
     const [verificationStatus, setVerificationStatus] = useState({
         loading: false,
         success: false,
         error: null
     });
 
+    // State for expanded description
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
     useEffect(() => {
@@ -85,12 +95,53 @@ const Profile = () => {
         location.reload();
     };
 
+    const validateName = (name) => {
+        if (name.trim() === '') {
+            return '';
+        }
+
+        if (name.trim().length < 5) {
+            return 'Имя должно содержать минимум 5 символов';
+        }
+
+        if (!/^[A-Za-zА-Яа-яЁё0-9\s'-]+$/.test(name)) {
+            return 'Имя может содержать только буквы, цифры, пробелы и символы \'-\'';
+        }
+
+        return '';
+    };
+
+    const validateEmail = (email) => {
+        if (email.trim() === '') {
+            return '';
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            return 'Введите корректный email адрес';
+        }
+
+        return '';
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setEditFormData(prev => ({
             ...prev,
             [name]: value
         }));
+
+        if (name === 'name') {
+            setValidationErrors(prev => ({
+                ...prev,
+                name: validateName(value)
+            }));
+        } else if (name === 'email') {
+            setValidationErrors(prev => ({
+                ...prev,
+                email: validateEmail(value)
+            }));
+        }
     };
 
     const toggleEditMode = () => {
@@ -101,6 +152,10 @@ const Profile = () => {
                 email: user.email || '',
                 password: ''
             });
+            setValidationErrors({
+                name: '',
+                email: ''
+            });
         }
         setIsEditMode(!isEditMode);
     };
@@ -109,8 +164,36 @@ const Profile = () => {
         setIsDescriptionExpanded(!isDescriptionExpanded);
     };
 
+    const MAX_DESCRIPTION_CHARS = 92;
+    const getDisplayText = () => {
+        if (!user.description) return "Не указано";
+
+        if (!isDescriptionExpanded && user.description.length > MAX_DESCRIPTION_CHARS) {
+            return user.description.substring(0, MAX_DESCRIPTION_CHARS) + '...';
+        }
+
+        return user.description;
+    };
+
+    const isFormValid = () => {
+        return !validationErrors.name && !validationErrors.email;
+    };
+
     const handleSubmitEdit = async (e) => {
         e.preventDefault();
+
+        const nameError = validateName(editFormData.name);
+        const emailError = validateEmail(editFormData.email);
+
+        setValidationErrors({
+            name: nameError,
+            email: emailError
+        });
+
+        if (nameError || emailError) {
+            return;
+        }
+
         setSubmitStatus({ loading: true, success: false, error: null });
 
         try {
@@ -178,8 +261,7 @@ const Profile = () => {
 
     if (!user) return null;
 
-    // Определяем, нужно ли показывать кнопку "Показать больше"
-    const needsExpansion = user.description && user.description.length > 100;
+    const needsExpansion = user.description && user.description.length > 60;
 
     return (
         <div className="bg-gray-50 min-h-screen py-8">
@@ -269,12 +351,19 @@ const Profile = () => {
                                             type="text"
                                             id="name"
                                             name="name"
-                                            className="pl-10 pr-4 py-2 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className={`pl-10 pr-4 py-2 border rounded-lg w-full transition-colors ${
+                                                validationErrors.name
+                                                    ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'
+                                                    : 'focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                            }`}
                                             value={editFormData.name}
                                             onChange={handleInputChange}
                                             placeholder="Введите ваше имя"
                                         />
                                     </div>
+                                    {validationErrors.name && (
+                                        <p className="mt-1 text-sm text-red-600">{validationErrors.name}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -287,12 +376,19 @@ const Profile = () => {
                                             type="email"
                                             id="email"
                                             name="email"
-                                            className="pl-10 pr-4 py-2 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            className={`pl-10 pr-4 py-2 border rounded-lg w-full transition-colors ${
+                                                validationErrors.email
+                                                    ? 'border-red-500 focus:ring-2 focus:ring-red-500 focus:border-red-500'
+                                                    : 'focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                                            }`}
                                             value={editFormData.email}
                                             onChange={handleInputChange}
                                             placeholder="your.email@example.com"
                                         />
                                     </div>
+                                    {validationErrors.email && (
+                                        <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
+                                    )}
                                 </div>
 
                                 <div>
@@ -345,7 +441,7 @@ const Profile = () => {
                                 <button
                                     type="submit"
                                     className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center transition-all disabled:opacity-70 disabled:cursor-not-allowed"
-                                    disabled={submitStatus.loading}
+                                    disabled={submitStatus.loading || !isFormValid()}
                                 >
                                     {submitStatus.loading ? (
                                         <div className="flex items-center">
@@ -389,16 +485,18 @@ const Profile = () => {
 
                                     <div className="text-gray-600">
                                         <span>О себе: </span>
-                                        <div
-                                            className={`overflow-hidden transition-all duration-300 ease-in-out`}
-                                            style={{
-                                                maxHeight: isDescriptionExpanded ? '1000px' : '60px'
-                                            }}
-                                        >
-                                            {user.description || "Не указано"}
+                                        <div className="relative">
+                                            <div
+                                                className="overflow-hidden transition-all duration-300 ease-in-out break-words whitespace-pre-wrap"
+                                                style={{
+                                                    maxHeight: isDescriptionExpanded ? '1000px' : '60px'
+                                                }}
+                                            >
+                                                {user.description || "Не указано"}
+                                            </div>
                                         </div>
 
-                                        {needsExpansion && (
+                                        {user.description && (user.description.length > MAX_DESCRIPTION_CHARS || user.description.split('\n').length > 2) && (
                                             <button
                                                 onClick={toggleDescriptionExpand}
                                                 className="text-xs text-blue-600 hover:text-blue-800 mt-1 flex items-center"

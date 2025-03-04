@@ -593,7 +593,6 @@ function TicketList() {
               filteredTickets.map((ticket) => (
                 <div key={ticket.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                   <div className="p-4">
-                    {/* Верхняя часть карточки с типом и статусом */}
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center">
                         <div
@@ -625,9 +624,11 @@ function TicketList() {
 
                     <div className="mb-2">
                       <div
-                          className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-800`}
+                          className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-800 break-words break-all w-full`}
                           style={{
                             maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
+                            wordBreak: 'break-word',
+                            overflowWrap: 'break-word'
                           }}
                       >
                         {ticket.description}
@@ -797,7 +798,6 @@ function TicketList() {
                       >
                         Описание
                       </th>
-                      {/* Added Zone column */}
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -845,9 +845,11 @@ function TicketList() {
                         <td className="px-6 py-4">
                           <div>
                             <div
-                                className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-900`}
+                                className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-900 break-words break-all w-full`}
                                 style={{
                                   maxHeight: expandedDescriptions[ticket.id] ? '200px' : '40px',
+                                  wordBreak: 'break-word',
+                                  overflowWrap: 'break-word'
                                 }}
                             >
                               {ticket.description}

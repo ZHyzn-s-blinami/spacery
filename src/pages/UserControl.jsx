@@ -951,9 +951,11 @@ const UserControl = () => {
                                                     {user.description ? (
                                                         <div>
                                                             <div
-                                                                className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-700`}
+                                                                className={`overflow-hidden transition-all duration-300 ease-in-out text-sm text-gray-700 break-words break-all w-full`}
                                                                 style={{
                                                                     maxHeight: expandedUsers[`desc_${user.id}`] ? '200px' : '40px',
+                                                                    wordBreak: 'break-word',
+                                                                    overflowWrap: 'break-word'
                                                                 }}
                                                             >
                                                                 {user.description}
