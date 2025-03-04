@@ -21,6 +21,22 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
   const navigate = useNavigate();
   const controlsRef = useRef(null);
 
+  const MIN_SCALE = 0.8;
+  const MAX_SCALE = 2;
+
+  const MIN_X = -500;
+  const MAX_X = 500;
+  const MIN_Y = -300;
+  const MAX_Y = 300;
+
+  const constrainPosition = (pos) => {
+    return {
+      x: Math.min(MAX_X, Math.max(MIN_X, pos.x)),
+      y: Math.min(MAX_Y, Math.max(MIN_Y, pos.y))
+    };
+  };
+
+
   const closePopup = () => {
     setShowPopup(false);
   };
@@ -45,7 +61,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
           name: `B${idx + 1}`,
           x: 280 + (idx % 3) * 50,
           y: 65 + Math.floor(idx / 3) * 50,
-          isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
+          isOccupied: !freePlaces.some((item) => item.name === `B${idx + 1}`),
           zone: 'B',
           type: 'office',
         })),
@@ -56,7 +72,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
           name: `C${idx + 1}`,
           x: 55 + (idx % 4) * 40,
           y: 280 + Math.floor(idx / 4) * 45,
-          isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
+          isOccupied: !freePlaces.some((item) => item.name === `C${idx + 1}`),
           zone: 'C',
           type: 'meeting',
         })),
@@ -67,7 +83,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
           name: `D${idx + 1}`,
           x: 265 + (idx % 6) * 27,
           y: 285 + Math.floor(idx / 6) * 70,
-          isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
+          isOccupied: !freePlaces.some((item) => item.name === `D${idx + 1}`),
           zone: 'D',
           type: 'focus',
         })),
@@ -78,7 +94,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
           name: `E${idx + 1}`,
           x: 490 + (idx % 2) * 55,
           y: 80 + Math.floor(idx / 2) * 40,
-          isOccupied: !freePlaces.some((item) => item.name === `A${idx + 1}`),
+          isOccupied: !freePlaces.some((item) => item.name === `E${idx + 1}`),
           zone: 'E',
           type: 'lounge',
         })),
@@ -123,7 +139,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
     if (tapTimeDiff < 300 && e.touches.length === 1) {
       if (scale >= 1.8) {
         setScale(1);
-        setPosition({ x: 0, y: 0 });
+        setPosition(constrainPosition({x: 0, y: 0}));
       } else {
         const touchX = e.touches[0].clientX;
         const touchY = e.touches[0].clientY;
@@ -132,10 +148,10 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
         const targetY = (touchY - rect.top - position.y) / scale;
 
         setScale(2);
-        setPosition({
+        setPosition(constrainPosition({
           x: touchX - targetX * 2,
           y: touchY - targetY * 2,
-        });
+        }));
       }
 
       e.preventDefault();
@@ -179,16 +195,18 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
 
       const ratio = dist / lastDistance;
 
-      const newScale = Math.max(0.5, Math.min(2, scale * ratio));
+      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * ratio));
 
       setScale(newScale);
 
       setLastDistance(dist);
     } else if (e.touches.length === 1 && isDragging) {
-      setPosition({
+      const newPosition = {
         x: e.touches[0].clientX - dragStart.x,
         y: e.touches[0].clientY - dragStart.y,
-      });
+      };
+
+      setPosition(constrainPosition(newPosition));
     }
   };
 
@@ -205,7 +223,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
   const handleWheel = (e) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setScale((prev) => Math.max(0.5, Math.min(2, prev + delta)));
+    setScale((prev) => Math.max(MIN_SCALE, Math.min(MAX_SCALE, prev + delta)));
   };
 
   const handleMouseDown = (e) => {
@@ -226,10 +244,12 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
 
   const handleMouseMove = (e) => {
     if (isDragging) {
-      setPosition({
+      const newPosition = {
         x: e.clientX - dragStart.x,
         y: e.clientY - dragStart.y,
-      });
+      };
+
+      setPosition(constrainPosition(newPosition));
     }
   };
 
@@ -321,13 +341,13 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
         <div className="flex gap-4">
           <button
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
-            onClick={() => setScale((prev) => Math.min(2, prev + 0.2))}
+            onClick={() => setScale((prev) => Math.min(MAX_SCALE, prev + 0.2))}
           >
             <Plus size={14} />
           </button>
           <button
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
-            onClick={() => setScale((prev) => Math.max(0.5, prev - 0.2))}
+            onClick={() => setScale((prev) => Math.max(MIN_SCALE, prev - 0.2))}
           >
             <Minus size={14} />
           </button>
@@ -335,7 +355,7 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
             className="bg-gray-200 hover:bg-gray-300 w-8 h-8 rounded-full flex items-center justify-center"
             onClick={() => {
               setScale(1);
-              setPosition({ x: 0, y: 0 });
+              setPosition(constrainPosition({x: 0, y: 0}));
             }}
           >
             <RotateCcw size={14} />
@@ -698,9 +718,9 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
           />
 
           <rect
-            x="240"
+            x="230"
             y="220"
-            width="190"
+            width="200"
             height="160"
             rx="3"
             fill="#fae8ff"
@@ -1077,104 +1097,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
           <circle cx="370" cy="210" r="2.5" fill="#9ca3af" />
           <circle cx="500" cy="210" r="2.5" fill="#9ca3af" />
 
-          <path d="M220,80 l-3,-6 l6,0 z" fill="#9ca3af" />
-          <path d="M220,170 l-3,-6 l6,0 z" fill="#9ca3af" />
-          <path d="M220,280 l-3,-6 l6,0 z" fill="#9ca3af" />
-          <path d="M220,350 l-3,-6 l6,0 z" fill="#9ca3af" />
-
-          <path d="M440,80 l-3,-6 l6,0 z" fill="#9ca3af" />
-          <path d="M440,170 l-3,-6 l6,0 z" fill="#9ca3af" />
-          <path d="M440,280 l-3,-6 l6,0 z" fill="#9ca3af" />
-          <path d="M440,350 l-3,-6 l6,0 z" fill="#9ca3af" />
-
-          <path d="M120,210 l6,-3 l0,6 z" fill="#9ca3af" />
-          <path d="M200,210 l6,-3 l0,6 z" fill="#9ca3af" />
-          <path d="M330,210 l6,-3 l0,6 z" fill="#9ca3af" />
-          <path d="M400,210 l6,-3 l0,6 z" fill="#9ca3af" />
-          <path d="M520,210 l6,-3 l0,6 z" fill="#9ca3af" />
-
-          <text
-            x="228"
-            y="80"
-            fill="#6b7280"
-            fontSize="8"
-            fontWeight="500"
-            transform="rotate(90 228 80)"
-          >
-            → Зоны A, B
-          </text>
-          <text
-            x="228"
-            y="160"
-            fill="#6b7280"
-            fontSize="8"
-            fontWeight="500"
-            transform="rotate(90 228 160)"
-          >
-            → Зона E
-          </text>
-          <text
-            x="228"
-            y="260"
-            fill="#6b7280"
-            fontSize="8"
-            fontWeight="500"
-            transform="rotate(90 228 260)"
-          >
-            → Зоны C, D
-          </text>
-          <text
-            x="228"
-            y="340"
-            fill="#6b7280"
-            fontSize="8"
-            fontWeight="500"
-            transform="rotate(90 228 340)"
-          >
-            → Кофе-зона
-          </text>
-
-          <text
-            x="452"
-            y="80"
-            fill="#6b7280"
-            fontSize="8"
-            fontWeight="500"
-            transform="rotate(90 452 80)"
-          >
-            → Зона E
-          </text>
-          <text
-            x="452"
-            y="260"
-            fill="#6b7280"
-            fontSize="8"
-            fontWeight="500"
-            transform="rotate(90 452 260)"
-          >
-            → Кофе-зона
-          </text>
-          <text
-            x="452"
-            y="340"
-            fill="#6b7280"
-            fontSize="8"
-            fontWeight="500"
-            transform="rotate(90 452 340)"
-          >
-            → Туалеты
-          </text>
-
-          <text x="120" y="202" fill="#6b7280" fontSize="8" fontWeight="500">
-            → Зона C
-          </text>
-          <text x="300" y="202" fill="#6b7280" fontSize="8" fontWeight="500">
-            → Зона D
-          </text>
-          <text x="500" y="202" fill="#6b7280" fontSize="8" fontWeight="500">
-            → Кофе-зона
-          </text>
-
           <circle cx="220" cy="210" r="5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="1" />
           <circle cx="440" cy="210" r="5" fill="#d1d5db" stroke="#9ca3af" strokeWidth="1" />
 
@@ -1262,50 +1184,42 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces, isAdmin }) => {
               >
                 {seat.name}
               </text>
-              {seat.isOccupied && (
-                <Lock
-                  className="text-gray-400"
-                  size={10}
-                  data-seat="true"
-                  style={{
-                    position: 'absolute',
-                    transform: 'translate(-50%, -50%)',
-                    left: `${seat.x}px`,
-                    top: `${seat.y + 5}px`,
-                  }}
-                />
-              )}
             </g>
           ))}
           {showPopup && <SeatPopup seat={selectedSeat} onClose={closePopup} />}
 
           <rect x="20" y="385" width="560" height="1" stroke="#94a3b8" strokeWidth="1" />
-          <circle cx="30" cy="395" r="5" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1" />
-          <text x="40" y="398" fill="#64748b" fontSize="8">
+
+          <circle cx="30" cy="400" r="5" fill="#dbeafe" stroke="#60a5fa" strokeWidth="1"/>
+          <text x="40" y="403" fill="#64748b" fontSize="8">
             Рабочее место
           </text>
-          <circle cx="100" cy="395" r="5" fill="#ccfbf1" stroke="#2dd4bf" strokeWidth="1" />
-          <text x="110" y="398" fill="#64748b" fontSize="8">
+          <circle cx="110" cy="400" r="5" fill="#ccfbf1" stroke="#2dd4bf" strokeWidth="1"/>
+          <text x="120" y="403" fill="#64748b" fontSize="8">
             Кабинет
           </text>
-          <circle cx="170" cy="395" r="5" fill="#fef9c3" stroke="#facc15" strokeWidth="1" />
-          <text x="180" y="398" fill="#64748b" fontSize="8">
+          <circle cx="170" cy="400" r="5" fill="#fef9c3" stroke="#facc15" strokeWidth="1"/>
+          <text x="180" y="403" fill="#64748b" fontSize="8">
             Переговорная
           </text>
-          <circle cx="250" cy="395" r="5" fill="#fae8ff" stroke="#d946ef" strokeWidth="1" />
-          <text x="260" y="398" fill="#64748b" fontSize="8">
+          <circle cx="250" cy="400" r="5" fill="#fae8ff" stroke="#d946ef" strokeWidth="1"/>
+          <text x="260" y="403" fill="#64748b" fontSize="8">
             Тихая зона
           </text>
-          <circle cx="320" cy="395" r="5" fill="#dcfce7" stroke="#4ade80" strokeWidth="1" />
-          <text x="330" y="398" fill="#64748b" fontSize="8">
+          <circle cx="320" cy="400" r="5" fill="#dcfce7" stroke="#4ade80" strokeWidth="1"/>
+          <text x="330" y="403" fill="#64748b" fontSize="8">
             Зона отдыха
           </text>
-          <circle cx="400" cy="395" r="5" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1" />
-          <text x="410" y="398" fill="#64748b" fontSize="8">
+          <circle cx="400" cy="400" r="5" fill="#ffedd5" stroke="#ab4b0e" strokeWidth="1"/>
+          <text x="410" y="403" fill="#64748b" fontSize="8">
+            Кофе-зона
+          </text>
+          <circle cx="470" cy="400" r="5" fill="#f3f4f6" stroke="#d1d5db" strokeWidth="1"/>
+          <text x="480" y="403" fill="#64748b" fontSize="8">
             Занято
           </text>
-          <circle cx="470" cy="395" r="5" fill="#bfdbfe" stroke="#3b82f6" strokeWidth="1.5" />
-          <text x="480" y="398" fill="#64748b" fontSize="8">
+          <circle cx="530" cy="400" r="5" fill="#bfdbfe" stroke="#3b82f6" strokeWidth="1.5"/>
+          <text x="540" y="403" fill="#64748b" fontSize="8">
             Выбрано
           </text>
         </svg>

@@ -369,6 +369,28 @@ const UserControl = () => {
     }
   };
 
+  const verifyUser = async (userId) => {
+    try {
+      const token = localStorage.getItem('userToken');
+      await axios.post(
+          `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/verify/${userId}`,
+          { verified: true },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          },
+      );
+      toastManager.showSuccessToast('Пользователь верифицирован');
+      fetchUsers();
+    } catch (err) {
+      console.error('Error verifying user:', err);
+      toastManager.showErrorToast('Не удалось верифицировать пользователя');
+    }
+  };
+
+
   const handleDeleteSubmit = async () => {
     try {
       setDeleteError(null);
@@ -890,6 +912,15 @@ const UserControl = () => {
                           Разблок
                         </button>
                       )}
+                      {!user.verified && (
+                          <button
+                              onClick={() => verifyUser(user.id)}
+                              className="text-xs bg-purple-50 text-purple-700 py-1.5 px-3 rounded-lg border border-purple-200 hover:bg-purple-100 transition-colors flex items-center"
+                          >
+                            <CheckCircle className="h-3 w-3 mr-1"/>
+                            Вериф
+                          </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1084,6 +1115,15 @@ const UserControl = () => {
                                 >
                                   <Unlock className="h-4 w-4" />
                                 </button>
+                              )}
+                              {!user.verified && (
+                                  <button
+                                      onClick={() => verifyUser(user.id)}
+                                      className="p-1.5 text-purple-600 hover:text-purple-900 rounded-lg hover:bg-purple-50 transition-colors"
+                                      title="Верифицировать"
+                                  >
+                                    <CheckCircle className="h-4 w-4"/>
+                                  </button>
                               )}
                             </div>
                           </td>
