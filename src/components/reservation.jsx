@@ -108,8 +108,7 @@ const CoworkingBooking = ({ isAdmin }) => {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const minDate = today.toISOString().split('T')[0];
-
+  const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const handleStartTimeChange = (newStartTime) => {
     setTimeRange((prev) => ({ ...prev, start: newStartTime }));
   };
@@ -159,10 +158,15 @@ const CoworkingBooking = ({ isAdmin }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     const selectedDay = new Date(selectedDate);
     selectedDay.setHours(0, 0, 0, 0);
 
     const isSameDay = today.getTime() === selectedDay.getTime();
+    const isTomorrow = tomorrow.getTime() === selectedDay.getTime();
+
     setIsToday(isSameDay);
 
     if (isSameDay) {
@@ -171,19 +175,18 @@ const CoworkingBooking = ({ isAdmin }) => {
       const currentMinutes = current.hour * 60 + current.minute;
 
       if (startMinutes < currentMinutes || timeRange.start.hour === 0) {
-        // Устанавливаем новое время начала и конца
         const endMinutes = currentMinutes + 60;
         const endTime =
-          endMinutes > maxTime.hour * 60 + maxTime.minute
-            ? maxTime
-            : { hour: Math.floor(endMinutes / 60), minute: endMinutes % 60 };
+            endMinutes > maxTime.hour * 60 + maxTime.minute
+                ? maxTime
+                : { hour: Math.floor(endMinutes / 60), minute: endMinutes % 60 };
 
         setTimeRange({
           start: current,
           end: endTime,
         });
       }
-    } else if (timeRange.start.hour === 0 || timeRange.end.hour === 0) {
+    } else if (isTomorrow || timeRange.start.hour === 0 || timeRange.end.hour === 0) {
       setTimeRange({
         start: { hour: 9, minute: 0 },
         end: { hour: 10, minute: 0 },
@@ -348,14 +351,18 @@ const CoworkingBooking = ({ isAdmin }) => {
 
   const handleDateChange = (e) => {
     try {
-      const newDate = new Date(e.target.value);
+      const parts = e.target.value.split('-');
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]) - 1;
+      const day = parseInt(parts[2]);
+
+      const newDate = new Date(year, month, day);
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       if (newDate.getTime() < today.getTime()) {
         setSelectedDate(today);
-        e.target.value = today.toISOString().split('T')[0];
       } else {
         setSelectedDate(newDate);
       }
@@ -404,12 +411,12 @@ const CoworkingBooking = ({ isAdmin }) => {
 
             <div className="relative">
               <input
-                type="date"
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={selectedDate.toISOString().split('T')[0]}
-                onChange={handleDateChange}
-                min={minDate}
-                onKeyDown={(e) => e.preventDefault()}
+                  type="date"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={`${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`}
+                  onChange={handleDateChange}
+                  min={minDate}
+                  onKeyDown={(e) => e.preventDefault()}
               />
               <span className="absolute top-3 right-4 text-gray-400"></span>
             </div>
