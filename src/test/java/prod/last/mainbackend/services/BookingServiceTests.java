@@ -78,7 +78,7 @@ public class BookingServiceTests {
         when(bookingRepository.save(any(BookingModel.class))).thenReturn(bookingModel);
 
         
-        BookingModel result = bookingService.create(userId, placeName, startTime, endTime);
+        BookingModel result = bookingService.create(userId, placeName, startTime, endTime, true);
 
         
         assertNotNull(result);
@@ -102,7 +102,7 @@ public class BookingServiceTests {
         
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> bookingService.create(userId, placeName, startTime, endTime)
+                () -> bookingService.create(userId, placeName, startTime, endTime, true)
         );
         assertEquals("Place not found", exception.getMessage());
 
@@ -124,7 +124,7 @@ public class BookingServiceTests {
         
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> bookingService.create(userId, placeName, startTime, endTime)
+                () -> bookingService.create(userId, placeName, startTime, endTime, true)
         );
         assertEquals("User not found", exception.getMessage());
 
@@ -152,7 +152,7 @@ public class BookingServiceTests {
         
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> bookingService.create(userId, placeName, startTime, endTime)
+                () -> bookingService.create(userId, placeName, startTime, endTime, true)
         );
         assertEquals("User already has a booking in the specified time range", exception.getMessage());
 

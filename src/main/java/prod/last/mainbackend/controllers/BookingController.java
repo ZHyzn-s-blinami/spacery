@@ -61,7 +61,8 @@ public class BookingController {
                     user.getId(),
                     bookingRequest.getName(),
                     bookingRequest.getStartAt(),
-                    bookingRequest.getEndAt()
+                    bookingRequest.getEndAt(),
+                    user.getVerified()
             ));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(e.getMessage());

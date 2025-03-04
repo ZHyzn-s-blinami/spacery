@@ -65,6 +65,7 @@ class BookingControllerTests {
 
         UserModel user = new UserModel();
         user.setId(userId);
+        user.setVerified(true);
 
         BookingModel bookingModel = new BookingModel();
         bookingModel.setId(bookingId);
@@ -72,15 +73,14 @@ class BookingControllerTests {
         bookingModel.setEndAt(endAt);
 
         when(userService.getUserById(userId)).thenReturn(user);
-        when(bookingService.create(userId, placeName, startAt, endAt)).thenReturn(bookingModel);
+        when(bookingService.create(userId, placeName, startAt, endAt, true)).thenReturn(bookingModel);
 
         
         ResponseEntity<?> response = bookingController.create(request, principal);
 
-        
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(bookingModel, response.getBody());
-        verify(bookingService).create(userId, placeName, startAt, endAt);
+        verify(bookingService).create(userId, placeName, startAt, endAt, true);
     }
 
     @Test
@@ -93,9 +93,10 @@ class BookingControllerTests {
 
         UserModel user = new UserModel();
         user.setId(userId);
+        user.setVerified(true);
 
         when(userService.getUserById(userId)).thenReturn(user);
-        when(bookingService.create(userId, placeName, startAt, endAt)).thenThrow(new RuntimeException("Error creating booking"));
+        when(bookingService.create(userId, placeName, startAt, endAt, true)).thenThrow(new RuntimeException("Error creating booking"));
 
         
         ResponseEntity<?> response = bookingController.create(request, principal);

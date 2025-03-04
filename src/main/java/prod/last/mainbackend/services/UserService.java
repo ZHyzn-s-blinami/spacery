@@ -83,7 +83,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void editUser(UUID id, String name, String description, String email, String password) {
+    public void editUser(UUID id, String name, String description, String email, String password ) {
         UserModel user = userRepository.findById(id).orElse(null);
         if (user == null) {
             throw new IllegalArgumentException("User not found");

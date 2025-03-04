@@ -56,10 +56,21 @@ public class BookingService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public BookingModel create(UUID userId, String name, LocalDateTime start, LocalDateTime end) {
+    public BookingModel create(UUID userId, String name, LocalDateTime start, LocalDateTime end, Boolean verify) {
         log.info("Creating booking for user {} and place {}", userId, name);
 
         List<BookingModel> existingBookings = bookingRepository.findAllByUserId(userId);
+
+        if (verify != null && !verify) {
+            long pendingBookingsCount = existingBookings.stream()
+                    .filter(booking -> booking.getStatus() == BookingStatus.PENDING)
+                    .count();
+
+            if (pendingBookingsCount >= 1) {
+                throw new IllegalArgumentException("Неверифицированные пользователи могут иметь только одно активное бронирование");
+            }
+        }
+
         for (BookingModel booking : existingBookings) {
             if (booking.getStartAt().isBefore(end) && booking.getEndAt().isAfter(start) && booking.getStatus() == BookingStatus.PENDING) {
                 throw new IllegalArgumentException("User already has a booking in the specified time range");
