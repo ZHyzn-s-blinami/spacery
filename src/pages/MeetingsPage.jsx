@@ -34,17 +34,12 @@ const MeetingsPage = () => {
     setShowLoading(loading);
   }, [dispatch]);
 
-  // Эффект для сортировки при изменении meetings или visibleTab
   useEffect(() => {
     if (!meetings || !meetings.length) return;
 
-    // Фильтрация и сортировка с учетом структуры данных
     const filtered = meetings.filter((meeting) => meeting?.status === visibleTab);
 
-    // Клонируем массив перед сортировкой, чтобы избежать мутации исходных данных
     const sorted = [...filtered].sort((a, b) => {
-      // Убедимся, что у нас есть корректные поля с датой и временем
-      // Предполагаем, что у нас есть поле dateTime, date и time, или startDate
       let dateA, dateB;
 
       if (a.dateTime) {
@@ -56,7 +51,6 @@ const MeetingsPage = () => {
       } else if (a.meetingDate) {
         dateA = new Date(a.meetingDate);
       } else {
-        // Если ни одно из известных полей не найдено, пробуем найти поле с "date" в имени
         const dateField = Object.keys(a).find((key) => key.toLowerCase().includes('date'));
         dateA = dateField ? new Date(a[dateField]) : new Date(0);
       }
@@ -74,16 +68,11 @@ const MeetingsPage = () => {
         dateB = dateField ? new Date(b[dateField]) : new Date(0);
       }
 
-      // Проверка на корректность дат
       if (isNaN(dateA.getTime())) dateA = new Date(0);
       if (isNaN(dateB.getTime())) dateB = new Date(0);
 
-      // Сортировка по возрастанию (ближайшие даты сверху)
       return dateA - dateB;
     });
-
-    // Консоль для отладки
-    console.log('Sorted meetings:', sorted);
 
     setSortedMeetings(sorted);
   }, [meetings, visibleTab]);
@@ -223,7 +212,7 @@ const MeetingsPage = () => {
                 <MeetingsList
                   statusFilter={visibleTab}
                   key={visibleTab}
-                  meetings={sortedMeetings} // Используем состояние с отсортированными бронированиями
+                  meetings={sortedMeetings}
                 />
               ) : (
                 <div className="flex justify-center items-center py-12">

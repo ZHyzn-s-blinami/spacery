@@ -280,7 +280,6 @@ const MeetingItem = ({ item }) => {
   };
 
   function formatDateForMoscow(date) {
-    // Create a formatter for Moscow timezone
     const options = {
       timeZone: 'Europe/Moscow',
       year: 'numeric',
@@ -292,7 +291,6 @@ const MeetingItem = ({ item }) => {
     };
 
     const moscowTime = new Intl.DateTimeFormat('en-GB', options).format(date);
-    // Convert "DD/MM/YYYY, HH:MM:SS" to "YYYY-MM-DDTHH:MM:SS"
     const [datePart, timePart] = moscowTime.split(', ');
     const [day, month, year] = datePart.split('/');
     return `${year}-${month}-${day}T${timePart}`;
@@ -415,8 +413,6 @@ const MeetingItem = ({ item }) => {
       setTicketModalMounted(false);
     }
   }, [showTicketModal, isTicketModalClosing]);
-
-  console.log(item);
 
   const getStatusBadge = () => {
     switch (item.status) {

@@ -195,7 +195,6 @@ const CoworkingMap = ({ selectedSeat, onSeatSelect, freePlaces }) => {
           zone: 'B',
           type: 'office',
         })),
-      // Аналогично для зон C, D, E…
       ...Array(8)
         .fill()
         .map((_, idx) => ({
@@ -963,8 +962,6 @@ const CoworkingBookingAdmin = () => {
     const minutes = String(time.minute).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}:00`;
   };
-
-  // Функция для получения свободных мест (должна обращаться к вашему API)
 
   const handleSeatSelect = (seat) => {
     setSelectedSeat(seat);
