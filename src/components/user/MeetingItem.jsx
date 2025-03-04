@@ -1235,7 +1235,7 @@ const MeetingItem = ({ item }) => {
                 <div className="text-sm text-gray-600 space-y-2">
                   <div className="flex">
                     <MapPinIcon size={16} className="mr-2 flex-shrink-0 text-gray-500" />
-                    <span>{`${item.place.description} - ${item.place.name}`}</span> {/*!!!!*/}
+                    <span>{`${item.place.description} - ${item.place.name}`}</span>
                   </div>
                   <div className="flex">
                     <CalendarIcon size={16} className="mr-2 flex-shrink-0 text-gray-500" />
