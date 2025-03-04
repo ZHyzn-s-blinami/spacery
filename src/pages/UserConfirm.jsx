@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import PageTitle from './PageTitle';
 
 const UserConfirm = () => {
   const { jwt } = useParams();
@@ -62,6 +63,7 @@ const UserConfirm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <PageTitle title="Подтверждение аккаунта" />
       <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
         <h2 className="text-2xl font-semibold text-center mb-6">Подтверждение аккаунта</h2>
 

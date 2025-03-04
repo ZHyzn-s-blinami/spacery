@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import PageTitle from './PageTitle';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -279,6 +280,7 @@ const Profile = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-8">
+      <PageTitle title="Профиль" />
       <div className="max-w-5xl mx-auto px-4">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 text-white">

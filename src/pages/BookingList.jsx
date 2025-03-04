@@ -16,6 +16,7 @@ import { useParams } from 'react-router-dom';
 import { bookingService } from '../services/bookingService';
 import { pingService } from '../services/pingService';
 import { toastManager } from '../common/toastManager';
+import PageTitle from './PageTitle';
 
 const BookingList = () => {
   const { name } = useParams();
@@ -225,6 +226,7 @@ const BookingList = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageTitle title="Список бронирований" />
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center">

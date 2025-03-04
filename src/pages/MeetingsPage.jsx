@@ -11,6 +11,7 @@ import {
   ArrowLeftIcon,
   ChevronDownIcon,
 } from 'lucide-react';
+import PageTitle from './PageTitle';
 
 const MeetingsPage = () => {
   const dispatch = useDispatch();
@@ -117,6 +118,7 @@ const MeetingsPage = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-4 sm:py-8">
+      <PageTitle title="Список бронирований" />
       <div className="max-w-5xl mx-auto px-3 sm:px-4">
         <div className="bg-blue-50 p-4 sm:p-6 rounded-xl mb-4 sm:mb-6 border border-blue-100">
           <div className="flex items-center justify-between mb-4 sm:mb-6">

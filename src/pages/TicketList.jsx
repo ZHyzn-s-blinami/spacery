@@ -39,6 +39,7 @@ import {
   Line,
 } from 'recharts';
 import { ChevronRight, BarChart2 } from 'lucide-react';
+import PageTitle from './PageTitle';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -422,6 +423,7 @@ function TicketList() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageTitle title="Список тикетов" />
       <header className="bg-white pb-4 shadow-sm shadow-b-2 top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center">
