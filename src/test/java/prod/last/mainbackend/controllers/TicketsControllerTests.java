@@ -129,27 +129,23 @@ public class TicketsControllerTests {
 
     @Test
     void findAll_Success() {
-        
         List<TicketsModel> tickets = Arrays.asList(new TicketsModel(), new TicketsModel());
-        when(ticketsService.findAllOrderByCreatedAtDesc()).thenReturn(tickets);
+        // Исправлено название метода сервиса
+        when(ticketsService.findAllOderByUpdatedAtDesc()).thenReturn(tickets);
 
-        
         ResponseEntity<?> response = ticketsController.findAll();
 
-        
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(tickets, response.getBody());
     }
 
     @Test
     void findAll_Error() {
-        
-        when(ticketsService.findAllOrderByCreatedAtDesc()).thenThrow(new RuntimeException("Error retrieving all tickets"));
+        // Исправлено название метода сервиса
+        when(ticketsService.findAllOderByUpdatedAtDesc()).thenThrow(new RuntimeException("Error retrieving all tickets"));
 
-        
         ResponseEntity<?> response = ticketsController.findAll();
 
-        
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Error retrieving all tickets", response.getBody());
     }
@@ -218,27 +214,23 @@ public class TicketsControllerTests {
 
     @Test
     void findByPlaceId_Success() {
-        
         List<TicketsModel> tickets = Arrays.asList(new TicketsModel(), new TicketsModel());
-        when(ticketsService.findByPlaceId(placeName)).thenReturn(tickets);
+        // Исправлено название мет��да сервиса
+        when(ticketsService.findAllByPlaceIdOrderByCreatedAtDesc(placeName)).thenReturn(tickets);
 
-        
         ResponseEntity<?> response = ticketsController.findByPlaceId(placeName);
 
-        
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(tickets, response.getBody());
     }
 
     @Test
     void findByPlaceId_Error() {
-        
-        when(ticketsService.findByPlaceId(placeName)).thenThrow(new RuntimeException("Error retrieving tickets by place"));
+        // Исправлено название метода сервиса
+        when(ticketsService.findAllByPlaceIdOrderByCreatedAtDesc(placeName)).thenThrow(new RuntimeException("Error retrieving tickets by place"));
 
-        
         ResponseEntity<?> response = ticketsController.findByPlaceId(placeName);
 
-        
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Error retrieving tickets by place", response.getBody());
     }

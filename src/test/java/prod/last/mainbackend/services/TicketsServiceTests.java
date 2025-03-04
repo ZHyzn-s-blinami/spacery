@@ -13,6 +13,7 @@ import prod.last.mainbackend.models.TicketsModel;
 import prod.last.mainbackend.models.request.TicketCreate;
 import prod.last.mainbackend.repositories.PlaceRepository;
 import prod.last.mainbackend.repositories.TicketsRepository;
+import org.springframework.data.domain.Sort;
 
 import java.util.Collections;
 import java.util.List;
@@ -122,16 +123,16 @@ public class TicketsServiceTests {
 
     @Test
     void findAll_Success() {
-        
-        when(ticketsRepository.findAll()).thenReturn(Collections.singletonList(ticket));
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
 
-        
+        when(ticketsRepository.findAll(sort)).thenReturn(Collections.singletonList(ticket));
+
         List<TicketsModel> result = ticketsService.findAll();
 
-        
         assertEquals(1, result.size());
         assertEquals(ticket, result.get(0));
-        verify(ticketsRepository).findAll();
+
+        verify(ticketsRepository).findAll(sort);
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import prod.last.mainbackend.models.UserModel;
@@ -136,18 +137,19 @@ public class UserServiceTests {
 
     @Test
     void getAllUsers_Success() {
-        
         UserModel user1 = new UserModel("user1@example.com", encodedPassword, "User 1", role);
         UserModel user2 = new UserModel("user2@example.com", encodedPassword, "User 2", role);
         List<UserModel> users = Arrays.asList(user1, user2);
-        when(userRepository.findAll()).thenReturn(users);
 
-        
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+
+        when(userRepository.findAll(sort)).thenReturn(users);
+
         List<UserModel> result = userService.getAllUsers();
 
-        
         assertEquals(2, result.size());
-        verify(userRepository).findAll();
+        verify(userRepository).findAll(sort);
     }
 
     @Test

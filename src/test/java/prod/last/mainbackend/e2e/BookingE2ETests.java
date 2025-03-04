@@ -21,7 +21,6 @@ public class BookingE2ETests extends LocalTestBase {
 
     @Test
     void testCreateAndCancelBooking() {
-        // Регистрация пользователя
         Map<String, String> userSignup = new HashMap<>();
         userSignup.put("email", "bookinguser@example.com");
         userSignup.put("password", "password123");
@@ -37,7 +36,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Регистрация администратора
         Map<String, String> adminSignup = new HashMap<>();
         adminSignup.put("email", "admin@example.com");
         adminSignup.put("password", "admin123");
@@ -53,7 +51,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Создание места администратором
         List<Map<String, Object>> placesToCreate = new ArrayList<>();
         Map<String, Object> placeData = new HashMap<>();
         placeData.put("type", "MEETING");
@@ -72,7 +69,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        // Создание бронирования
         LocalDateTime startAt = LocalDateTime.now().plusHours(1);
         LocalDateTime endAt = LocalDateTime.now().plusHours(2);
 
@@ -92,14 +88,12 @@ public class BookingE2ETests extends LocalTestBase {
                 .body("id", notNullValue())
                 .extract().path("id");
 
-        // Небольшая задержка для гарантии сохранения в БД
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
 
-        // Проверка списка бронирований пользователя (проверяем наличие бронирования без жесткой привязки к ID)
         given()
                 .header("Authorization", "Bearer " + token)
                 .when()
@@ -109,7 +103,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .body("size()", equalTo(1))
                 .body("[0].place.name", equalTo("test-room-1"));
 
-        // Отмена бронирования
         given()
                         .header("Authorization", "Bearer " + token)
                         .when()
@@ -120,7 +113,6 @@ public class BookingE2ETests extends LocalTestBase {
 
     @Test
     void testBookingQRCode() {
-        // Регистрация пользователя
         Map<String, String> userSignup = new HashMap<>();
         userSignup.put("email", "qruser@example.com");
         userSignup.put("password", "password123");
@@ -136,7 +128,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Регистрация администратора
         Map<String, String> adminSignup = new HashMap<>();
         adminSignup.put("email", "qradmin@example.com");
         adminSignup.put("password", "admin123");
@@ -152,7 +143,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Создание места
         List<Map<String, Object>> placesToCreate = new ArrayList<>();
         Map<String, Object> placeData = new HashMap<>();
         placeData.put("type", "MEETING");
@@ -171,7 +161,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        // Создание бронирования
         LocalDateTime startAt = LocalDateTime.now().plusHours(1);
         LocalDateTime endAt = LocalDateTime.now().plusHours(2);
 
@@ -190,7 +179,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("id");
 
-        // Получение QR-кода
         String qrCode = given()
                 .header("Authorization", "Bearer " + token)
                 .when()
@@ -200,7 +188,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .body("qrCode", notNullValue())
                 .extract().path("qrCode");
 
-        // Проверка QR-кода администратором
         Map<String, String> qrCheckRequest = new HashMap<>();
         qrCheckRequest.put("qrCode", qrCode);
 
@@ -217,7 +204,6 @@ public class BookingE2ETests extends LocalTestBase {
 
     @Test
     void testAdminBookingOperations() {
-        // Регистрация администратора
         Map<String, String> adminSignup = new HashMap<>();
         adminSignup.put("email", "bookingadmin@example.com");
         adminSignup.put("password", "admin123");
@@ -233,7 +219,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Создание места
         List<Map<String, Object>> placesToCreate = new ArrayList<>();
         Map<String, Object> placeData = new HashMap<>();
         placeData.put("type", "MEETING");
@@ -252,7 +237,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        // Создание бронирования администратором
         LocalDateTime startAt = LocalDateTime.now().plusHours(1);
         LocalDateTime endAt = LocalDateTime.now().plusHours(3);
 
@@ -270,7 +254,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
-        // Проверка получения всех бронирований по месту
         given()
                 .header("Authorization", "Bearer " + adminToken)
                 .when()
@@ -283,7 +266,6 @@ public class BookingE2ETests extends LocalTestBase {
 
     @Test
     void testBookingUpdate() {
-        // Регистрация пользователя
         Map<String, String> userSignup = new HashMap<>();
         userSignup.put("email", "updateuser@example.com");
         userSignup.put("password", "password123");
@@ -299,7 +281,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Регистрация администратора
         Map<String, String> adminSignup = new HashMap<>();
         adminSignup.put("email", "updateadmin@example.com");
         adminSignup.put("password", "admin123");
@@ -315,7 +296,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Создание места
         List<Map<String, Object>> placesToCreate = new ArrayList<>();
         Map<String, Object> placeData = new HashMap<>();
         placeData.put("type", "MEETING");
@@ -334,7 +314,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        // Создание бронирования
         LocalDateTime startAt = LocalDateTime.now().plusHours(1);
         LocalDateTime endAt = LocalDateTime.now().plusHours(2);
 
@@ -353,7 +332,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("id");
 
-        // Обновление времени бронирования
         LocalDateTime newStartAt = LocalDateTime.now().plusHours(3);
         LocalDateTime newEndAt = LocalDateTime.now().plusHours(4);
 
@@ -371,7 +349,6 @@ public class BookingE2ETests extends LocalTestBase {
 
     @Test
     void testBookingsByStatus() {
-        // Регистрация пользователя
         Map<String, String> userSignup = new HashMap<>();
         userSignup.put("email", "statususer@example.com");
         userSignup.put("password", "password123");
@@ -387,7 +364,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Регистрация администратора
         Map<String, String> adminSignup = new HashMap<>();
         adminSignup.put("email", "statusadmin@example.com");
         adminSignup.put("password", "admin123");
@@ -403,7 +379,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
-        // Создание места
         List<Map<String, Object>> placesToCreate = new ArrayList<>();
         Map<String, Object> placeData = new HashMap<>();
         placeData.put("type", "MEETING");
@@ -422,7 +397,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
-        // Создание бронирования
         LocalDateTime startAt = LocalDateTime.now().plusHours(1);
         LocalDateTime endAt = LocalDateTime.now().plusHours(2);
 
@@ -441,7 +415,6 @@ public class BookingE2ETests extends LocalTestBase {
                 .statusCode(HttpStatus.CREATED.value())
                 .extract().path("id");
 
-        // Получение всех бронирований со статусом PENDING
         given()
                 .header("Authorization", "Bearer " + token)
                 .when()
