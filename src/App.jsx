@@ -12,8 +12,8 @@ import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import UserControl from './pages/UserControl';
 import TicketList from './pages/TicketList';
 import CheckQr from './pages/CheckQr.jsx';
-import MeetingsPage from './pages/MeetingsList.jsx';
-import UserConfirm from "./pages/UserConfirm.jsx";
+import MeetingsPage from './pages/MeetingsPage.jsx';
+import UserConfirm from './pages/UserConfirm.jsx';
 
 function App() {
   return (
@@ -72,7 +72,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/meetings" element={<MeetingsPage />} />
         </Route>
-          <Route path="/userConfirm/:jwt" element={<UserConfirm />} />
+        <Route path="/userConfirm/:jwt" element={<UserConfirm />} />
         <Route path="/checkQr/:jwt" element={<CheckQr />} />
         <Route
           path="/admin"

@@ -21,6 +21,7 @@ const CoworkingBooking = ({ isAdmin }) => {
   const [freePlaces, setFreePlaces] = useState([]);
   const [isOutsideWorkingHours, setIsOutsideWorkingHours] = useState(false);
   const mapContainerRef = useRef(null);
+  const [error, setError] = useState('');
 
   const minTime = { hour: 8, minute: 0 };
   const maxTime = { hour: 22, minute: 0 };
@@ -93,7 +94,9 @@ const CoworkingBooking = ({ isAdmin }) => {
       return result;
     } catch (error) {
       console.error('Ошибка при создании бронирования: ', error);
-      toastManager.showErrorToast('Ошибка при бронировании');
+      toastManager.showErrorToast(
+        'Пользователь уже забронировал место в этот временной промежуток',
+      );
       throw error;
     }
   };
@@ -482,7 +485,6 @@ const CoworkingBooking = ({ isAdmin }) => {
 
         <div ref={mapContainerRef} className="mb-6 coworking-map-container relative">
           <CoworkingMap
-
             selectedSeat={selectedSeat}
             onSeatSelect={handleSeatSelect}
             freePlaces={freePlaces}
