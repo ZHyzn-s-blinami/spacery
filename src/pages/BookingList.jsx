@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { adminService } from '../services/adminService';
 import {
   Calendar,
@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Filter,
   Search,
+  ArrowLeft,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { bookingService } from '../services/bookingService';
@@ -109,13 +110,11 @@ const BookingList = () => {
       toastManager.showSuccessToast('Бронь отменена');
       return response.data;
     } catch (error) {
-      toastManager.showErrorToast('Ошибка при отмене брони');
+      toastManager.showErrorToast(error.response.data);
       console.error('Ошибка при отмене брони:', error);
       throw error;
     }
   };
-
-  console.log(bookings);
 
   const filteredBookings = bookings.filter((booking) => {
     if (filterOptions.status !== 'ALL' && booking.status !== filterOptions.status) {
@@ -245,6 +244,11 @@ const BookingList = () => {
 
       <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-6">
+          <Link to="/admin">
+            <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg flex justify-center items-center transition-all cursor-pointer">
+              <ArrowLeft /> Назад
+            </button>
+          </Link>
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Бронирования</h2>
 
           <div className="bg-white rounded-lg shadow-sm p-4 mb-6">

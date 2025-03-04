@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Lock, Info, Coffee, Wifi, Users, MapPin, Filter } from 'lucide-react';
 import { placeService } from '../services/placeService';
 import { useNavigate } from 'react-router-dom';
+import { toastManager } from '../common/toastManager';
 
 const SeatPopover = ({ seat, timeRange, selectedDate, onClose, onBook, position }) => {
   const popoverRef = useRef(null);
@@ -971,7 +972,7 @@ const CoworkingBookingAdmin = () => {
       setPopoverSeat(null);
       setSelectedSeat(null);
     } catch (error) {
-      console.error('Ошибка при создании бронирования: ', error);
+      toastManager.showErrorToast(error.response.data);
     }
   };
 
