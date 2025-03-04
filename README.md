@@ -1,5 +1,8 @@
 # **BookingIT** 
 
+* backend - [backend](https://gitlab.prodcontest.ru/team-5/backend#bookingit)
+* frontend - [frontend](https://gitlab.prodcontest.ru/team-5/frontend#spacery-frontend)
+
 ### Описание проекта
 
 Приложение предназначено для бронирования коворкинг-пространств. Пользователи могут выбрать подходящие место, бронировать его на определённое время и управлять своими бронированиями через веб-приложение.
