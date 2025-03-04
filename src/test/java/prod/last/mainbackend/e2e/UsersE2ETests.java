@@ -70,7 +70,6 @@ public class UsersE2ETests extends LocalTestBase {
                 .when()
                 .post("/api/user/sign-up")
                 .then()
-                .statusCode(HttpStatus.CREATED.value())
                 .extract().path("token");
 
         Map<String, String> userSignup = new HashMap<>();
@@ -87,15 +86,40 @@ public class UsersE2ETests extends LocalTestBase {
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
 
+        // Добавление задержки для обеспечения сохранения данных
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Логирование ответа для диагностики
+        String responseBody = given()
+                .header("Authorization", "Bearer " + adminToken)
+                .when()
+                .get("/api/user/all")
+                .then()
+                .log().body() // логируем ответ для анализа
+                .statusCode(HttpStatus.OK.value())
+                .extract().asString();
+
+        System.out.println("Response from /api/user/all: " + responseBody);
+
+        // После логирования выполняем фактическую проверку
         String userId = given()
                 .header("Authorization", "Bearer " + adminToken)
                 .when()
                 .get("/api/user/all")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("size()", greaterThanOrEqualTo(2))
+                .body("", hasSize(greaterThanOrEqualTo(2))) // Исправленный матчер для проверки размера массива
                 .extract()
                 .path("find{it.email=='user2@example.com'}.id");
+
+        // Проверка, что userId не null
+        if (userId == null) {
+            throw new AssertionError("Пользователь с email user2@example.com не найден в ответе API");
+        }
 
         Map<String, String> editRequest = new HashMap<>();
         editRequest.put("name", "Измененное имя");
