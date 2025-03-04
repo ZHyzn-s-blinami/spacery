@@ -297,8 +297,8 @@ public class BookingService {
             }
         }
 
-        booking.setStartAt(start);
-        booking.setEndAt(end);
+        booking.setStartAt(start.atZone(ZoneId.of("Europe/Moscow")).toLocalDateTime());
+        booking.setEndAt(end.atZone(ZoneId.of("Europe/Moscow")).toLocalDateTime());
         booking.updateStatus(BookingStatus.PENDING);
         booking.setSentNotification(false);
         return bookingRepository.save(booking);

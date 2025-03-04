@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Data
@@ -45,8 +46,8 @@ public class BookingModel {
         this.updatedAt = LocalDateTime.now();
         this.userId = userId;
         this.placeId = placeId;
-        this.startAt = startAt;
-        this.endAt = endAt;
+        this.startAt = startAt.atZone(ZoneId.of("Europe/Moscow")).toLocalDateTime();
+        this.endAt = endAt.atZone(ZoneId.of("Europe/Moscow")).toLocalDateTime();
     }
 
     public void updateStatus(BookingStatus status) {
