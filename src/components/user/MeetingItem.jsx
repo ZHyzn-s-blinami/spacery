@@ -276,13 +276,33 @@ const MeetingItem = ({item}) => {
         setSelectedDate(e.target.value);
     };
 
+    function formatDateForMoscow(date) {
+        // Create a formatter for Moscow timezone
+        const options = {
+            timeZone: 'Europe/Moscow',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+
+        const moscowTime = new Intl.DateTimeFormat('en-GB', options).format(date);
+        // Convert "DD/MM/YYYY, HH:MM:SS" to "YYYY-MM-DDTHH:MM:SS"
+        const [datePart, timePart] = moscowTime.split(', ');
+        const [day, month, year] = datePart.split('/');
+        return `${year}-${month}-${day}T${timePart}`;
+    }
+
+
     const confirmReschedule = async () => {
         setReschedulingLoading(true);
         setRescheduleStatus(null);
 
         try {
-            const formattedStartAt = selectedTimeRange.start.toISOString().split('.')[0];
-            const formattedEndAt = selectedTimeRange.end.toISOString().split('.')[0];
+            const formattedStartAt = formatDateForMoscow(selectedTimeRange.start);
+            const formattedEndAt = formatDateForMoscow(selectedTimeRange.end);
 
             await dispatch(updateMeeting({
                 uuid: item.bookingId,
