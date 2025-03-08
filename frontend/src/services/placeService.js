@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://prod-team-5-qnkvbg7c.final.prodcontest.ru';
+const API_URL = 'localhost:8080';
 
 const apiClient = axios.create({
   baseURL: API_URL,

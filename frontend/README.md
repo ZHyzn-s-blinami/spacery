@@ -1,6 +1,6 @@
 # Spacery frontend
 
-Сслыка на фронт - https://prod-team-5-qnkvbg7c.final.prodcontest.ru/
+Сслыка на фронт - localhost:8080/
 
 ### Бронирование
 * просмотр бронирований (по статусам)

@@ -10,7 +10,7 @@ const UserConfirm = () => {
   const [status, setStatus] = useState({ loading: true, error: null, success: false });
 
   const apiClient = axios.create({
-    baseURL: 'https://prod-team-5-qnkvbg7c.final.prodcontest.ru',
+    baseURL: 'localhost:8080',
     headers: {
       'Content-Type': 'application/json',
     },

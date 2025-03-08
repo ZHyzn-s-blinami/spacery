@@ -98,7 +98,7 @@ const MeetingItem = ({ item }) => {
           setQrCode(
             typeof response === 'string'
               ? response
-              : 'https://prod-team-5-qnkvbg7c.final.prodcontest.ru/checkQr/' +
+              : 'localhost:8080/checkQr/' +
                   response.payload.qrCode || '',
           );
         } catch (error) {
@@ -372,7 +372,7 @@ const MeetingItem = ({ item }) => {
       const token = localStorage.getItem('userToken');
 
       const response = await axios.post(
-        'https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/tickets/create',
+        'localhost:8080/api/tickets/create',
         {
           placeName: ticketData.placeName,
           ticketType: ticketData.ticketType,

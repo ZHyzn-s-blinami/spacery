@@ -136,7 +136,7 @@ const UserControl = () => {
       setLoading(true);
       const token = localStorage.getItem('userToken');
       const response = await axios.get(
-        'https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/all',
+        'localhost:8080/api/user/all',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -307,7 +307,7 @@ const UserControl = () => {
 
       const token = localStorage.getItem('userToken');
       await axios.put(
-        `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/edit/${editingUser.id}`,
+        `localhost:8080/api/user/edit/${editingUser.id}`,
         payload,
         {
           headers: {
@@ -345,7 +345,7 @@ const UserControl = () => {
 
       const token = localStorage.getItem('userToken');
       await axios.post(
-        'https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/sign-up',
+        'localhost:8080/api/user/sign-up',
         createFormData,
         {
           headers: {
@@ -373,7 +373,7 @@ const UserControl = () => {
     try {
       const token = localStorage.getItem('userToken');
       await axios.post(
-          `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/verify/${userId}`,
+          `localhost:8080/api/user/verify/${userId}`,
           { verified: true },
           {
             headers: {
@@ -398,7 +398,7 @@ const UserControl = () => {
 
       const token = localStorage.getItem('userToken');
       await axios.delete(
-        `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/delete/${deletingUser.id}`,
+        `localhost:8080/api/user/delete/${deletingUser.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -431,7 +431,7 @@ const UserControl = () => {
     try {
       const token = localStorage.getItem('userToken');
       await axios.post(
-        `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/block/${userId}`,
+        `localhost:8080/api/user/block/${userId}`,
         {},
         {
           headers: {
@@ -452,7 +452,7 @@ const UserControl = () => {
     try {
       const token = localStorage.getItem('userToken');
       await axios.post(
-        `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/unblock/${userId}`,
+        `localhost:8080/api/user/unblock/${userId}`,
         {},
         {
           headers: {

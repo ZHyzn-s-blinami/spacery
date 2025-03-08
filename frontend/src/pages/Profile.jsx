@@ -85,7 +85,7 @@ const Profile = () => {
 
     try {
       await axios.post(
-        'https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/verify',
+        'localhost:8080/api/user/verify',
         {},
         {
           headers: { Authorization: `Bearer ${userToken}` },
@@ -223,7 +223,7 @@ const Profile = () => {
       });
 
       await axios.put(
-        `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/user/edit/${user.id}`,
+        `localhost:8080/api/user/edit/${user.id}`,
         payload,
         { headers: { Authorization: `Bearer ${userToken}` } },
       );

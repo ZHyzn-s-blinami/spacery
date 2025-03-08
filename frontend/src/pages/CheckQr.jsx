@@ -14,7 +14,7 @@ const CheckQr = () => {
         setLoading(true);
         const userToken = localStorage.getItem('userToken');
         const response = await axios.post(
-          `https://prod-team-5-qnkvbg7c.final.prodcontest.ru/api/booking/qr/check`,
+          `localhost:8080/api/booking/qr/check`,
           { qrCode: jwt },
           {
             headers: {
