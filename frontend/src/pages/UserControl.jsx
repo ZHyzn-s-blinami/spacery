@@ -136,7 +136,7 @@ const UserControl = () => {
       setLoading(true);
       const token = localStorage.getItem('userToken');
       const response = await axios.get(
-        'localhost:8080/api/user/all',
+        'http://127.0.0.1:8080/api/user/all',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -307,7 +307,7 @@ const UserControl = () => {
 
       const token = localStorage.getItem('userToken');
       await axios.put(
-        `localhost:8080/api/user/edit/${editingUser.id}`,
+        `http://127.0.0.1:8080/api/user/edit/${editingUser.id}`,
         payload,
         {
           headers: {
@@ -345,7 +345,7 @@ const UserControl = () => {
 
       const token = localStorage.getItem('userToken');
       await axios.post(
-        'localhost:8080/api/user/sign-up',
+        'http://127.0.0.1:8080/api/user/sign-up',
         createFormData,
         {
           headers: {
@@ -373,7 +373,7 @@ const UserControl = () => {
     try {
       const token = localStorage.getItem('userToken');
       await axios.post(
-          `localhost:8080/api/user/verify/${userId}`,
+          `http://127.0.0.1:8080/api/user/verify/${userId}`,
           { verified: true },
           {
             headers: {
@@ -398,7 +398,7 @@ const UserControl = () => {
 
       const token = localStorage.getItem('userToken');
       await axios.delete(
-        `localhost:8080/api/user/delete/${deletingUser.id}`,
+        `http://127.0.0.1:8080/api/user/delete/${deletingUser.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -431,7 +431,7 @@ const UserControl = () => {
     try {
       const token = localStorage.getItem('userToken');
       await axios.post(
-        `localhost:8080/api/user/block/${userId}`,
+        `http://127.0.0.1:8080/api/user/block/${userId}`,
         {},
         {
           headers: {
@@ -452,7 +452,7 @@ const UserControl = () => {
     try {
       const token = localStorage.getItem('userToken');
       await axios.post(
-        `localhost:8080/api/user/unblock/${userId}`,
+        `http://127.0.0.1:8080/api/user/unblock/${userId}`,
         {},
         {
           headers: {

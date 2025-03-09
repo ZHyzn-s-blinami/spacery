@@ -85,7 +85,7 @@ const Profile = () => {
 
     try {
       await axios.post(
-        'localhost:8080/api/user/verify',
+        'http://127.0.0.1:8080/api/user/verify',
         {},
         {
           headers: { Authorization: `Bearer ${userToken}` },
@@ -223,7 +223,7 @@ const Profile = () => {
       });
 
       await axios.put(
-        `localhost:8080/api/user/edit/${user.id}`,
+        `http://127.0.0.1:8080/api/user/edit/${user.id}`,
         payload,
         { headers: { Authorization: `Bearer ${userToken}` } },
       );

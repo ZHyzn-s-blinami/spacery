@@ -98,7 +98,7 @@ const MeetingItem = ({ item }) => {
           setQrCode(
             typeof response === 'string'
               ? response
-              : 'localhost:8080/checkQr/' +
+              : 'http://127.0.0.1:8080/checkQr/' +
                   response.payload.qrCode || '',
           );
         } catch (error) {
@@ -372,7 +372,7 @@ const MeetingItem = ({ item }) => {
       const token = localStorage.getItem('userToken');
 
       const response = await axios.post(
-        'localhost:8080/api/tickets/create',
+        'http://127.0.0.1:8080/api/tickets/create',
         {
           placeName: ticketData.placeName,
           ticketType: ticketData.ticketType,
