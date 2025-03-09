@@ -16,6 +16,7 @@ services:
       start_period: 5s
     volumes:
       - database:/var/lib/postgresql/data
+      - ./migrations.sql:/docker-entrypoint-initdb.d/migrations.sql
     networks:
       - webnet
     restart: always
